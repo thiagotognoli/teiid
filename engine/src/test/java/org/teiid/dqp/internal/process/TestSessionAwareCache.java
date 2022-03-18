@@ -23,6 +23,8 @@ import org.teiid.adminapi.impl.SessionMetadata;
 import org.teiid.cache.Cachable;
 import org.teiid.cache.DefaultCacheFactory;
 import org.teiid.common.buffer.BufferManager;
+import org.teiid.common.buffer.BufferManagerFactory;
+import org.teiid.common.buffer.TupleBufferCache;
 import org.teiid.dqp.internal.process.SessionAwareCache.CacheID;
 import org.teiid.metadata.AbstractMetadataRecord.DataModifiable;
 import org.teiid.metadata.FunctionMethod.Determinism;
@@ -64,7 +66,9 @@ public class TestSessionAwareCache {
     @Test
     public void testUserSpecfic() {
 
+        BufferManager bm = BufferManagerFactory.getStandaloneBufferManager();
         SessionAwareCache<Cachable> cache = new SessionAwareCache<Cachable>("resultset", DefaultCacheFactory.INSTANCE, SessionAwareCache.Type.RESULTSET, 0);
+        cache.setTupleBufferCache(bm);
 
         CacheID id = new CacheID(buildWorkContext(), new ParseInfo(), "SELECT * FROM FOO");
 
@@ -90,7 +94,9 @@ public class TestSessionAwareCache {
     @Test
     public void testNoScope() {
 
+        BufferManager bm = BufferManagerFactory.getStandaloneBufferManager();
         SessionAwareCache<Cachable> cache = new SessionAwareCache<Cachable>("resultset", DefaultCacheFactory.INSTANCE, SessionAwareCache.Type.RESULTSET, 0);
+        cache.setTupleBufferCache(bm);
 
         CacheID id = new CacheID(buildWorkContext(), new ParseInfo(), "SELECT * FROM FOO");
 
@@ -116,7 +122,9 @@ public class TestSessionAwareCache {
     @Test
     public void testVDBRemoval() {
 
+        BufferManager bm = BufferManagerFactory.getStandaloneBufferManager();
         SessionAwareCache<Cachable> cache = new SessionAwareCache<Cachable>("resultset", DefaultCacheFactory.INSTANCE, SessionAwareCache.Type.RESULTSET, 0);
+        cache.setTupleBufferCache(bm);
 
         CacheID id = new CacheID(buildWorkContext(), new ParseInfo(), "SELECT * FROM FOO");
 
@@ -138,7 +146,9 @@ public class TestSessionAwareCache {
 
     @Test public void testRemove() {
 
+        BufferManager bm = BufferManagerFactory.getStandaloneBufferManager();
         SessionAwareCache<Cachable> cache = new SessionAwareCache<Cachable>("resultset", DefaultCacheFactory.INSTANCE, SessionAwareCache.Type.RESULTSET, 0);
+        cache.setTupleBufferCache(bm);
 
         CacheID id = new CacheID(buildWorkContext(), new ParseInfo(), "SELECT * FROM FOO");
 
@@ -196,7 +206,9 @@ public class TestSessionAwareCache {
 
     @Test public void testClear() {
 
+        BufferManager bm = BufferManagerFactory.getStandaloneBufferManager();
         SessionAwareCache<Cachable> cache = new SessionAwareCache<Cachable>("resultset", DefaultCacheFactory.INSTANCE, SessionAwareCache.Type.RESULTSET, 0);
+        cache.setTupleBufferCache(bm);
 
         DQPWorkContext context = buildWorkContext();
         CacheID id = new CacheID(context, new ParseInfo(), "SELECT * FROM FOO");

@@ -243,7 +243,7 @@ public class TestEmbeddedServer {
             @Override
             public boolean enlistResource(XAResource xaRes)
                     throws RollbackException, IllegalStateException, SystemException {
-                throw new UnsupportedOperationException();
+                return true;
             }
 
             @Override
