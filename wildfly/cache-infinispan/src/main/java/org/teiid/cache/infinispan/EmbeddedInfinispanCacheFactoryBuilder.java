@@ -18,12 +18,13 @@
 
 package org.teiid.cache.infinispan;
 
+import org.infinispan.commons.configuration.io.ConfigurationResourceResolver;
+import org.infinispan.commons.dataconversion.MediaType;
 import org.infinispan.commons.util.FileLookupFactory;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.cache.TransactionConfigurationBuilder;
 import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
 import org.infinispan.configuration.parsing.ParserRegistry;
-import org.infinispan.configuration.parsing.XMLResourceResolver;
 import org.infinispan.manager.DefaultCacheManager;
 import org.teiid.cache.CacheFactory;
 import org.teiid.core.TeiidRuntimeException;
@@ -31,7 +32,6 @@ import org.teiid.core.TeiidRuntimeException;
 import javax.transaction.TransactionManager;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 
 /**
  * Needed to create the CacheFactory for embedded usage.
@@ -44,7 +44,7 @@ public class EmbeddedInfinispanCacheFactoryBuilder {
                 configFile = "infinispan-config.xml"; // in classpath
             }
             InputStream inputStream = FileLookupFactory.newInstance().lookupFileStrict(configFile, Thread.currentThread().getContextClassLoader());
-            ConfigurationBuilderHolder builderHolder = new ParserRegistry().parse(inputStream, (XMLResourceResolver)null);
+            ConfigurationBuilderHolder builderHolder = new ParserRegistry().parse(inputStream, ConfigurationResourceResolver.DEFAULT, MediaType.APPLICATION_XML);
             ConfigurationBuilder builder = builderHolder.getCurrentConfigurationBuilder();
             TransactionConfigurationBuilder transaction = builder.transaction();
             transaction.transactionManagerLookup(() -> tm);

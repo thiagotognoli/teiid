@@ -45,7 +45,8 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
 			<scope>compile</scope>
-        </dependency>
+			<version>${version.javax.xml.bind.api}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
