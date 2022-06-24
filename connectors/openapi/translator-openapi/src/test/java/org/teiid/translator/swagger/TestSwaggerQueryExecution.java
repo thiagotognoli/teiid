@@ -108,7 +108,7 @@ public class TestSwaggerQueryExecution {
                 return "application/json";
             }
         };
-        Mockito.when(dispatch.invoke(Mockito.any(DataSource.class)))
+        Mockito.when(dispatch.invoke(Mockito.nullable(DataSource.class)))
                 .thenReturn(outputDS);
 
         ProcedureExecution execution = translator.createProcedureExecution(

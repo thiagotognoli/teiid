@@ -113,7 +113,7 @@ public class TestODataQueryExecution {
                 return "application/xml";
             }
         };
-        Mockito.when(dispatch.invoke(Mockito.any(DataSource.class))).thenReturn(ds);
+        Mockito.when(dispatch.invoke(Mockito.nullable(DataSource.class))).thenReturn(ds);
 
         ResultSetExecution execution = translator.createResultSetExecution((QueryExpression)cmd, context, utility.createRuntimeMetadata(), connection);
         execution.execute();
