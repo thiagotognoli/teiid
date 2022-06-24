@@ -80,7 +80,7 @@ public class TestWSTranslator {
         RuntimeMetadataImpl rm = new RuntimeMetadataImpl(tm);
         Dispatch<Object> mockDispatch = mockDispatch();
         DataSource source = Mockito.mock(DataSource.class);
-        Mockito.when(mockDispatch.invoke(Mockito.any(DataSource.class))).thenReturn(source);
+        Mockito.when(mockDispatch.invoke(Mockito.nullable(DataSource.class))).thenReturn(source);
         Mockito.when(mockConnection.createDispatch(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
         CommandBuilder cb = new CommandBuilder(tm);
 
@@ -114,11 +114,11 @@ public class TestWSTranslator {
         DataSource mock = Mockito.mock(DataSource.class);
         ByteArrayInputStream baos = new ByteArrayInputStream(new byte[100]);
         Mockito.when(mock.getInputStream()).thenReturn(baos);
-        Mockito.when(mockDispatch.invoke(Mockito.any(DataSource.class))).thenReturn(mock);
+        Mockito.when(mockDispatch.invoke(Mockito.nullable(DataSource.class))).thenReturn(mock);
         Mockito.when(mockConnection.createDispatch(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
         CommandBuilder cb = new CommandBuilder(tm);
 
-        Call call = (Call)cb.getCommand("call invokeHttp('GET', null, null, true)");
+        Call call = (Call)cb.getCommand("call invokeHttp('GET', null, 'http://localhost/service', true)");
         BinaryWSProcedureExecution pe = new BinaryWSProcedureExecution(call, rm, Mockito.mock(ExecutionContext.class), ef, mockConnection);
         pe.execute();
         List<?> result = pe.getOutputParameterValues();
@@ -146,7 +146,7 @@ public class TestWSTranslator {
         DataSource mock = Mockito.mock(DataSource.class);
         ByteArrayInputStream baos = new ByteArrayInputStream(new byte[100]);
         Mockito.when(mock.getInputStream()).thenReturn(baos);
-        Mockito.when(mockDispatch.invoke(Mockito.any(DataSource.class))).thenReturn(mock);
+        Mockito.when(mockDispatch.invoke(Mockito.nullable(DataSource.class))).thenReturn(mock);
         Mockito.when(mockConnection.createDispatch(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
         CommandBuilder cb = new CommandBuilder(tm);
 

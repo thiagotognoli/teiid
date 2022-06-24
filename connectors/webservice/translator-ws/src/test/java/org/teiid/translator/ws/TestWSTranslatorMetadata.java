@@ -64,7 +64,7 @@ public class TestWSTranslatorMetadata {
 
         Dispatch<Object> mockDispatch = Mockito.mock(Dispatch.class);
         StAXSource source = Mockito.mock(StAXSource.class);
-        Mockito.when(mockDispatch.invoke(Mockito.any(DataSource.class))).thenReturn(source);
+        Mockito.when(mockDispatch.invoke(Mockito.nullable(DataSource.class))).thenReturn(source);
         Mockito.when(mockConnection.createDispatch(Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
 
         CommandBuilder cb = new CommandBuilder(tm);
@@ -95,7 +95,7 @@ public class TestWSTranslatorMetadata {
         RuntimeMetadataImpl rm = new RuntimeMetadataImpl(tm);
 
         Dispatch<Object> mockDispatch = Mockito.mock(Dispatch.class);
-        Mockito.when(mockDispatch.invoke(Mockito.any(DataSource.class))).thenReturn(Mockito.mock(StAXSource.class));
+        Mockito.when(mockDispatch.invoke(Mockito.nullable(DataSource.class))).thenReturn(Mockito.mock(StAXSource.class));
         Mockito.when(mockConnection.createDispatch(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
 
         CommandBuilder cb = new CommandBuilder(tm);
