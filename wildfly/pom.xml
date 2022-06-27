@@ -21,7 +21,7 @@
 	    <version.org.wildfly.arquillian>3.0.1.Final</version.org.wildfly.arquillian>
         <version.org.wildfly.build-tools>1.2.12.Final</version.org.wildfly.build-tools>
         <version.org.jboss.arquillian.testenricher>1.4.1.Final</version.org.jboss.arquillian.testenricher>
-        <version.org.springframework>5.1.14.RELEASE</version.org.springframework>
+        <version.org.springframework>5.3.20</version.org.springframework>
 
         <!-- override Teiid to align with wildfly -->
         <version.com.fasterxml.jackson.dataformat>2.12.3</version.com.fasterxml.jackson.dataformat>
