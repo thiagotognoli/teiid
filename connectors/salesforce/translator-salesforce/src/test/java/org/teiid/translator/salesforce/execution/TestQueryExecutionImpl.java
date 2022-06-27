@@ -237,7 +237,7 @@ public class TestQueryExecutionImpl {
 
         final BatchResultInfo info = new BatchResultInfo("x");
 
-        Mockito.when(connection.getBatchQueryResults(Mockito.anyString(), Mockito.eq(info))).thenAnswer(new Answer<BulkBatchResult>() {
+        Mockito.when(connection.getBatchQueryResults(Mockito.nullable(String.class), Mockito.eq(info))).thenAnswer(new Answer<BulkBatchResult>() {
             boolean first = true;
             @Override
             public BulkBatchResult answer(InvocationOnMock invocation)

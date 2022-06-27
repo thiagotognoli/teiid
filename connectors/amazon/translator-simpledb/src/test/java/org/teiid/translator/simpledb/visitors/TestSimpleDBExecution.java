@@ -67,7 +67,7 @@ public class TestSimpleDBExecution {
         SelectResult result = new SelectResult();
         result.setItems(mockResult());
         String query = "select * from item where attribute > 'name'";
-        Mockito.when(connection.performSelect(Mockito.anyString(), Mockito.anyString())).thenReturn(result);
+        Mockito.when(connection.performSelect(Mockito.nullable(String.class), Mockito.nullable(String.class))).thenReturn(result);
 
         Command cmd = utility.parseCommand(query);
         ExecutionContext context = Mockito.mock(ExecutionContext.class);
@@ -198,7 +198,7 @@ public class TestSimpleDBExecution {
 
         String query = "select * from item where attribute > 'name'";
 
-        Mockito.when(connection.performSelect(Mockito.anyString(), Mockito.anyString())).thenReturn(result);
+        Mockito.when(connection.performSelect(Mockito.nullable(String.class), Mockito.nullable(String.class))).thenReturn(result);
 
         Command cmd = utility.parseCommand(query);
         ExecutionContext context = Mockito.mock(ExecutionContext.class);

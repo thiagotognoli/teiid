@@ -81,10 +81,10 @@ public class TestWSTranslator {
         Dispatch<Object> mockDispatch = mockDispatch();
         DataSource source = Mockito.mock(DataSource.class);
         Mockito.when(mockDispatch.invoke(Mockito.nullable(DataSource.class))).thenReturn(source);
-        Mockito.when(mockConnection.createDispatch(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
+        Mockito.when(mockConnection.createDispatch(Mockito.any(String.class), Mockito.nullable(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
         CommandBuilder cb = new CommandBuilder(tm);
 
-        Call call = (Call)cb.getCommand("call invokeHttp('GET', null, null)");
+        Call call = (Call)cb.getCommand("call invokeHttp('GET', null, 'http://localhost/service')");
         BinaryWSProcedureExecution pe = new BinaryWSProcedureExecution(call, rm, Mockito.mock(ExecutionContext.class), ef, mockConnection);
         pe.execute();
         pe.getOutputParameterValues();
@@ -93,7 +93,7 @@ public class TestWSTranslator {
         mockDispatch = Mockito.mock(Dispatch.class);
         StAXSource ssource = Mockito.mock(StAXSource.class);
         Mockito.when(mockDispatch.invoke(Mockito.any(StAXSource.class))).thenReturn(ssource);
-        Mockito.when(mockConnection.createDispatch(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
+        Mockito.when(mockConnection.createDispatch(Mockito.any(String.class), Mockito.nullable(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
         call = (Call)cb.getCommand("call invoke()");
         WSProcedureExecution wpe = new WSProcedureExecution(call, rm, Mockito.mock(ExecutionContext.class), ef, mockConnection);
         wpe.execute();
@@ -150,7 +150,7 @@ public class TestWSTranslator {
         Mockito.when(mockConnection.createDispatch(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
         CommandBuilder cb = new CommandBuilder(tm);
 
-        Call call = (Call)cb.getCommand("call invokeHttp('GET', null, null, false, '{\"ContentType\":\"application/json\"}')");
+        Call call = (Call)cb.getCommand("call invokeHttp('GET', null, 'http://localhost/service', false, '{\"ContentType\":\"application/json\"}')");
         BinaryWSProcedureExecution pe = new BinaryWSProcedureExecution(call, rm, Mockito.mock(ExecutionContext.class), ef, mockConnection);
         pe.execute();
 
