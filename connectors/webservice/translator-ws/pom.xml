@@ -43,13 +43,11 @@
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-core</artifactId>
-            <version>${version.org.apache.cxf}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${version.org.springframework}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
