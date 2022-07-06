@@ -68,4 +68,18 @@ public class TestRedshiftTranslator {
         assertEquals("create temporary  table foo (COL1 int4, COL2 varchar(100)) ", TranslationHelper.helpTestTempTable(TRANSLATOR, false));
     }
 
+    @Test public void testSelectStringLiteral() throws Exception {
+        String input = "SELECT 'a' FROM bqt1.SmallA"; //$NON-NLS-1$
+        String output = "SELECT 'a' FROM SmallA";  //$NON-NLS-1$
+
+        TranslationHelper.helpTestVisitor(TranslationHelper.BQT_VDB, input, output, TRANSLATOR);
+    }
+
+    @Test public void testSelectNullLiteral() throws Exception {
+        String input = "SELECT NULL FROM bqt1.SmallA"; //$NON-NLS-1$
+        String output = "SELECT NULL FROM SmallA";  //$NON-NLS-1$
+
+        TranslationHelper.helpTestVisitor(TranslationHelper.BQT_VDB, input, output, TRANSLATOR);
+    }
+
 }
