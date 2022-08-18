@@ -129,10 +129,10 @@
 			<artifactId>jboss-connector-api_1.7_spec</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.picketbox</groupId>
-			<artifactId>picketbox</artifactId>
+			<groupId>org.wildfly.security</groupId>
+			<artifactId>wildfly-elytron</artifactId>
 		</dependency>
-		
+
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>

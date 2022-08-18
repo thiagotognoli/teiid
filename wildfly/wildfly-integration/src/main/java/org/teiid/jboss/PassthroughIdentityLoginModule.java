@@ -20,7 +20,6 @@ package org.teiid.jboss;
 import java.security.AccessController;
 import java.security.Principal;
 import java.security.PrivilegedAction;
-import java.security.acl.Group;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ import org.jboss.security.SecurityContextAssociation;
 import org.jboss.security.SimplePrincipal;
 import org.jboss.security.vault.SecurityVaultException;
 import org.jboss.security.vault.SecurityVaultUtil;
-import org.picketbox.datasource.security.AbstractPasswordCredentialLoginModule;
+//import org.picketbox.datasource.security.AbstractPasswordCredentialLoginModule;
 import org.teiid.OAuthCredentialContext;
 
 /**
@@ -45,9 +44,9 @@ import org.teiid.OAuthCredentialContext;
  * to EIS, as pass-through without any validation.
  *
  */
-
+//DTS-67778  Removing PicketBox
 @SuppressWarnings("unchecked")
-public class PassthroughIdentityLoginModule extends AbstractPasswordCredentialLoginModule {
+public class PassthroughIdentityLoginModule {//} extends AbstractPasswordCredentialLoginModule { // needs to be updated to a Realm
    /**
     * Module option to specify if any {@link GSSCredential} being added to the
     * {@link Subject} should be wrapped to prevent disposal.
@@ -67,9 +66,9 @@ public class PassthroughIdentityLoginModule extends AbstractPasswordCredentialLo
    private Subject intermediateSubject;
    private GSSCredential storedCredential;
 
-   @Override
+//   @Override
    public void initialize(Subject subject, CallbackHandler handler, Map<String, ?> sharedState, Map<String, ?> options) {
-      super.initialize(subject, handler, sharedState, options);
+//      super.initialize(subject, handler, sharedState, options);
 
       this.userName = (String) options.get("username"); //$NON-NLS-1$
 
@@ -88,10 +87,10 @@ public class PassthroughIdentityLoginModule extends AbstractPasswordCredentialLo
         }
         this.properties.putAll(options);
         this.wrapGssCredential = Boolean.parseBoolean((String) options.get(WRAP_GSS_CREDENTIAL));
-        log.tracef("wrapGssCredential=%b", wrapGssCredential);
+//        log.tracef("wrapGssCredential=%b", wrapGssCredential);
    }
 
-    @Override
+//    @Override
     public boolean login() throws LoginException {
 
         String username = userName;
@@ -109,84 +108,88 @@ public class PassthroughIdentityLoginModule extends AbstractPasswordCredentialLo
 
         // Update userName so that getIdentity is consistent
         this.userName = username;
-        if (super.login() == true) {
-            return true;
-        }
+//        if (super.login() == true) {
+//            return true;
+//        }
 
         // Put the principal name into the sharedState map
-        sharedState.put("javax.security.auth.login.name", username); //$NON-NLS-1$
-        super.loginOk = true;
-        return true;
+//        sharedState.put("javax.security.auth.login.name", username); //$NON-NLS-1$
+//        super.loginOk = true;
+//        return true;
+        return false;
    }
 
-   @Override
+//   @Override
    public boolean commit() throws LoginException {
       // Put the principal name into the sharedState map
-      sharedState.put("javax.security.auth.login.name", userName); //$NON-NLS-1$
+//      sharedState.put("javax.security.auth.login.name", userName); //$NON-NLS-1$
 
       if (this.addPrincipal) {
-          subject.getPrincipals().add(getIdentity());
+//          subject.getPrincipals().add(getIdentity());
 
           // Add the PasswordCredential
           if (this.password != null) {
               PasswordCredential cred = new PasswordCredential(userName, password);
-              SecurityActions.addCredentials(subject, cred);
+//              SecurityActions.addCredentials(subject, cred);
           }
       }
 
       if (this.callerSubject != null) {
           GSSCredential rawCredential = getGssCredential(this.callerSubject);
           if (rawCredential != null) {
-              log.trace("Kerberos passthough mechanism in works");
+//              log.trace("Kerberos passthough mechanism in works");
               this.storedCredential = wrapGssCredential ? wrapCredential(rawCredential) : rawCredential;
               this.intermediateSubject = GSSUtil.createGssSubject(rawCredential, storedCredential);
               if (this.intermediateSubject == null){
                   throw new LoginException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50108));
               }
-              log.tracef("created a subject from deletegate credential");
-              makeCopy(intermediateSubject, this.subject);
-              log.tracef("Copied contents of temporary Subject to Subject from the LoginContext");
-              addPrivateCredential(this.subject, storedCredential);
-              log.trace("Also add the GSSCredential to the Subject");
+//              log.tracef("created a subject from deletegate credential");
+//              makeCopy(intermediateSubject, this.subject);
+//              log.tracef("Copied contents of temporary Subject to Subject from the LoginContext");
+//              addPrivateCredential(this.subject, storedCredential);
+//              log.trace("Also add the GSSCredential to the Subject");
           } else {
-              makeCopy(this.callerSubject, this.subject);
+//              makeCopy(this.callerSubject, this.subject);
           }
       }
 
-      addPrivateCredential(this.subject, this.properties);
-      log.trace("Adding module option properties as private credential");
+//      addPrivateCredential(this.subject, this.properties);
+//      log.trace("Adding module option properties as private credential");
 
       // if oauth credential available in calling context then add the OAuthCredential.
       if (OAuthCredentialContext.getCredential() != null) {
-          addPrivateCredential(this.subject, OAuthCredentialContext.getCredential());
-          log.trace("Adding OAuth credential as private credential");
+//          addPrivateCredential(this.subject, OAuthCredentialContext.getCredential());
+//          log.trace("Adding OAuth credential as private credential");
       }
       return true;
    }
 
-   @Override
+//   @Override
    public boolean logout() throws LoginException {
        if (System.getSecurityManager() == null) {
            if (storedCredential != null) {
-               removePrivateCredential(subject, storedCredential);
-               log.trace("Remove GSSCredential to the Subject");
+//               removePrivateCredential(subject, storedCredential);
+//               log.trace("Remove GSSCredential to the Subject");
            }
-           removePrivateCredential(subject, properties);
-           clearSubjectContents(subject, intermediateSubject != null?intermediateSubject:callerSubject);
-           log.trace("Clear Subject contents");
-           return true;
+//           removePrivateCredential(subject, properties);
+//           clearSubjectContents(subject, intermediateSubject != null?intermediateSubject:callerSubject);
+//           log.trace("Clear Subject contents");
+//           return true;
+           return false;
        }
 
        return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
            public Boolean run() {
                if (storedCredential != null) {
-                   removePrivateCredential(subject, storedCredential);
-                   log.trace("Remove GSSCredential to the Subject");
+//                   removePrivateCredential(subject, storedCredential);
+//                   log.trace("Remove GSSCredential to the Subject");
                }
-               removePrivateCredential(subject, properties);
-               clearSubjectContents(subject, intermediateSubject != null?intermediateSubject:callerSubject);
-               log.trace("Clear Subject contents");
-               return true;
+//               removePrivateCredential(subject, properties);
+//               clearSubjectContents(subject, intermediateSubject != null?intermediateSubject:callerSubject);
+//               log.trace("Clear Subject contents");
+//               return true;
+               return false;
+
            }
        });
    }
@@ -206,15 +209,15 @@ public class PassthroughIdentityLoginModule extends AbstractPasswordCredentialLo
        from.getPrivateCredentials().removeAll(toSubtract.getPrivateCredentials());
    }
 
-   @Override
+//   @Override
    protected Principal getIdentity() {
       Principal principal = new SimplePrincipal(userName);
       return principal;
    }
 
-   @Override
-   protected Group[] getRoleSets() throws LoginException {
-       return new Group[]{};
+//   @Override
+   protected Principal[] getRoleSets() throws LoginException {
+       return new Principal[]{};
    }
 
    static Principal getPrincipal() {

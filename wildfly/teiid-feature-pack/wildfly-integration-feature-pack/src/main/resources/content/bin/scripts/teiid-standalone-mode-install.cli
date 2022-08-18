@@ -16,11 +16,11 @@ connect
 /subsystem=logging/logger=org.teiid.AUDIT_LOG:write-attribute(name="level", value="WARN")
 
 batch
-/subsystem=infinispan/cache-container=teiid-cache:add()
+/subsystem=infinispan/cache-container=teiid-cache:add(marshaller=JBOSS)
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset-repl:add()
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset-repl/component=locking:add(isolation=READ_COMMITTED)
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset-repl/component=expiration:add(lifespan=7200000)
-/subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset-repl/memory=object:add(max-entries=1024, strategy=REMOVE)
+/subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset-repl/memory=object:add(size=1024)
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset-repl/component=transaction:add(mode=NON_XA)
 run-batch
 
@@ -28,7 +28,7 @@ batch
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset:add()
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset/component=locking:add(isolation=READ_COMMITTED)
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset/component=expiration:add(lifespan=7200000)
-/subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset/memory=object:add(max-entries=1024, strategy=REMOVE)
+/subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset/memory=object:add(size=1024)
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=resultset/component=transaction:add(mode=NON_XA)
 run-batch
 
@@ -36,16 +36,16 @@ batch
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=preparedplan:add()
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=preparedplan/component=locking:add(isolation=READ_COMMITTED)
 /subsystem=infinispan/cache-container=teiid-cache/local-cache=preparedplan/component=expiration:add(lifespan=28800)
-/subsystem=infinispan/cache-container=teiid-cache/local-cache=preparedplan/memory=object:add(max-entries=512, strategy=REMOVE)
+/subsystem=infinispan/cache-container=teiid-cache/local-cache=preparedplan/memory=object:add(size=512)
 /subsystem=infinispan/cache-container=teiid-cache:write-attribute(name=default-cache, value=resultset)
 run-batch
 
-/subsystem=security/security-domain=teiid-security:add(cache-type=default)
-/subsystem=security/security-domain=teiid-security/authentication=classic:add()
-/subsystem=security/security-domain=teiid-security/authentication=classic/login-module=RealmDirect:add(code=RealmDirect, flag=required, module-options=[("password-stacking"=>"useFirstPass")])
-/subsystem=security/security-domain=teiid-security/authentication=classic/login-module=Identity:add(code=Identity, flag=required, module-options={"password-stacking"=>"useFirstPass","roles"=>"odata"})
+#/subsystem=security/security-domain=teiid-security:add(cache-type=default)
+#/subsystem=security/security-domain=teiid-security/authentication=classic:add()
+#/subsystem=security/security-domain=teiid-security/authentication=classic/login-module=RealmDirect:add(code=RealmDirect, flag=required, module-options=[("password-stacking"=>"useFirstPass")])
+#/subsystem=security/security-domain=teiid-security/authentication=classic/login-module=Identity:add(code=Identity, flag=required, module-options={"password-stacking"=>"useFirstPass","roles"=>"odata"})
 
-/subsystem=teiid:add(authentication-security-domain=teiid-security, resultset-cache-infinispan-container=teiid-cache, preparedplan-cache-infinispan-container=teiid-cache, policy-decider-module=org.jboss.teiid, buffer-manager-disk-max-space-mb=51200)
+/subsystem=teiid:add(authentication-security-domain=teiid-security,, resultset-cache-infinispan-container=teiid-cache, preparedplan-cache-infinispan-container=teiid-cache, policy-decider-module=org.jboss.teiid, buffer-manager-disk-max-space-mb=51200)
 /subsystem=teiid/transport=local:add()
 /subsystem=teiid/transport=odata:add()
 /subsystem=teiid/transport=jdbc:add(protocol=teiid, socket-binding=teiid-jdbc)
