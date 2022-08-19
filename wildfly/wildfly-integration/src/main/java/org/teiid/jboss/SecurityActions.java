@@ -26,83 +26,75 @@ import javax.security.auth.Subject;
 
 import org.teiid.logging.LogConstants;
 import org.teiid.logging.LogManager;
+import org.teiid.security.SecurityHelper;
 import org.wildfly.security.auth.server.RealmUnavailableException;
+import org.wildfly.security.auth.server.SecurityDomain;
 import org.wildfly.security.auth.server.SecurityIdentity;
 import org.wildfly.security.evidence.PasswordGuessEvidence;
 
 class SecurityActions {
 
-    private static ThreadLocal<SecurityIdentity> securityIdentityThreadLocal;
+    private static final ThreadLocal<SecurityIdentity> securityIdentityThreadLocal;
 
     static {
         String saflag = System.getProperty("org.jboss.security.SecurityAssociation.ThreadLocal", "false");
         String scflag = System.getProperty("org.jboss.security.context.ThreadLocal", "false");
         boolean useThreadLocal = Boolean.parseBoolean(saflag) || Boolean.parseBoolean(scflag);
         if (useThreadLocal) {
-            securityIdentityThreadLocal = new ThreadLocal();
+            securityIdentityThreadLocal = new ThreadLocal<>();
         } else {
-            securityIdentityThreadLocal = new InheritableThreadLocal();
+            securityIdentityThreadLocal = new InheritableThreadLocal<>();
         }
     }
 
     static void setSecurityIdentity(final SecurityIdentity sc)
        {
-          AccessController.doPrivileged(new PrivilegedAction<Object>()
-          {
-             public Object run()
-             {
-                 securityIdentityThreadLocal.set(sc);
-                return null;
-             }
+          AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+              securityIdentityThreadLocal.set(sc);
+             return null;
           });
        }
 
        static SecurityIdentity getSecurityIdentity()
        {
-          return AccessController.doPrivileged(new PrivilegedAction<SecurityIdentity>()
-          {
-             public SecurityIdentity run()
-             {
-                 return securityIdentityThreadLocal.get();
-             }
+          return AccessController.doPrivileged((PrivilegedAction<SecurityIdentity>) securityIdentityThreadLocal::get);
+       }
+
+       static void clearSecurityIdentity()
+       {
+          AccessController.doPrivileged((PrivilegedAction<SecurityIdentity>) () -> {
+              securityIdentityThreadLocal.remove();
+              return null;
           });
        }
 
-       static SecurityIdentity clearSecurityIdentity()
+       static SecurityIdentity createSecurityIdentity(final Principal p, final Object cred, final String securityDomainName, final SecurityHelper securityHelper)
        {
-          return AccessController.doPrivileged(new PrivilegedAction<SecurityIdentity>()
-          {
-             public SecurityIdentity run()
-             {
-                 securityIdentityThreadLocal.remove();
-                return null;
-             }
-          });
-       }
-
-       static SecurityIdentity createSecurityIdentity(final Principal p, final Object cred, final Subject subject, final String securityDomain)
-       {
-            return AccessController.doPrivileged(new PrivilegedAction<SecurityIdentity>() {
-                public SecurityIdentity run() {
-                    SecurityIdentity sc = null;
-                    try {
-                        sc = JBossSecurityHelper.getSecurityDomain(securityDomain).authenticate(p, new PasswordGuessEvidence(cred.toString().toCharArray()));
-                    } catch (RealmUnavailableException e) {
-                        LogManager.logError(LogConstants.CTX_SECURITY, "Failed to authenticate '" + p.getName() + "' with creds '" + cred + "'");
-                    }
-                    if (sc == null) {
+           return AccessController.doPrivileged((PrivilegedAction<SecurityIdentity>) () -> {
+               SecurityIdentity securityIdentity = null;
+               if (securityHelper instanceof JBossSecurityHelper) {
+                   JBossSecurityHelper jBossSecurityHelper = (JBossSecurityHelper) securityHelper;
+                   SecurityDomain securityDomain = jBossSecurityHelper.getSecurityDomain(securityDomainName);
+                   try {
+                       securityIdentity = securityDomain.authenticate(p, new PasswordGuessEvidence(cred.toString().toCharArray()));
+                   } catch (RealmUnavailableException e) {
+                       LogManager.logError(LogConstants.CTX_SECURITY, "Failed to authenticate '" + p.getName() + "' with creds '" + cred + "'");
+                   }
+/*
+                    if (securityIdentity == null) {
                         try {
-                            sc = JBossSecurityHelper.getSecurityDomain(securityDomain).createAdHocIdentity(p);
+                            securityIdentity = securityDomain.createAdHocIdentity(p);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
                     }
-                    return sc;
-                }
-            });
+*/
+               }
+               return securityIdentity;
+           });
        }
 
-       static class AddCredentialsAction implements PrivilegedAction
+       static class AddCredentialsAction implements PrivilegedAction<Object>
        {
           Subject subject;
           PasswordCredential cred;

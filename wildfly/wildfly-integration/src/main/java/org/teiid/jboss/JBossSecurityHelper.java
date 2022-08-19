@@ -79,8 +79,8 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
         return null;
     }
 
-    public SecurityIdentity createSecurityIdentity(String securityDomain, Principal p, Object credentials, Subject subject) {
-        return SecurityActions.createSecurityIdentity(p, credentials, subject, securityDomain);
+    public SecurityIdentity createSecurityIdentity(String securityDomain, Principal p, Object credentials) {
+        return SecurityActions.createSecurityIdentity(p, credentials, securityDomain ,this);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
 
                 try {
                     context.associate();
-                    SecurityIdentity securityContext = createSecurityIdentity(securityDomain, new SimplePrincipal("temp"), null, new Subject()); //$NON-NLS-1$
+                    SecurityIdentity securityContext = createSecurityIdentity(securityDomain, new SimplePrincipal("temp"), null); //$NON-NLS-1$
                     previous = associateSecurityContext(securityContext);
 
                     Subject subject = new Subject();
@@ -151,7 +151,7 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
                             }
                         }
 
-                        Object sc = createSecurityIdentity(securityDomain, principal, null, subject);
+                        Object sc = createSecurityIdentity(securityDomain, principal, null);
                         LogManager.logDetail(LogConstants.CTX_SECURITY, new Object[] {"Logon successful though GSS API"}); //$NON-NLS-1$
                         GSSResult result = buildGSSResult(context, securityDomain, true, delegationCredential);
                         result.setSecurityContext(sc);
@@ -205,7 +205,7 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
         return null;
     }
 
-    public static SecurityDomain getSecurityDomain(String securityDomainName) {
+    public SecurityDomain getSecurityDomain(String securityDomainName) {
         SecurityDomain securityDomain = null; //SecurityDomain.getCurrent(); // this only registers one
         if (securityDomain == null) {
             ServiceName serviceName = WILDFLY.append("security", "security-domain", securityDomainName);
@@ -217,7 +217,7 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
         return securityDomain;
     }
 
-    private static ServiceContainer currentServiceContainer() {
+    private ServiceContainer currentServiceContainer() {
         return System.getSecurityManager() == null ? CurrentServiceContainer.getServiceContainer() : AccessController.doPrivileged(CurrentServiceContainer.GET_ACTION);
     }
 }
