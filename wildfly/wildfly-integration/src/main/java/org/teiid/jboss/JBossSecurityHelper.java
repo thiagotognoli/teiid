@@ -46,66 +46,72 @@ import org.jboss.security.identity.plugins.SimpleRoleGroup;
 import org.jboss.security.mapping.MappingContext;
 import org.jboss.security.mapping.MappingManager;
 import org.jboss.security.mapping.MappingType;
-import org.jboss.security.negotiation.Constants;
-import org.jboss.security.negotiation.common.NegotiationContext;
-import org.jboss.security.negotiation.spnego.KerberosMessage;
 import org.teiid.logging.LogConstants;
 import org.teiid.logging.LogManager;
 import org.teiid.security.Credentials;
 import org.teiid.security.GSSResult;
 import org.teiid.security.SecurityHelper;
+import org.wildfly.security.auth.server.SecurityDomain;
+import org.wildfly.security.auth.server.SecurityIdentity;
 
-public class JBossSecurityHelper implements SecurityHelper, Serializable {
+public class JBossSecurityHelper implements SecurityHelper<SecurityIdentity>, Serializable {
     private static final long serialVersionUID = 3598997061994110254L;
     public static final String AT = "@"; //$NON-NLS-1$
 
+    private ThreadLocal<SecurityIdentity> currentContext = new ThreadLocal<>();
+
     @Override
-    public SecurityContext associateSecurityContext(Object newContext) {
-        SecurityContext context = SecurityActions.getSecurityContext();
-        if (newContext != context) {
-            SecurityActions.setSecurityContext((SecurityContext)newContext);
+    public SecurityIdentity associateSecurityContext(SecurityIdentity newContext) {
+        SecurityIdentity oldIdentity = currentContext.get();
+        if(newContext != oldIdentity) {
+            currentContext.set(newContext);
         }
-        return context;
+        return oldIdentity;
     }
 
     @Override
     public void clearSecurityContext() {
-        SecurityActions.clearSecurityContext();
+        currentContext.remove();
     }
 
     @Override
-    public Object getSecurityContext(String securityDomain) {
-        SecurityContext sc = SecurityActions.getSecurityContext();
-        if (sc != null && sc.getSecurityDomain().equals(securityDomain)) {
-            return sc;
+    public SecurityIdentity getSecurityContext(String securityDomain) {
+        SecurityIdentity identity = currentContext.get();
+        if (identity != null) {
+            SecurityDomain domain = SecurityDomain.forIdentity(identity);
+            if(domain != null) {
+                return identity;
+            }
         }
         return null;
     }
 
-    public SecurityContext createSecurityContext(String securityDomain, Principal p, Object credentials, Subject subject) {
-        return SecurityActions.createSecurityContext(p, credentials, subject, securityDomain);
+    public SecurityIdentity createSecurityContext(String securityDomain, Principal p, Object credentials, Subject subject) {
+        //return SecurityActions.createSecurityContext(p, credentials, subject, securityDomain);
+        return null;
     }
 
     @Override
-    public Subject getSubjectInContext(Object context) {
-        if (!(context instanceof SecurityContext)) {
+    public Subject getSubjectInContext(SecurityIdentity context) {
+        if (!(context instanceof SecurityIdentity)) {
             return null;
         }
-        SecurityContext sc = (SecurityContext)context;
-        SubjectInfo si = sc.getSubjectInfo();
-        Subject subject = si.getAuthenticatedSubject();
-        return subject;
+//        SecurityContext sc = (SecurityContext)context;
+//        SubjectInfo si = sc.getSubjectInfo();
+//        Subject subject = si.getAuthenticatedSubject();
+//        return subject;
+        return null;
     }
 
     @Override
-    public SecurityContext authenticate(String domain,
+    public SecurityIdentity authenticate(String domain,
             String baseUsername, Credentials credentials, String applicationName) throws LoginException {
         // If username specifies a domain (user@domain) only that domain is authenticated against.
         SecurityDomainContext securityDomainContext = getSecurityDomainContext(domain);
         if (securityDomainContext != null) {
             Subject subject = new Subject();
             boolean isValid = false;
-            SecurityContext securityContext = null;
+            SecurityIdentity securityContext = null;
             AuthenticationManager authManager = securityDomainContext.getAuthenticationManager();
             if (authManager != null) {
                 Principal userPrincipal = new SimplePrincipal(baseUsername);
@@ -120,10 +126,11 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
                 if (mappingManager != null) {
                     MappingContext<RoleGroup> mc = mappingManager.getMappingContext(MappingType.ROLE.name());
                     if(mc != null && mc.hasModules()) {
-                        RoleGroup userRoles = securityContext.getUtil().getRoles();
-                        if(userRoles == null) {
-                            userRoles = new SimpleRoleGroup(SecurityConstants.ROLES_IDENTIFIER);
-                         }
+//                        RoleGroup userRoles = securityContext.getUtil().getRoles();
+//                        if(userRoles == null) {
+//                            userRoles = new SimpleRoleGroup(SecurityConstants.ROLES_IDENTIFIER);
+//                        }
+                        RoleGroup userRoles = new SimpleRoleGroup(SecurityConstants.ROLES_IDENTIFIER);
 
                         Map<String,Object> contextMap = new HashMap<String,Object>();
                         contextMap.put(SecurityConstants.ROLES_IDENTIFIER, userRoles);
@@ -150,80 +157,86 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
     @Override
     public GSSResult negotiateGssLogin(String securityDomain, byte[] serviceTicket) throws LoginException {
 
-        SecurityDomainContext securityDomainContext = getSecurityDomainContext(securityDomain);
-        if (securityDomainContext != null) {
-            AuthenticationManager authManager = securityDomainContext.getAuthenticationManager();
-
-            if (authManager != null) {
-                Object previous = null;
-                NegotiationContext context = new NegotiationContext();
-                context.setRequestMessage(new KerberosMessage(Constants.KERBEROS_V5, serviceTicket));
-
-                try {
-                    context.associate();
-                    SecurityContext securityContext = createSecurityContext(securityDomain, new SimplePrincipal("temp"), null, new Subject()); //$NON-NLS-1$
-                    previous = associateSecurityContext(securityContext);
-
-                    Subject subject = new Subject();
-                    boolean isValid = authManager.isValid(null, null, subject);
-                    if (isValid) {
-
-                        Principal principal = null;
-                        for(Principal p:subject.getPrincipals()) {
-                            principal = p;
-                            break;
-                        }
-                        GSSCredential delegationCredential = null;
-                        //if isValid checked just the cache the context will be null
-                        if (context.getSchemeContext() == null) {
-                            Set<GSSCredential> credentials = subject.getPrivateCredentials(GSSCredential.class);
-                            if (credentials != null && !credentials.isEmpty()) {
-                                delegationCredential = credentials.iterator().next();
-                            }
-                        }
-
-                        Object sc = createSecurityContext(securityDomain, principal, null, subject);
-                        LogManager.logDetail(LogConstants.CTX_SECURITY, new Object[] {"Logon successful though GSS API"}); //$NON-NLS-1$
-                        GSSResult result = buildGSSResult(context, securityDomain, true, delegationCredential);
-                        result.setSecurityContext(sc);
-                        result.setUserName(principal.getName());
-                        return result;
-                    }
-                    LoginException le = (LoginException)securityContext.getData().get("org.jboss.security.exception"); //$NON-NLS-1$
-                    if (le != null) {
-                        if (le.getMessage().equals("Continuation Required.")) { //$NON-NLS-1$
-                            return buildGSSResult(context, securityDomain, false, null);
-                        }
-                        throw le;
-                    }
-                } finally {
-                    associateSecurityContext(previous);
-                    context.clear();
-                }
-            }
-        }
+//        SecurityDomainContext securityDomainContext = getSecurityDomainContext(securityDomain);
+//        if (securityDomainContext != null) {
+//            AuthenticationManager authManager = securityDomainContext.getAuthenticationManager();
+//
+//            if (authManager != null) {
+//                Object previous = null;
+//                NegotiationContext context = new NegotiationContext();
+//
+//                try {
+//                    //http://docs.oracle.com/cd/E21455_01/common/tutorials/kerberos_principal.html
+//                    org.ietf.jgss.Oid KERBEROS_V5_PRINCIPAL_NAME = new org.ietf.jgss.Oid("1.2.840.113554.1.2.2.1"); //$NON-NLS-1$
+//                    context.setRequestMessage(new KerberosMessage(KERBEROS_V5_PRINCIPAL_NAME, serviceTicket));
+//                    context.associate();
+//                    SecurityContext securityContext = createSecurityContext(securityDomain, new SimplePrincipal("temp"), null, new Subject()); //$NON-NLS-1$
+//                    previous = associateSecurityContext(securityContext);
+//
+//                    Subject subject = new Subject();
+//                    boolean isValid = authManager.isValid(null, null, subject);
+//                    if (isValid) {
+//
+//                        Principal principal = null;
+//                        for(Principal p:subject.getPrincipals()) {
+//                            principal = p;
+//                            break;
+//                        }
+//                        GSSCredential delegationCredential = null;
+//                        //if isValid checked just the cache the context will be null
+//                        if (context.getSchemeContext() == null) {
+//                            Set<GSSCredential> credentials = subject.getPrivateCredentials(GSSCredential.class);
+//                            if (credentials != null && !credentials.isEmpty()) {
+//                                delegationCredential = credentials.iterator().next();
+//                            }
+//                        }
+//
+//                        Object sc = createSecurityContext(securityDomain, principal, null, subject);
+//                        LogManager.logDetail(LogConstants.CTX_SECURITY, new Object[] {"Logon successful though GSS API"}); //$NON-NLS-1$
+//                        GSSResult result = buildGSSResult(context, securityDomain, true, delegationCredential);
+//                        result.setSecurityContext(sc);
+//                        result.setUserName(principal.getName());
+//                        return result;
+//                    }
+//                    LoginException le = (LoginException)securityContext.getData().get("org.jboss.security.exception"); //$NON-NLS-1$
+//                    if (le != null) {
+//                        if (le.getMessage().equals("Continuation Required.")) { //$NON-NLS-1$
+//                            return buildGSSResult(context, securityDomain, false, null);
+//                        }
+//                        throw le;
+//                    }
+//                } catch (GSSException e) {
+//                    e.printStackTrace();
+//                } finally {
+//                    associateSecurityContext(previous);
+//                    context.clear();
+//                }
+//            }
+//        }
         throw new LoginException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50072, "GSS Auth", securityDomain)); //$NON-NLS-1$
     }
 
-    private GSSResult buildGSSResult(NegotiationContext context, String securityDomain, boolean validAuth, GSSCredential delegationCredential) throws LoginException {
-        GSSContext securityContext = (GSSContext) context.getSchemeContext();
-        try {
-            if (securityContext != null && securityContext.getCredDelegState()) {
-                delegationCredential = securityContext.getDelegCred();
-            }
-            if (context.getResponseMessage() == null && validAuth) {
-                return new GSSResult(context.isAuthenticated(), delegationCredential);
-            }
-            if (context.getResponseMessage() instanceof KerberosMessage) {
-                KerberosMessage km = (KerberosMessage)context.getResponseMessage();
-                return new GSSResult(km.getToken(), context.isAuthenticated(), delegationCredential);
-            }
-        } catch (GSSException e) {
-            // login exception can not take exception
-            throw new LoginException(e.getMessage());
-        }
-        throw new LoginException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50103, securityDomain));
-    }
+//    private GSSResult buildGSSResult(NegotiationContext context, String securityDomain, boolean validAuth, GSSCredential delegationCredential) throws LoginException {
+//        GSSContext securityContext = (GSSContext) context.getSchemeContext();
+//        try {
+//            if (securityContext != null && securityContext.getCredDelegState()) {
+//                delegationCredential = securityContext.getDelegCred();
+//            }
+//            if (context.getResponseMessage() == null && validAuth) {
+//                return new GSSResult(context.isAuthenticated(), delegationCredential);
+//            }
+//            if (context.getResponseMessage() instanceof KerberosMessage) {
+//                KerberosMessage km = (KerberosMessage)context.getResponseMessage();
+//                return new GSSResult(km.getToken(), context.isAuthenticated(), delegationCredential);
+//            }
+//        } catch (GSSException e) {
+//            // login exception can not take exception
+//            LoginException loginException = new LoginException(e.getMessage());
+//            loginException.initCause(e);
+//            throw loginException;
+//        }
+//        throw new LoginException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50103, securityDomain));
+//    }
 
     protected SecurityDomainContext getSecurityDomainContext(String securityDomain) {
         if (securityDomain != null && !securityDomain.isEmpty()) {
