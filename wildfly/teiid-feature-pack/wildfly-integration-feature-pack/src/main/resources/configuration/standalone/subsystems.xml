@@ -30,7 +30,6 @@
         <subsystem>request-controller.xml</subsystem>
         <subsystem>sar.xml</subsystem>
         <subsystem>security-manager.xml</subsystem>
-        <subsystem>teiid-security.xml</subsystem>
         <subsystem>teiid.xml</subsystem>
         <subsystem>transactions.xml</subsystem>
         <subsystem>undertow.xml</subsystem>

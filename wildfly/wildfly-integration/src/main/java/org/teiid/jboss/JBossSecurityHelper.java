@@ -19,9 +19,9 @@
 package org.teiid.jboss;
 
 import java.io.Serializable;
+import java.security.AccessController;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -32,20 +32,11 @@ import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.jboss.as.security.plugins.SecurityDomainContext;
 import org.jboss.as.server.CurrentServiceContainer;
+import org.jboss.msc.service.ServiceContainer;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.jboss.security.AuthenticationManager;
-import org.jboss.security.PicketBoxLogger;
-import org.jboss.security.SecurityConstants;
-import org.jboss.security.SecurityContext;
-import org.jboss.security.SecurityRolesAssociation;
 import org.jboss.security.SimplePrincipal;
-import org.jboss.security.SubjectInfo;
-import org.jboss.security.identity.RoleGroup;
-import org.jboss.security.identity.plugins.SimpleRoleGroup;
-import org.jboss.security.mapping.MappingContext;
-import org.jboss.security.mapping.MappingManager;
-import org.jboss.security.mapping.MappingType;
 import org.jboss.security.negotiation.Constants;
 import org.jboss.security.negotiation.common.NegotiationContext;
 import org.jboss.security.negotiation.spnego.KerberosMessage;
@@ -54,97 +45,75 @@ import org.teiid.logging.LogManager;
 import org.teiid.security.Credentials;
 import org.teiid.security.GSSResult;
 import org.teiid.security.SecurityHelper;
+import org.wildfly.security.auth.server.RealmUnavailableException;
+import org.wildfly.security.auth.server.SecurityDomain;
+import org.wildfly.security.auth.server.SecurityIdentity;
+import org.wildfly.security.evidence.PasswordGuessEvidence;
 
 public class JBossSecurityHelper implements SecurityHelper, Serializable {
     private static final long serialVersionUID = 3598997061994110254L;
     public static final String AT = "@"; //$NON-NLS-1$
 
+    public static final ServiceName WILDFLY = ServiceName.of("org","wildfly");
+
     @Override
-    public SecurityContext associateSecurityContext(Object newContext) {
-        SecurityContext context = SecurityActions.getSecurityContext();
+    public SecurityIdentity associateSecurityContext(Object newContext) {
+        SecurityIdentity context = SecurityActions.getSecurityIdentity();
         if (newContext != context) {
-            SecurityActions.setSecurityContext((SecurityContext)newContext);
+            SecurityActions.setSecurityIdentity((SecurityIdentity)newContext);
         }
         return context;
     }
 
     @Override
     public void clearSecurityContext() {
-        SecurityActions.clearSecurityContext();
+        SecurityActions.clearSecurityIdentity();
     }
 
     @Override
     public Object getSecurityContext(String securityDomain) {
-        SecurityContext sc = SecurityActions.getSecurityContext();
-        if (sc != null && sc.getSecurityDomain().equals(securityDomain)) {
-            return sc;
+        SecurityIdentity securityIdentity = SecurityActions.getSecurityIdentity();
+        if (securityIdentity != null/* && sc.getSecurityDomain().equals(securityDomain)*/) { //todo how to compare domains
+            return securityIdentity;
         }
         return null;
     }
 
-    public SecurityContext createSecurityContext(String securityDomain, Principal p, Object credentials, Subject subject) {
-        return SecurityActions.createSecurityContext(p, credentials, subject, securityDomain);
+    public SecurityIdentity createSecurityIdentity(String securityDomain, Principal p, Object credentials) {
+        return SecurityActions.createSecurityIdentity(p, credentials, securityDomain ,this);
     }
 
     @Override
     public Subject getSubjectInContext(Object context) {
-        if (!(context instanceof SecurityContext)) {
-            return null;
-        }
-        SecurityContext sc = (SecurityContext)context;
-        SubjectInfo si = sc.getSubjectInfo();
-        Subject subject = si.getAuthenticatedSubject();
+        Subject subject = null;
+
+        if(context instanceof SecurityIdentity){
+            SecurityIdentity securityIdentity = (SecurityIdentity) context;
+            subject = new Subject(true, Collections.singleton(securityIdentity.getPrincipal()),Collections.singleton(securityIdentity.getPublicCredentials()), Collections.singleton(securityIdentity.getPrivateCredentials()));
+         }
         return subject;
     }
 
     @Override
-    public SecurityContext authenticate(String domain,
+    public SecurityIdentity authenticate(String domain,
             String baseUsername, Credentials credentials, String applicationName) throws LoginException {
-        // If username specifies a domain (user@domain) only that domain is authenticated against.
-        SecurityDomainContext securityDomainContext = getSecurityDomainContext(domain);
-        if (securityDomainContext != null) {
-            Subject subject = new Subject();
-            boolean isValid = false;
-            SecurityContext securityContext = null;
-            AuthenticationManager authManager = securityDomainContext.getAuthenticationManager();
-            if (authManager != null) {
-                Principal userPrincipal = new SimplePrincipal(baseUsername);
-                Object cred = credentials==null?null:credentials.getCredentials();
-                isValid = authManager.isValid(userPrincipal, cred, subject);
-                securityContext = createSecurityContext(domain, userPrincipal, cred, subject);
-                LogManager.logDetail(LogConstants.CTX_SECURITY, new Object[] {"Logon successful for \"", baseUsername, "\" in security domain", domain}); //$NON-NLS-1$ //$NON-NLS-2$
-            }
 
-            if (isValid) {
-                MappingManager mappingManager = securityDomainContext.getMappingManager();
-                if (mappingManager != null) {
-                    MappingContext<RoleGroup> mc = mappingManager.getMappingContext(MappingType.ROLE.name());
-                    if(mc != null && mc.hasModules()) {
-                        RoleGroup userRoles = securityContext.getUtil().getRoles();
-                        if(userRoles == null) {
-                            userRoles = new SimpleRoleGroup(SecurityConstants.ROLES_IDENTIFIER);
-                         }
-
-                        Map<String,Object> contextMap = new HashMap<String,Object>();
-                        contextMap.put(SecurityConstants.ROLES_IDENTIFIER, userRoles);
-                        //Append any deployment role->principals configuration done by the user
-                        contextMap.put(SecurityConstants.DEPLOYMENT_PRINCIPAL_ROLES_MAP,
-                              SecurityRolesAssociation.getSecurityRoles());
-
-                        //Append the principals also
-                        contextMap.put(SecurityConstants.PRINCIPALS_SET_IDENTIFIER, subject.getPrincipals());
-                        LogManager.logDetail(LogConstants.CTX_SECURITY, new Object[] {"Roles before mapping \"", userRoles.toString()}); //$NON-NLS-1$
-                        PicketBoxLogger.LOGGER.traceRolesBeforeMapping(userRoles != null ? userRoles.toString() : "");
-
-                        mc.performMapping(contextMap, userRoles);
-                        RoleGroup mappedRoles = mc.getMappingResult().getMappedObject();
-                        LogManager.logDetail(LogConstants.CTX_SECURITY, new Object[] {"Roles after mapping \"", mappedRoles.toString()}); //$NON-NLS-1$
-                    }
+        SecurityDomain securityDomain = getSecurityDomain(domain);
+        if (securityDomain != null) {
+            try {
+                SecurityIdentity securityIdentity = securityDomain.authenticate(baseUsername, new PasswordGuessEvidence(credentials.getCredentials().toString().toCharArray()));
+                if (securityIdentity != null) {
+                    LogManager.logDetail(LogConstants.CTX_SECURITY, "Authenticated successful for '"+baseUsername+"'", securityIdentity.getRoles().toString());
+                    return securityIdentity;
+                } else {
+                    LogManager.logInfo(LogConstants.CTX_SECURITY, "user \""+baseUsername+"\" was not authenticated"); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new LoginException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50072, baseUsername, domain));
                 }
-                return securityContext;
+            } catch (RealmUnavailableException e) {
+                throw new LoginException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50072, baseUsername, domain));
             }
         }
-        throw new LoginException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50072, baseUsername, domain ));
+        throw new LoginException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50072, baseUsername, domain));
     }
 
     @Override
@@ -161,7 +130,7 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
 
                 try {
                     context.associate();
-                    SecurityContext securityContext = createSecurityContext(securityDomain, new SimplePrincipal("temp"), null, new Subject()); //$NON-NLS-1$
+                    SecurityIdentity securityContext = createSecurityIdentity(securityDomain, new SimplePrincipal("temp"), null); //$NON-NLS-1$
                     previous = associateSecurityContext(securityContext);
 
                     Subject subject = new Subject();
@@ -182,14 +151,14 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
                             }
                         }
 
-                        Object sc = createSecurityContext(securityDomain, principal, null, subject);
+                        Object sc = createSecurityIdentity(securityDomain, principal, null);
                         LogManager.logDetail(LogConstants.CTX_SECURITY, new Object[] {"Logon successful though GSS API"}); //$NON-NLS-1$
                         GSSResult result = buildGSSResult(context, securityDomain, true, delegationCredential);
                         result.setSecurityContext(sc);
                         result.setUserName(principal.getName());
                         return result;
                     }
-                    LoginException le = (LoginException)securityContext.getData().get("org.jboss.security.exception"); //$NON-NLS-1$
+                    LoginException le = null;//(LoginException)securityContext.getData().get("org.jboss.security.exception"); //$NON-NLS-1$
                     if (le != null) {
                         if (le.getMessage().equals("Continuation Required.")) { //$NON-NLS-1$
                             return buildGSSResult(context, securityDomain, false, null);
@@ -228,11 +197,27 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
     protected SecurityDomainContext getSecurityDomainContext(String securityDomain) {
         if (securityDomain != null && !securityDomain.isEmpty()) {
             ServiceName name = ServiceName.JBOSS.append("security", "security-domain", securityDomain); //$NON-NLS-1$ //$NON-NLS-2$
-            ServiceController<SecurityDomainContext> controller = (ServiceController<SecurityDomainContext>) CurrentServiceContainer.getServiceContainer().getService(name);
+            ServiceController<SecurityDomainContext> controller = (ServiceController<SecurityDomainContext>)currentServiceContainer().getService(name);
             if (controller != null) {
                 return controller.getService().getValue();
             }
         }
         return null;
+    }
+
+    public SecurityDomain getSecurityDomain(String securityDomainName) {
+        SecurityDomain securityDomain = null; //SecurityDomain.getCurrent(); // this only registers one
+        if (securityDomain == null) {
+            ServiceName serviceName = WILDFLY.append("security", "security-domain", securityDomainName);
+            ServiceController<?> controller = currentServiceContainer().getService(serviceName);
+            if (controller != null) {
+                securityDomain = (SecurityDomain) controller.getValue();
+            }
+        }
+        return securityDomain;
+    }
+
+    private ServiceContainer currentServiceContainer() {
+        return System.getSecurityManager() == null ? CurrentServiceContainer.getServiceContainer() : AccessController.doPrivileged(CurrentServiceContainer.GET_ACTION);
     }
 }

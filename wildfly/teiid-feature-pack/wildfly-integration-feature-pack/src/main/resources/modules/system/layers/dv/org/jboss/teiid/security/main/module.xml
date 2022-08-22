@@ -13,7 +13,7 @@
         <module name="org.apache.cxf" /> <!-- for OAuth -->
         <module name="org.apache.cxf.impl" /> <!-- for OAuth -->
         <module name="org.apache.cxf.impl.frontend-jaxrs" />  <!-- for OAuth -->
-        <module name="org.picketbox"/>
+        <module name="org.wildfly.security.elytron"/>
         <module name="org.jboss.as.security"/>
     </dependencies>
 
