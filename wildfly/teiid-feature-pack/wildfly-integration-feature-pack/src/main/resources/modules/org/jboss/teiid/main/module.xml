@@ -32,7 +32,7 @@
         <module name="io.netty"/>
         <module name="org.jboss.staxmapper" />
         <module name="org.jboss.vfs" />
-        <module name="org.picketbox"/>
+        <module name="org.wildfly.security.elytron"/>
         <module name="org.jboss.as.network"/>
         <module name="org.jboss.as.security"/>
         <module name="org.jboss.as.server"/>

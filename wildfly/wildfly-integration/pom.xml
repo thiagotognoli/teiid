@@ -8,6 +8,18 @@
 	<artifactId>teiid-wildfly-integration</artifactId>
 	<name>teiid-wildfly-integration</name>
 	<description>JBoss specific integration layer for teiid</description>
+    <build>
+        <plugins>
+            <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 	<dependencies>
 
@@ -112,6 +124,16 @@
 			<groupId>org.jboss.ironjacamar</groupId>
 			<artifactId>ironjacamar-common-api</artifactId>
 		</dependency>
+<!--
+		<dependency>
+			<groupId>org.jboss.security</groupId>
+			<artifactId>jboss-negotiation-spnego</artifactId>
+		</dependency>
+		<dependency>
+		  <groupId>org.jboss.security</groupId>
+		  <artifactId>jboss-negotiation-common</artifactId>
+		</dependency>
+-->
 		<dependency>
 			<groupId>org.jboss.spec.javax.transaction</groupId>
 			<artifactId>jboss-transaction-api_1.3_spec</artifactId>
@@ -119,6 +141,10 @@
 		<dependency>
 			<groupId>org.jboss.spec.javax.resource</groupId>
 			<artifactId>jboss-connector-api_1.7_spec</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wildfly.security</groupId>
+			<artifactId>wildfly-elytron</artifactId>
 		</dependency>
 
         <dependency>

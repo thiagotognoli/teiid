@@ -70,7 +70,17 @@
         <dependency>
             <groupId>org.teiid.wildfly</groupId>
             <artifactId>teiid-wildfly-security</artifactId>
-        </dependency>        
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-simple</artifactId>
+        </dependency>
+-->
     </dependencies>
 
     <build>
