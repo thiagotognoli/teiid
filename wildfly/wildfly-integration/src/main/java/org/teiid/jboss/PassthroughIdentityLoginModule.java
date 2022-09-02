@@ -32,10 +32,10 @@ import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSName;
 import org.ietf.jgss.Oid;
-import org.jboss.security.SecurityContextAssociation;
-import org.jboss.security.SimplePrincipal;
-import org.jboss.security.vault.SecurityVaultException;
-import org.jboss.security.vault.SecurityVaultUtil;
+//import org.jboss.security.SecurityContextAssociation;
+//import org.jboss.security.SimplePrincipal;
+//import org.jboss.security.vault.SecurityVaultException;
+//import org.jboss.security.vault.SecurityVaultUtil;
 //import org.picketbox.datasource.security.AbstractPasswordCredentialLoginModule;
 import org.teiid.OAuthCredentialContext;
 
@@ -73,6 +73,7 @@ public class PassthroughIdentityLoginModule {//} extends AbstractPasswordCredent
       this.userName = (String) options.get("username"); //$NON-NLS-1$
 
       String pass = (String) options.get("password");//$NON-NLS-1$
+/*
         if (pass != null) {
             if (SecurityVaultUtil.isVaultFormat(pass)) {
                 try {
@@ -87,7 +88,9 @@ public class PassthroughIdentityLoginModule {//} extends AbstractPasswordCredent
         }
         this.properties.putAll(options);
         this.wrapGssCredential = Boolean.parseBoolean((String) options.get(WRAP_GSS_CREDENTIAL));
+*/
 //        log.tracef("wrapGssCredential=%b", wrapGssCredential);
+       throw new RuntimeException("Login Modules need to be converted to SecurityRealm");
    }
 
 //    @Override
@@ -211,8 +214,12 @@ public class PassthroughIdentityLoginModule {//} extends AbstractPasswordCredent
 
 //   @Override
    protected Principal getIdentity() {
+/*
       Principal principal = new SimplePrincipal(userName);
       return principal;
+*/
+       throw new RuntimeException("Login Modules need to be converted to SecurityRealm");
+
    }
 
 //   @Override
@@ -221,6 +228,8 @@ public class PassthroughIdentityLoginModule {//} extends AbstractPasswordCredent
    }
 
    static Principal getPrincipal() {
+       throw new RuntimeException("Login Modules need to be converted to SecurityRealm");
+/*
        if (System.getSecurityManager() == null) {
            return SecurityContextAssociation.getPrincipal();
        }
@@ -230,9 +239,12 @@ public class PassthroughIdentityLoginModule {//} extends AbstractPasswordCredent
                return SecurityContextAssociation.getPrincipal();
            }
        });
+*/
    }
 
    static Subject getSubject() {
+       throw new RuntimeException("Login Modules need to be converted to SecurityRealm");
+/*
        if (System.getSecurityManager() == null) {
            return SecurityContextAssociation.getSubject();
        }
@@ -242,6 +254,7 @@ public class PassthroughIdentityLoginModule {//} extends AbstractPasswordCredent
                return SecurityContextAssociation.getSubject();
            }
        });
+*/
    }
 
    static Object makeCopy(final Subject from, final Subject to) {

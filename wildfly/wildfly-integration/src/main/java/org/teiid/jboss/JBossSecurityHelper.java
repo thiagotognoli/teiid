@@ -22,24 +22,24 @@ import java.io.Serializable;
 import java.security.AccessController;
 import java.security.Principal;
 import java.util.Collections;
-import java.util.Set;
+//import java.util.Set;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginException;
 
-import org.ietf.jgss.GSSContext;
-import org.ietf.jgss.GSSCredential;
-import org.ietf.jgss.GSSException;
-import org.jboss.as.security.plugins.SecurityDomainContext;
+//import org.ietf.jgss.GSSContext;
+//import org.ietf.jgss.GSSCredential;
+//import org.ietf.jgss.GSSException;
+//import org.jboss.as.security.plugins.SecurityDomainContext;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.msc.service.ServiceContainer;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
-import org.jboss.security.AuthenticationManager;
-import org.jboss.security.SimplePrincipal;
-import org.jboss.security.negotiation.Constants;
-import org.jboss.security.negotiation.common.NegotiationContext;
-import org.jboss.security.negotiation.spnego.KerberosMessage;
+//import org.jboss.security.AuthenticationManager;
+//import org.jboss.security.SimplePrincipal;
+//import org.jboss.security.negotiation.Constants;
+//import org.jboss.security.negotiation.common.NegotiationContext;
+//import org.jboss.security.negotiation.spnego.KerberosMessage;
 import org.teiid.logging.LogConstants;
 import org.teiid.logging.LogManager;
 import org.teiid.security.Credentials;
@@ -50,17 +50,17 @@ import org.wildfly.security.auth.server.SecurityDomain;
 import org.wildfly.security.auth.server.SecurityIdentity;
 import org.wildfly.security.evidence.PasswordGuessEvidence;
 
-public class JBossSecurityHelper implements SecurityHelper, Serializable {
+public class JBossSecurityHelper implements SecurityHelper<SecurityIdentity>, Serializable {
     private static final long serialVersionUID = 3598997061994110254L;
     public static final String AT = "@"; //$NON-NLS-1$
 
     public static final ServiceName WILDFLY = ServiceName.of("org","wildfly");
 
     @Override
-    public SecurityIdentity associateSecurityContext(Object newContext) {
+    public SecurityIdentity associateSecurityContext(SecurityIdentity newContext) {
         SecurityIdentity context = SecurityActions.getSecurityIdentity();
         if (newContext != context) {
-            SecurityActions.setSecurityIdentity((SecurityIdentity)newContext);
+            SecurityActions.setSecurityIdentity(newContext);
         }
         return context;
     }
@@ -71,7 +71,7 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
     }
 
     @Override
-    public Object getSecurityContext(String securityDomain) {
+    public SecurityIdentity getSecurityContext(String securityDomain) {
         SecurityIdentity securityIdentity = SecurityActions.getSecurityIdentity();
         if (securityIdentity != null/* && sc.getSecurityDomain().equals(securityDomain)*/) { //todo how to compare domains
             return securityIdentity;
@@ -84,11 +84,10 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
     }
 
     @Override
-    public Subject getSubjectInContext(Object context) {
+    public Subject getSubjectInContext(SecurityIdentity securityIdentity) {
         Subject subject = null;
 
-        if(context instanceof SecurityIdentity){
-            SecurityIdentity securityIdentity = (SecurityIdentity) context;
+        if(securityIdentity != null){
             subject = new Subject(true, Collections.singleton(securityIdentity.getPrincipal()),Collections.singleton(securityIdentity.getPublicCredentials()), Collections.singleton(securityIdentity.getPrivateCredentials()));
          }
         return subject;
@@ -119,12 +118,13 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
     @Override
     public GSSResult negotiateGssLogin(String securityDomain, byte[] serviceTicket) throws LoginException {
 
+/*
         SecurityDomainContext securityDomainContext = getSecurityDomainContext(securityDomain);
         if (securityDomainContext != null) {
             AuthenticationManager authManager = securityDomainContext.getAuthenticationManager();
 
             if (authManager != null) {
-                Object previous = null;
+                SecurityIdentity previous = null;
                 NegotiationContext context = new NegotiationContext();
                 context.setRequestMessage(new KerberosMessage(Constants.KERBEROS_V5, serviceTicket));
 
@@ -171,9 +171,11 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
                 }
             }
         }
+*/
         throw new LoginException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50072, "GSS Auth", securityDomain)); //$NON-NLS-1$
     }
 
+/*
     private GSSResult buildGSSResult(NegotiationContext context, String securityDomain, boolean validAuth, GSSCredential delegationCredential) throws LoginException {
         GSSContext securityContext = (GSSContext) context.getSchemeContext();
         try {
@@ -193,7 +195,9 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
         }
         throw new LoginException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50103, securityDomain));
     }
+*/
 
+/*
     protected SecurityDomainContext getSecurityDomainContext(String securityDomain) {
         if (securityDomain != null && !securityDomain.isEmpty()) {
             ServiceName name = ServiceName.JBOSS.append("security", "security-domain", securityDomain); //$NON-NLS-1$ //$NON-NLS-2$
@@ -204,6 +208,7 @@ public class JBossSecurityHelper implements SecurityHelper, Serializable {
         }
         return null;
     }
+*/
 
     public SecurityDomain getSecurityDomain(String securityDomainName) {
         SecurityDomain securityDomain = null; //SecurityDomain.getCurrent(); // this only registers one

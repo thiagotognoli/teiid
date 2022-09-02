@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.teiid.connectors</groupId>
 		<artifactId>ldap</artifactId>
-		<version>17.0.1C2-SNAPSHOT</version>
+		<version>17.0.2C1-SNAPSHOT</version>
 	</parent>
 	<artifactId>translator-ldap</artifactId>
 	<name>LDAP Translator</name>

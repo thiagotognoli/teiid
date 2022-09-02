@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>teiid-parent</artifactId>
 		<groupId>org.teiid</groupId>
-        <version>17.0.1C2-SNAPSHOT</version>
+        <version>17.0.2C1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>teiid-common-core</artifactId>
@@ -21,12 +21,12 @@
 					<execution>
 						<phase>process-resources</phase>
 						<configuration>
-							<tasks>
+							<target>
 								<tstamp />
 								<replace dir="${project.build.outputDirectory}" token="@build-date@" value="${DSTAMP}">
 									<include name="**/*.properties" />
 								</replace>
-							</tasks>
+							</target>
 						</configuration>
 						<goals>
 							<goal>run</goal>

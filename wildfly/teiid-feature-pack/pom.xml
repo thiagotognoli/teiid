@@ -3,18 +3,18 @@
   <parent>
     <artifactId>wildfly-parent</artifactId>
     <groupId>org.teiid.wildfly</groupId>
-    <version>17.0.1C2-SNAPSHOT</version>
+    <version>17.0.2C1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>teiid-feature-pack</artifactId>
+  <artifactId>teiid-galleon-pack</artifactId>
   <packaging>pom</packaging>
   <name>Feature packs related Teiid core modules</name>
   <description />
   
   <modules>
     <module>client-feature-pack</module>
-    <module>rest-service-feature-pack</module>
     <module>wildfly-integration-feature-pack</module>
+    <module>rest-service-feature-pack</module>
     <module>olingo-feature-pack</module>
   </modules>
 

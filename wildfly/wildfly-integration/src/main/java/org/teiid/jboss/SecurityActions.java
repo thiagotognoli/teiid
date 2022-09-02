@@ -78,7 +78,7 @@ class SecurityActions {
                    try {
                        securityIdentity = securityDomain.authenticate(p, new PasswordGuessEvidence(cred.toString().toCharArray()));
                    } catch (RealmUnavailableException e) {
-                       LogManager.logError(LogConstants.CTX_SECURITY, "Failed to authenticate '" + p.getName() + "' with creds '" + cred + "'");
+                       LogManager.logError(LogConstants.CTX_SECURITY, "Failed to authenticate '" + p.getName() /*+ "' with creds '" + cred + "'"*/);
                    }
 /*
                     if (securityIdentity == null) {

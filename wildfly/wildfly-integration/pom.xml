@@ -2,7 +2,7 @@
 	<parent>
         <artifactId>wildfly-parent</artifactId>
         <groupId>org.teiid.wildfly</groupId>
-        <version>17.0.1C2-SNAPSHOT</version>
+        <version>17.0.2C1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>teiid-wildfly-integration</artifactId>
@@ -21,7 +21,7 @@
         </plugins>
     </build>
 
-    <dependencies>
+	<dependencies>
 
         <dependency>
             <groupId>org.teiid</groupId>
@@ -124,6 +124,7 @@
 			<groupId>org.jboss.ironjacamar</groupId>
 			<artifactId>ironjacamar-common-api</artifactId>
 		</dependency>
+<!--
 		<dependency>
 			<groupId>org.jboss.security</groupId>
 			<artifactId>jboss-negotiation-spnego</artifactId>
@@ -132,6 +133,7 @@
 		  <groupId>org.jboss.security</groupId>
 		  <artifactId>jboss-negotiation-common</artifactId>
 		</dependency>
+-->
 		<dependency>
 			<groupId>org.jboss.spec.javax.transaction</groupId>
 			<artifactId>jboss-transaction-api_1.3_spec</artifactId>

@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>teiid-test-integration</artifactId>
 		<groupId>org.teiid.wildfly</groupId>
-        <version>17.0.1C2-SNAPSHOT</version>
+        <version>17.0.2C1-SNAPSHOT</version>
 	</parent>
 	<licenses>
         <license>
@@ -126,10 +126,6 @@
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.testenricher</groupId>
-            <artifactId>arquillian-testenricher-initialcontext</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wildfly.arquillian</groupId>

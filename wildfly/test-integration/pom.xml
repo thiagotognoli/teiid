@@ -3,7 +3,7 @@
 	<parent>
         <artifactId>wildfly-parent</artifactId>
         <groupId>org.teiid.wildfly</groupId>
-        <version>17.0.1C2-SNAPSHOT</version>
+        <version>17.0.2C1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>teiid-test-integration</artifactId>
@@ -80,12 +80,6 @@
 	        <artifactId>jboss-connector-api_1.7_spec</artifactId>
 	        <scope>provided</scope>
 	    </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.testenricher</groupId>
-            <artifactId>arquillian-testenricher-initialcontext</artifactId>
-            <version>${version.org.jboss.arquillian.testenricher}</version>
-            <scope>provided</scope>
-        </dependency>        
 		<dependency>
 			<groupId>org.jboss</groupId>
 			<artifactId>jboss-vfs</artifactId>
