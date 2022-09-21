@@ -4,11 +4,11 @@
     <formats>
        <format>zip</format>
     </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <baseDirectory>teiid-${project.version}</baseDirectory>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${dir.wildfly}</baseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/teiid-${project.version}-wildfly-dist</directory>
+            <directory>${project.build.directory}/${dir.wildfly}</directory>
             <outputDirectory/>
         </fileSet>
     </fileSets>
