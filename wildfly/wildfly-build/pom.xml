@@ -187,39 +187,31 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-dependency-plugin</artifactId>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>unpack-server-deps</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>unpack</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <artifactItems>-->
-<!--                                <artifactItem>-->
-<!--                                    <groupId>org.wildfly</groupId>-->
-<!--                                    <artifactId>wildfly-dist</artifactId>-->
-<!--                                    <version>${version.org.wildfly}</version>-->
-<!--                                    <type>zip</type>-->
-<!--                                    <outputDirectory>${project.build.directory}</outputDirectory>-->
-<!--                                </artifactItem>-->
-<!--                                <artifactItem>-->
-<!--                                    <groupId>org.teiid.hal</groupId>-->
-<!--                                    <artifactId>dist</artifactId>-->
-<!--                                    <version>${version.teiid.console}</version>-->
-<!--                                    <classifier>overlay</classifier>-->
-<!--                                    <type>zip</type>-->
-<!--                                    <outputDirectory>${project.build.directory}/${dir.wildfly}</outputDirectory>-->
-<!--                                </artifactItem>-->
-<!--                            </artifactItems>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-<!--            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-server-deps</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.teiid.hal</groupId>
+                                    <artifactId>dist</artifactId>
+                                    <version>${version.teiid.console}</version>
+                                    <classifier>overlay</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}/${dir.wildfly}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
