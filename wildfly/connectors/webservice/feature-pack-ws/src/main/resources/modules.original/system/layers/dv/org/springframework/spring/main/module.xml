@@ -12,7 +12,7 @@
     <artifact name="${org.springframework:spring-tx}"/>    
   </resources>
   <dependencies>
-    <module name="javax.api"/>
+    <module name="javaee.api"/>
     <module name="org.apache.commons.logging"/>
   </dependencies>
 </module>
