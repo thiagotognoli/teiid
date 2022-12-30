@@ -27,5 +27,7 @@
         <package name="org.jboss.teiid.resource-adapter.webservice"/>
         <package name="org.jboss.teiid.translator.ws"/>
         <package name="com.googlecode.json-simple"/>
+        <package name="net.oauth.core"/>
+        <package name="org.apache.cxf.impl.frontend-jaxrs"/>
     </default-packages>
 </build>
