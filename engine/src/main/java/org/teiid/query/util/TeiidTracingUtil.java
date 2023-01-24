@@ -138,7 +138,7 @@ public class TeiidTracingUtil {
             //when a workitem adds itself to a queue the span will already be active
             return null;
         }
-        return tr.scopeManager().activate(span, false);
+        return tr.scopeManager().activate(span);
     }
 
     private Tracer getTracer() {
@@ -154,7 +154,7 @@ public class TeiidTracingUtil {
             SimpleContentHandler sch = new SimpleContentHandler();
             parser.parse(spanContextJson, sch);
             Map<String, String> result = (Map<String, String>) sch.getResult();
-            return getTracer().extract(Builtin.TEXT_MAP, new TextMapExtractAdapter(result));
+            return getTracer().extract(Builtin.TEXT_MAP_EXTRACT, new TextMapExtractAdapter(result));
         } catch (IllegalArgumentException | ClassCastException | ParseException e) {
             LogManager.logDetail(LogConstants.CTX_DQP, e, "Could not extract the span context"); //$NON-NLS-1$
             return null;

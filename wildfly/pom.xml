@@ -16,7 +16,7 @@
   
   <properties>
         <site.url>http://teiid.io</site.url>
-        <version.org.wildfly>26.1.2.Final</version.org.wildfly>
+        <version.org.wildfly>26.1.3.Final</version.org.wildfly>
 	    <version.org.wildfly.core>18.1.2.Final</version.org.wildfly.core>
 	    <version.org.wildfly.arquillian>3.0.1.Final</version.org.wildfly.arquillian>
         <version.org.wildfly.build-tools>1.2.12.Final</version.org.wildfly.build-tools>
