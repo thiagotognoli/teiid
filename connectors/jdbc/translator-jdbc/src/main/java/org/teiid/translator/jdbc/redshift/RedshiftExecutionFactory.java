@@ -28,6 +28,7 @@ import org.teiid.translator.Translator;
 import org.teiid.translator.TranslatorException;
 import org.teiid.translator.TypeFacility;
 import org.teiid.translator.jdbc.FunctionModifier;
+import org.teiid.translator.jdbc.SQLConversionVisitor;
 import org.teiid.translator.jdbc.postgresql.PostgreSQLExecutionFactory;
 
 
@@ -105,4 +106,8 @@ public class RedshiftExecutionFactory extends PostgreSQLExecutionFactory {
         return ""; //$NON-NLS-1$ //redshift does not support the ON COMMIT clause
     }
 
+    @Override
+    public SQLConversionVisitor getSQLConversionVisitor() {
+        return new RedshiftSQLConversionVisitor(this);
+    }
 }
