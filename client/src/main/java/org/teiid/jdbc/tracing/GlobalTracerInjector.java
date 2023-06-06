@@ -48,7 +48,7 @@ public class GlobalTracerInjector implements Injector {
             return null;
         }
         Map<String,String> spanMap = new HashMap<String, String>();
-        tracer.inject(span.context(), Builtin.TEXT_MAP_INJECT, new TextMapInjectAdapter(spanMap));
+        tracer.inject(span.context(), Builtin.TEXT_MAP, new TextMapInjectAdapter(spanMap));
 
         //simple json creation
         StringBuilder json = new StringBuilder();
