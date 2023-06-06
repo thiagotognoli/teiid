@@ -19,7 +19,6 @@
 package org.teiid.runtime;
 
 import io.opentracing.Scope;
-import io.opentracing.Span;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
@@ -2729,8 +2728,7 @@ public class TestEmbeddedServer {
             List<MockSpan> spans = tracer.finishedSpans();
             assertEquals(0, spans.size());
 
-            Span ignored = tracer.buildSpan("some operation").start();
-            try {
+            try (Scope ignored = tracer.buildSpan("some operation").startActive(true)) {
                 assertNotNull(tracer.activeSpan());
                 stmt = c.createStatement();
                 //execute with an active span
@@ -2739,8 +2737,6 @@ public class TestEmbeddedServer {
 
                 }
                 stmt.close();
-            } finally {
-                ignored.finish();
             }
 
             spans = tracer.finishedSpans();
@@ -2753,8 +2749,7 @@ public class TestEmbeddedServer {
             //remote propagation
             Connection remote = TeiidDriver.getInstance().connect("jdbc:teiid:x@mm://"+addr.getHostName()+":"+es.transports.get(0).getPort(), null);
 
-            ignored = tracer.buildSpan("some remote operation").start();
-            try {
+            try (Scope ignored = tracer.buildSpan("some remote operation").startActive(true)) {
                 assertNotNull(tracer.activeSpan());
                 stmt = remote.createStatement();
                 //execute with an active span
@@ -2763,8 +2758,6 @@ public class TestEmbeddedServer {
 
                 }
                 stmt.close();
-            } finally {
-                ignored.finish();
             }
 
             //this isn't ideal, but close is an async event

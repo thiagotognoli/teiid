@@ -20,7 +20,6 @@ package org.teiid.jdbc.tracing;
 
 import static org.junit.Assert.*;
 
-import io.opentracing.Span;
 import org.junit.Test;
 
 import io.opentracing.Scope;
@@ -32,11 +31,11 @@ public class TestTracing {
     @Test public void testSpanContextInjection() {
         MockTracer tracer = new MockTracer();
         assertNull(GlobalTracerInjector.getSpanContext(tracer));
-        Span ignored = tracer.buildSpan("x").start();
+        Scope ignored = tracer.buildSpan("x").startActive(true);
         try {
             assertEquals("{\"spanid\":\"2\",\"traceid\":\"1\"}", GlobalTracerInjector.getSpanContext(tracer));
         } finally {
-            ignored.finish();
+            ignored.close();
         }
     }
 
