@@ -28,9 +28,9 @@
 			<artifactId>infinispan-api</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>org.teiid.wildfly</groupId>
-            <artifactId>teiid-resource-spi</artifactId>
-        </dependency>
+			<groupId>org.teiid.wildfly</groupId>
+			<artifactId>teiid-resource-spi</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.jboss.spec.javax.resource</groupId>
 			<artifactId>jboss-connector-api_1.7_spec</artifactId>
@@ -48,8 +48,7 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
-			<scope>test</scope>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-client-hotrod</artifactId>
@@ -62,13 +61,13 @@
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-remote-query-server</artifactId>
 		</dependency>
-        <!-- test dependencies -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+		<!-- test dependencies -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
 			<version>${version.com.fasterxml.jackson.core}</version>
-            <scope>test</scope>
-        </dependency>        
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-server-hotrod</artifactId>
@@ -101,18 +100,17 @@
 		</dependency>
 
 		<dependency>
-            <groupId>org.teiid.connectors</groupId>
-            <artifactId>translator-infinispan-hotrod</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.teiid.connectors</groupId>
-            <artifactId>translator-infinispan-hotrod</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
+			<groupId>org.teiid.connectors</groupId>
+			<artifactId>translator-infinispan-hotrod</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.teiid.connectors</groupId>
+			<artifactId>translator-infinispan-hotrod</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 </project>
- 

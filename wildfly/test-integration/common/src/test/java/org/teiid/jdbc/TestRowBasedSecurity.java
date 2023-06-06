@@ -63,7 +63,8 @@ public class TestRowBasedSecurity {
 
         final Subject subject = new Subject();
         SimpleGroup rolesGroup = new SimpleGroup("Roles");
-        rolesGroup.addMember(new SimplePrincipal("myrole"));
+        SimplePrincipal role = new SimplePrincipal("myrole");
+        rolesGroup.addMember(role);
         subject.getPrincipals().add(rolesGroup);
 
         ec.setSecurityHelper(new DoNothingSecurityHelper() {
@@ -152,7 +153,7 @@ public class TestRowBasedSecurity {
         assertEquals(2, rs.getInt(1));
 
         //different session with different roles
-//        v.clear();
+        rolesGroup.removeMember(role);
         c = es.getDriver().connect("jdbc:teiid:z;PassthroughAuthentication=true", null);
         s = c.createStatement();
         rs = s.executeQuery("select count(col2) from v where col is not null");

@@ -8,45 +8,33 @@
 	<artifactId>teiid-wildfly-integration</artifactId>
 	<name>teiid-wildfly-integration</name>
 	<description>JBoss specific integration layer for teiid</description>
-    <build>
-        <plugins>
-            <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 	<dependencies>
 
-        <dependency>
-            <groupId>org.teiid</groupId>
-            <artifactId>teiid-common-core</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.teiid</groupId>
+			<artifactId>teiid-common-core</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.teiid</groupId>
 			<artifactId>teiid-runtime</artifactId>
 		</dependency>
 
-        <dependency>
+		<dependency>
 			<groupId>org.teiid</groupId>
 			<artifactId>teiid-engine</artifactId>
 		</dependency>
-        
+
 		<dependency>
 			<groupId>org.teiid</groupId>
 			<artifactId>teiid-api</artifactId>
 		</dependency>
-		
+
 		<dependency>
-            <groupId>org.teiid.wildfly</groupId>
-            <artifactId>teiid-resource-spi</artifactId>
-        </dependency>
+			<groupId>org.teiid.wildfly</groupId>
+			<artifactId>teiid-resource-spi</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.teiid</groupId>
@@ -62,17 +50,17 @@
 			<groupId>org.teiid</groupId>
 			<artifactId>teiid-metadata</artifactId>
 		</dependency>
-        
-        <dependency>
-            <groupId>org.teiid</groupId>
-            <artifactId>cache-infinispan</artifactId>
-        </dependency>
-                
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>     
-        </dependency> 
-        
+
+		<dependency>
+			<groupId>org.teiid</groupId>
+			<artifactId>cache-infinispan</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>jboss-logging</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.jboss</groupId>
 			<artifactId>jboss-dmr</artifactId>
@@ -97,17 +85,17 @@
 			<artifactId>wildfly-clustering-jgroups-api</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-clustering-jgroups-spi</artifactId>
-        </dependency>
+			<groupId>org.wildfly</groupId>
+			<artifactId>wildfly-clustering-jgroups-spi</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-clustering-infinispan-spi</artifactId>
 		</dependency>
-        <dependency>
-           <groupId>org.jgroups</groupId>
-           <artifactId>jgroups</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.jgroups</groupId>
+			<artifactId>jgroups</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-security</artifactId>
@@ -128,16 +116,16 @@
 			<groupId>org.jboss.ironjacamar</groupId>
 			<artifactId>ironjacamar-common-api</artifactId>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>org.jboss.security</groupId>
-			<artifactId>jboss-negotiation-spnego</artifactId>
-		</dependency>
-		<dependency>
-		  <groupId>org.jboss.security</groupId>
-		  <artifactId>jboss-negotiation-common</artifactId>
-		</dependency>
--->
+		<!--
+                <dependency>
+                    <groupId>org.jboss.security</groupId>
+                    <artifactId>jboss-negotiation-spnego</artifactId>
+                </dependency>
+                <dependency>
+                  <groupId>org.jboss.security</groupId>
+                  <artifactId>jboss-negotiation-common</artifactId>
+                </dependency>
+        -->
 		<dependency>
 			<groupId>org.jboss.spec.javax.transaction</groupId>
 			<artifactId>jboss-transaction-api_1.3_spec</artifactId>
@@ -151,22 +139,22 @@
 			<artifactId>wildfly-elytron</artifactId>
 		</dependency>
 
-        <dependency>
-            <groupId>org.locationtech.jts</groupId>
-            <artifactId>jts-core</artifactId>
-        </dependency>
-        
+		<dependency>
+			<groupId>org.locationtech.jts</groupId>
+			<artifactId>jts-core</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.wildfly.core</groupId>
 			<artifactId>wildfly-subsystem-test-framework</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-            <scope>test</scope>
-        </dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.teiid</groupId>
