@@ -34,6 +34,7 @@ import java.util.Properties;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginException;
 
+import jakarta.transaction.TransactionManager;
 import org.infinispan.transaction.tm.EmbeddedTransactionManager;
 import org.junit.After;
 import org.junit.Before;
@@ -176,7 +177,7 @@ public class TestInternalConnection {
         useTxn = true;
         EmbeddedConfiguration config = new EmbeddedConfiguration();
         config.setSecurityHelper(new ThreadLocalSecurityHelper());
-        config.setTransactionManager(EmbeddedTransactionManager.getInstance());
+        config.setTransactionManager((TransactionManager) EmbeddedTransactionManager.getInstance());
         es.start(config);
         es.deployVDB(new ByteArrayInputStream(vdb.getBytes()));
         Connection conn = null;

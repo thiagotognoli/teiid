@@ -26,18 +26,11 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.InvalidTransactionException;
-import javax.transaction.RollbackException;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import jakarta.transaction.*;
 import org.teiid.adminapi.AdminException;
 import org.teiid.adminapi.AdminProcessingException;
 import org.teiid.adminapi.impl.TransactionMetadata;
@@ -371,7 +364,7 @@ public class TransactionServerImpl implements TransactionService {
             Transaction tx = transactionManager.suspend();
             tc.setTransaction(tx);
             tc.setCreationTime(System.currentTimeMillis());
-        } catch (javax.transaction.NotSupportedException err) {
+        } catch (jakarta.transaction.NotSupportedException err) {
              throw new XATransactionException(QueryPlugin.Event.TEIID30528, err);
         } catch (SystemException err) {
              throw new XATransactionException(QueryPlugin.Event.TEIID30528, err);

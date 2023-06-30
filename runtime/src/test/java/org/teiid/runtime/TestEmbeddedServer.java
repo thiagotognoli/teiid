@@ -65,7 +65,7 @@ import org.teiid.transport.SSLConfiguration;
 import org.teiid.transport.SocketConfiguration;
 import org.teiid.transport.WireProtocol;
 
-import javax.transaction.*;
+import jakarta.transaction.*;
 import javax.transaction.xa.XAResource;
 import java.io.*;
 import java.math.BigDecimal;
@@ -328,7 +328,7 @@ public class TestEmbeddedServer {
         public int getStatus() throws SystemException {
             Transaction t = txns.get();
             if (t == null) {
-                return javax.transaction.Status.STATUS_NO_TRANSACTION;
+                return jakarta.transaction.Status.STATUS_NO_TRANSACTION;
             }
             return t.getStatus();
         }

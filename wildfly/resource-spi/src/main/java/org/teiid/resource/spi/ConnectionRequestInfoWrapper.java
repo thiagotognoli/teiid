@@ -17,8 +17,8 @@
  */
 package org.teiid.resource.spi;
 
-import javax.resource.cci.ConnectionSpec;
-import javax.resource.spi.ConnectionRequestInfo;
+import jakarta.resource.cci.ConnectionSpec;
+import jakarta.resource.spi.ConnectionRequestInfo;
 
 class ConnectionRequestInfoWrapper implements ConnectionRequestInfo {
     ConnectionSpec cs;

@@ -18,40 +18,14 @@
 
 package org.teiid.replication.jgroups;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-
 import org.jgroups.Address;
 import org.jgroups.JChannel;
-import org.jgroups.MembershipListener;
-import org.jgroups.Message;
-import org.jgroups.MessageListener;
-import org.jgroups.ReceiverAdapter;
+import org.jgroups.Receiver;
 import org.jgroups.View;
-import org.jgroups.blocks.MethodCall;
-import org.jgroups.blocks.MethodLookup;
-import org.jgroups.blocks.RequestOptions;
-import org.jgroups.blocks.ResponseMode;
-import org.jgroups.blocks.RpcDispatcher;
+import org.jgroups.blocks.*;
 import org.jgroups.util.Promise;
 import org.jgroups.util.Rsp;
 import org.jgroups.util.RspList;
-import org.jgroups.util.Util;
 import org.teiid.Replicated;
 import org.teiid.Replicated.ReplicationMode;
 import org.teiid.core.TeiidRuntimeException;
@@ -60,6 +34,16 @@ import org.teiid.logging.LogManager;
 import org.teiid.query.ObjectReplicator;
 import org.teiid.query.ReplicatedObject;
 import org.teiid.runtime.RuntimePlugin;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 
 @SuppressWarnings("unchecked")
 public class JGroupsObjectReplicator implements ObjectReplicator, Serializable {
@@ -74,114 +58,112 @@ public class JGroupsObjectReplicator implements ObjectReplicator, Serializable {
         private final ArrayList<Method> methodList;
         Map<List<?>, JGroupsInputStream> inputStreams = new ConcurrentHashMap<List<?>, JGroupsInputStream>();
 
-        private ReplicatorRpcDispatcher(JChannel channel, MessageListener l,
-                MembershipListener l2, Object serverObj, S object,
+        private ReplicatorRpcDispatcher(JChannel channel, Object serverObj, S object,
                 HashMap<Method, Short> methodMap, ArrayList<Method> methodList) {
             super(channel, serverObj);
-            this.setMembershipListener(l2);
             this.object = object;
             this.methodMap = methodMap;
             this.methodList = methodList;
         }
 
-        @Override
-        public Object handle(Message req) {
-            Object      body=null;
-            if(server_obj == null) {
-                log.error(Util.getMessage("NoMethodHandlerIsRegisteredDiscardingRequest"));
-                return null;
-            }
-
-            if(req == null || req.getLength() == 0) {
-                log.error(Util.getMessage("MessageOrMessageBufferIsNull"));
-                return null;
-            }
-
-            try {
-                MethodCall method_call=methodCallFromBuffer(req.getRawBuffer(), req.getOffset(), req.getLength(), marshaller);
-
-                if(log.isTraceEnabled())
-                    log.trace("[sender=" + req.getSrc() + "], method_call: " + method_call); //$NON-NLS-1$ //$NON-NLS-2$
-
-                if (method_call.getMethodId() >= methodList.size() - 5 && req.getSrc().equals(local_addr)) {
-                    return null;
-                }
-
-                if (method_call.getMethodId() >= methodList.size() - 3) {
-                    Address address = req.getSrc();
-                    Serializable stateId = (Serializable)method_call.getArgs()[0];
-                    List<?> key = Arrays.asList(stateId, address);
-                    JGroupsInputStream is = inputStreams.get(key);
-                    if (method_call.getMethodId() == methodList.size() - 3) {
-                        LogManager.logTrace(LogConstants.CTX_RUNTIME, object, "create state", stateId); //$NON-NLS-1$
-                        if (is != null) {
-                            is.receive(null);
-                        }
-                        is = new JGroupsInputStream(IO_TIMEOUT);
-                        this.inputStreams.put(key, is);
-                        executor.execute(new StreamingRunner(object, stateId, is, null));
-                    } else if (method_call.getMethodId() == methodList.size() - 2) {
-                        LogManager.logTrace(LogConstants.CTX_RUNTIME, object, "building state", stateId); //$NON-NLS-1$
-                        if (is != null) {
-                            is.receive((byte[])method_call.getArgs()[1]);
-                        }
-                    } else if (method_call.getMethodId() == methodList.size() - 1) {
-                        LogManager.logTrace(LogConstants.CTX_RUNTIME, object, "finished state", stateId); //$NON-NLS-1$
-                        if (is != null) {
-                            is.receive(null);
-                        }
-                        this.inputStreams.remove(key);
-                    }
-                    return null;
-                } else if (method_call.getMethodId() == methodList.size() - 5) {
-                    //hasState
-                    ReplicatedObject ro = (ReplicatedObject)object;
-                    Serializable stateId = (Serializable)method_call.getArgs()[0];
-
-                    if (stateId == null) {
-                        synchronized (this) {
-                            if (initialized) {
-                                return Boolean.TRUE;
-                            }
-                            return null;
-                        }
-                    }
-
-                    if (ro.hasState(stateId)) {
-                        return Boolean.TRUE;
-                    }
-                    return null;
-                } else if (method_call.getMethodId() == methodList.size() - 4) {
-                    //sendState
-                    ReplicatedObject ro = (ReplicatedObject)object;
-                    String stateId = (String)method_call.getArgs()[0];
-                    Address dest = (Address)method_call.getArgs()[1];
-
-                    JGroupsOutputStream oStream = new JGroupsOutputStream(this, Arrays.asList(dest), stateId, (short)(methodMap.size() - 3), false);
-                    try {
-                        if (stateId == null) {
-                            ro.getState(oStream);
-                        } else {
-                            ro.getState(stateId, oStream);
-                        }
-                    } finally {
-                        oStream.close();
-                    }
-                    LogManager.logTrace(LogConstants.CTX_RUNTIME, object, "sent state", stateId); //$NON-NLS-1$
-                    return null;
-                }
-
-                Method m=method_lookup.findMethod(method_call.getMethodId());
-                if(m == null)
-                    throw new Exception("no method found for " + method_call.getMethodId()); //$NON-NLS-1$
-                method_call.setMethod(m);
-
-                return method_call.invoke(server_obj);
-            }
-            catch(Throwable x) {
-                return x;
-            }
-        }
+//        @Override
+//        public Object handle(Message req) {
+//            Object      body=null;
+//            if(server_obj == null) {
+//                log.error(Util.getMessage("NoMethodHandlerIsRegisteredDiscardingRequest"));
+//                return null;
+//            }
+//
+//            if(req == null || req.getLength() == 0) {
+//                log.error(Util.getMessage("MessageOrMessageBufferIsNull"));
+//                return null;
+//            }
+//
+//            try {
+//                MethodCall method_call=methodCallFromBuffer(req.getRawBuffer(), req.getOffset(), req.getLength(), marshaller);
+//
+//                if(log.isTraceEnabled())
+//                    log.trace("[sender=" + req.getSrc() + "], method_call: " + method_call); //$NON-NLS-1$ //$NON-NLS-2$
+//
+//                if (method_call.getMethodId() >= methodList.size() - 5 && req.getSrc().equals(local_addr)) {
+//                    return null;
+//                }
+//
+//                if (method_call.getMethodId() >= methodList.size() - 3) {
+//                    Address address = req.getSrc();
+//                    Serializable stateId = (Serializable)method_call.getArgs()[0];
+//                    List<?> key = Arrays.asList(stateId, address);
+//                    JGroupsInputStream is = inputStreams.get(key);
+//                    if (method_call.getMethodId() == methodList.size() - 3) {
+//                        LogManager.logTrace(LogConstants.CTX_RUNTIME, object, "create state", stateId); //$NON-NLS-1$
+//                        if (is != null) {
+//                            is.receive(null);
+//                        }
+//                        is = new JGroupsInputStream(IO_TIMEOUT);
+//                        this.inputStreams.put(key, is);
+//                        executor.execute(new StreamingRunner(object, stateId, is, null));
+//                    } else if (method_call.getMethodId() == methodList.size() - 2) {
+//                        LogManager.logTrace(LogConstants.CTX_RUNTIME, object, "building state", stateId); //$NON-NLS-1$
+//                        if (is != null) {
+//                            is.receive((byte[])method_call.getArgs()[1]);
+//                        }
+//                    } else if (method_call.getMethodId() == methodList.size() - 1) {
+//                        LogManager.logTrace(LogConstants.CTX_RUNTIME, object, "finished state", stateId); //$NON-NLS-1$
+//                        if (is != null) {
+//                            is.receive(null);
+//                        }
+//                        this.inputStreams.remove(key);
+//                    }
+//                    return null;
+//                } else if (method_call.getMethodId() == methodList.size() - 5) {
+//                    //hasState
+//                    ReplicatedObject ro = (ReplicatedObject)object;
+//                    Serializable stateId = (Serializable)method_call.getArgs()[0];
+//
+//                    if (stateId == null) {
+//                        synchronized (this) {
+//                            if (initialized) {
+//                                return Boolean.TRUE;
+//                            }
+//                            return null;
+//                        }
+//                    }
+//
+//                    if (ro.hasState(stateId)) {
+//                        return Boolean.TRUE;
+//                    }
+//                    return null;
+//                } else if (method_call.getMethodId() == methodList.size() - 4) {
+//                    //sendState
+//                    ReplicatedObject ro = (ReplicatedObject)object;
+//                    String stateId = (String)method_call.getArgs()[0];
+//                    Address dest = (Address)method_call.getArgs()[1];
+//
+//                    JGroupsOutputStream oStream = new JGroupsOutputStream(this, Arrays.asList(dest), stateId, (short)(methodMap.size() - 3), false);
+//                    try {
+//                        if (stateId == null) {
+//                            ro.getState(oStream);
+//                        } else {
+//                            ro.getState(stateId, oStream);
+//                        }
+//                    } finally {
+//                        oStream.close();
+//                    }
+//                    LogManager.logTrace(LogConstants.CTX_RUNTIME, object, "sent state", stateId); //$NON-NLS-1$
+//                    return null;
+//                }
+//
+//                Method m=method_lookup.findMethod(method_call.getMethodId());
+//                if(m == null)
+//                    throw new Exception("no method found for " + method_call.getMethodId()); //$NON-NLS-1$
+//                method_call.setMethod(m);
+//
+//                return method_call.invoke(server_obj);
+//            }
+//            catch(Throwable x) {
+//                return x;
+//            }
+//        }
     }
 
     private static final long serialVersionUID = -6851804958313095166L;
@@ -227,7 +209,7 @@ public class JGroupsObjectReplicator implements ObjectReplicator, Serializable {
         }
     }
 
-    private final class ReplicatedInvocationHandler<S> extends ReceiverAdapter implements
+    private final class ReplicatedInvocationHandler<S> implements Receiver,
             InvocationHandler, Serializable {
 
         private static final int PULL_RETRIES = 3;
@@ -525,7 +507,7 @@ public class JGroupsObjectReplicator implements ObjectReplicator, Serializable {
          * TODO: could have an object implement streaming
          * Override the normal handle method to support streaming
          */
-        ReplicatorRpcDispatcher disp = new ReplicatorRpcDispatcher<S>(channel, proxy, proxy, object, object, methodMap, methodList);
+        ReplicatorRpcDispatcher disp = new ReplicatorRpcDispatcher<S>(channel, object, object, methodMap, methodList);
 
         proxy.setDisp(disp);
         disp.setMethodLookup(new MethodLookup() {

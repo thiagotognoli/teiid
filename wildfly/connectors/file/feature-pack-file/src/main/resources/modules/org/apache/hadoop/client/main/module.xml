@@ -13,7 +13,7 @@
         <module name="sun.jdk" />
         <module name="javax.api"/>
         <module name="org.slf4j"/>
-        <module name="org.apache.log4j"/>
+        <module name="org.apache.logging.log4j.api"/>
         <module name="org.apache.commons.logging"/>
         <!-- findbugs -->
     </dependencies>

@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.resource.ResourceException;
-import javax.resource.spi.InvalidPropertyException;
+import jakarta.resource.ResourceException;
+import jakarta.resource.spi.InvalidPropertyException;
 
 import org.teiid.core.BundleUtil;
 import org.teiid.google.SpreadsheetConfiguration;

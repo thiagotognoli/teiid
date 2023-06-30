@@ -20,7 +20,7 @@ package org.teiid.resource.adapter.simpledb;
 
 import java.util.Objects;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.teiid.resource.spi.BasicConnectionFactory;
 import org.teiid.resource.spi.BasicManagedConnectionFactory;

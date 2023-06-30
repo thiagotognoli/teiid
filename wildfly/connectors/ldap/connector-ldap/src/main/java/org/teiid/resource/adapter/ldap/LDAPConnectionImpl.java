@@ -37,7 +37,7 @@ import javax.naming.ldap.ExtendedRequest;
 import javax.naming.ldap.ExtendedResponse;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 import javax.security.auth.Subject;
 
 import org.teiid.logging.LogConstants;

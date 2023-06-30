@@ -38,9 +38,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import javax.resource.spi.XATerminator;
-import javax.resource.spi.work.WorkManager;
-import javax.transaction.TransactionManager;
+import jakarta.resource.spi.XATerminator;
+import jakarta.resource.spi.work.WorkManager;
+import jakarta.transaction.TransactionManager;
 
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.as.controller.AbstractAddStepHandler;
@@ -114,8 +114,8 @@ import org.teiid.runtime.MaterializationManager;
 import org.teiid.services.InternalEventDistributorFactory;
 import org.teiid.services.SessionServiceImpl;
 import org.teiid.translator.ExecutionFactory;
-import org.wildfly.clustering.infinispan.spi.InfinispanCacheRequirement;
-import org.wildfly.clustering.infinispan.spi.InfinispanRequirement;
+import org.wildfly.clustering.infinispan.service.InfinispanCacheRequirement;
+import org.wildfly.clustering.infinispan.service.InfinispanRequirement;
 import org.wildfly.clustering.jgroups.ChannelFactory;
 import org.wildfly.clustering.jgroups.spi.JGroupsRequirement;
 

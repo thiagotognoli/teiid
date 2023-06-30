@@ -73,44 +73,39 @@
             <groupId>org.teiid</groupId>
             <artifactId>teiid-client</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.teiid</groupId>
             <artifactId>teiid-client</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>jakarta.transaction</groupId>
-            <artifactId>jakarta.transaction-api</artifactId>
-        </dependency>
-               
+
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-        </dependency>
-        
+
         <dependency>
             <groupId>io.opentracing.contrib</groupId>
             <artifactId>opentracing-concurrent</artifactId>
         </dependency>
-                
+
         <dependency>
             <groupId>io.opentracing</groupId>
             <artifactId>opentracing-api</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>io.opentracing</groupId>
             <artifactId>opentracing-mock</artifactId>
             <scope>test</scope>
-        </dependency>    
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+        </dependency>
                                   
 	</dependencies>
 

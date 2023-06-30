@@ -21,7 +21,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Set;
 
-import javax.resource.spi.security.PasswordCredential;
+import jakarta.resource.spi.security.PasswordCredential;
 import javax.security.auth.Subject;
 
 /**

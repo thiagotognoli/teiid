@@ -10,7 +10,7 @@
     <dependencies>
         <module name="javax.api"/>
         <module name="org.slf4j"/>
-        <module name="org.apache.log4j"/>
+        <module name="org.apache.logging.log4j.api"/>
         <module name="com.google.guava"/>
         <module name="org.apache.commons.io"/>
         <module name="org.apache.commons.configuration2"/>

@@ -24,7 +24,7 @@ import static org.teiid.query.processor.proc.TestProcedureProcessor.*;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.transaction.Transaction;
+import jakarta.transaction.Transaction;
 
 import org.junit.Test;
 import org.mockito.Mockito;
