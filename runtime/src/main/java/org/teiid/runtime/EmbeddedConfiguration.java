@@ -21,7 +21,7 @@ package org.teiid.runtime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 
 import org.teiid.cache.CacheFactory;
 import org.teiid.dqp.internal.process.DQPConfiguration;

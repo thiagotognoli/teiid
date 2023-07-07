@@ -22,9 +22,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.teiid.resource.api.ConnectionFactory;
-import javax.xml.ws.Service.Mode;
-import javax.xml.ws.http.HTTPBinding;
-import javax.xml.ws.soap.SOAPBinding;
+import jakarta.xml.ws.Service.Mode;
+import jakarta.xml.ws.http.HTTPBinding;
+import jakarta.xml.ws.soap.SOAPBinding;
 
 import org.teiid.core.BundleUtil;
 import org.teiid.core.util.PropertiesUtils;

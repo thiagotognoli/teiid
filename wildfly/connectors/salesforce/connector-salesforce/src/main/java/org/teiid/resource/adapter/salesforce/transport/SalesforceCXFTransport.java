@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
@@ -164,7 +164,7 @@ public class SalesforceCXFTransport implements Transport {
 
     @Override
     public InputStream getContent() throws IOException {
-        javax.ws.rs.core.Response response = client.post(new ByteArrayInputStream(this.payload.toByteArray()));
+        jakarta.ws.rs.core.Response response = client.post(new ByteArrayInputStream(this.payload.toByteArray()));
         successful = true;
         InputStream in = (InputStream)response.getEntity();
         if (response.getStatus() != 200) {

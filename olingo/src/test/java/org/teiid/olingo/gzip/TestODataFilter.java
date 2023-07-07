@@ -22,8 +22,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.teiid.olingo.web.ODataFilter;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;

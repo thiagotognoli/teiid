@@ -18,7 +18,7 @@
 
 package org.teiid.resource.adapter.accumulo;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.teiid.core.BundleUtil;
 import org.teiid.resource.spi.BasicConnectionFactory;

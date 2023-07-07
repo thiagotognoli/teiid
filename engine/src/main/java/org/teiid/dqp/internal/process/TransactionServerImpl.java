@@ -26,14 +26,14 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.InvalidTransactionException;
-import javax.transaction.RollbackException;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.InvalidTransactionException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.Synchronization;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.Transaction;
+import jakarta.transaction.TransactionManager;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -371,7 +371,7 @@ public class TransactionServerImpl implements TransactionService {
             Transaction tx = transactionManager.suspend();
             tc.setTransaction(tx);
             tc.setCreationTime(System.currentTimeMillis());
-        } catch (javax.transaction.NotSupportedException err) {
+        } catch (jakarta.transaction.NotSupportedException err) {
              throw new XATransactionException(QueryPlugin.Event.TEIID30528, err);
         } catch (SystemException err) {
              throw new XATransactionException(QueryPlugin.Event.TEIID30528, err);

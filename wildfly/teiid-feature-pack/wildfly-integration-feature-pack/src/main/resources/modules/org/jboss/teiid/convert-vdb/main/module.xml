@@ -12,8 +12,8 @@
         <module name="org.jboss.teiid.api" />
         <module name="org.jboss.teiid.client" />
         <module name="org.jboss.teiid"/>
-        <module name="javax.xml.bind.api"/>
-        <module name="javax.transaction.api"/>
+        <module name="jakarta.xml.bind.api"/>
+        <module name="jakarta.transaction.api"/>
         <module name="org.infinispan"/>
     </dependencies>
 </module>

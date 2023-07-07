@@ -43,7 +43,7 @@ import org.teiid.query.tempdata.GlobalTableStoreImpl;
 import org.teiid.query.tempdata.TempTableDataManager;
 import org.teiid.query.unittest.RealMetadataFactory;
 
-import javax.transaction.*;
+import jakarta.transaction.*;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;

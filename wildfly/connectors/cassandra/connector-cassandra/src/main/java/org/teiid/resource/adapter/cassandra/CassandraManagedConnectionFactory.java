@@ -18,7 +18,7 @@
 
 package org.teiid.resource.adapter.cassandra;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.teiid.cassandra.CassandraConfiguration;
 import org.teiid.cassandra.CassandraConnectionFactory;

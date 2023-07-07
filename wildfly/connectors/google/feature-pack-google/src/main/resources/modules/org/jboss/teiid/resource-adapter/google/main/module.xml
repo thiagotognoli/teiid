@@ -11,11 +11,11 @@
 
     <dependencies>
         <module name="javax.api"/>
-        <module name="javax.resource.api"/>
+        <module name="jakarta.resource.api"/>
         <module name="org.jboss.teiid.common-core"/>
         <module name="org.jboss.teiid.api"/>
         <module name="org.jboss.teiid.translator.google.api"/>
-        <module name="javax.xml.bind.api" />
+        <module name="jakarta.xml.bind.api" />
         <module name="com.google.gdata"/>       
         <module name="com.google.apis.google-api-services-sheets"/>
         <module name="org.apache.httpcomponents" />

@@ -20,11 +20,11 @@ package org.teiid.resource.spi;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
-import javax.resource.ResourceException;
-import javax.resource.cci.ConnectionFactory;
-import javax.resource.cci.ConnectionSpec;
-import javax.resource.cci.RecordFactory;
-import javax.resource.cci.ResourceAdapterMetaData;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.ConnectionFactory;
+import jakarta.resource.cci.ConnectionSpec;
+import jakarta.resource.cci.RecordFactory;
+import jakarta.resource.cci.ResourceAdapterMetaData;
 
 public abstract class BasicConnectionFactory<T extends ResourceConnection> implements ConnectionFactory, org.teiid.resource.api.ConnectionFactory<T> {
     private static final long serialVersionUID = 2900581028589520388L;

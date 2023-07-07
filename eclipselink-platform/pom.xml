@@ -23,7 +23,7 @@
 		
 		<dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
+            <artifactId>jakarta.persistence</artifactId>
             <scope>runtime</scope>
         </dependency>
         

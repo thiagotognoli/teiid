@@ -38,7 +38,7 @@ import java.util.Arrays;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClientConfig;

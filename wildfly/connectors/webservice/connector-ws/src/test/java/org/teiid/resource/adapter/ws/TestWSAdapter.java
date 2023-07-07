@@ -18,11 +18,11 @@
 
 package org.teiid.resource.adapter.ws;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.Service.Mode;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.http.HTTPBinding;
+import jakarta.xml.ws.Service.Mode;
+import jakarta.xml.ws.WebServiceException;
+import jakarta.xml.ws.http.HTTPBinding;
 
 import org.junit.Test;
 import org.teiid.translator.ws.WSConnection;

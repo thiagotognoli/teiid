@@ -17,7 +17,7 @@
  */
 package org.teiid.resource.adapter.ftp;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.teiid.file.ftp.FtpConfiguration;
 import org.teiid.file.ftp.FtpFileConnection;

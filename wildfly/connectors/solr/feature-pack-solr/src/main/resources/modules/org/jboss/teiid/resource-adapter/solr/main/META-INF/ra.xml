@@ -86,9 +86,9 @@
 	                <config-property-type>java.lang.String</config-property-type>
 	            </config-property> 
 
-				<connectionfactory-interface>javax.resource.cci.ConnectionFactory</connectionfactory-interface>
+				<connectionfactory-interface>jakarta.resource.cci.ConnectionFactory</connectionfactory-interface>
 				<connectionfactory-impl-class>org.teiid.resource.spi.WrappedConnectionFactory</connectionfactory-impl-class>
-				<connection-interface>javax.resource.cci.Connection</connection-interface>
+				<connection-interface>jakarta.resource.cci.Connection</connection-interface>
 				<connection-impl-class>org.teiid.resource.spi.WrappedConnection</connection-impl-class>
 			</connection-definition>
 
@@ -96,7 +96,7 @@
 
 			<authentication-mechanism>
 				<authentication-mechanism-type>BasicPassword</authentication-mechanism-type>
-				<credential-interface>javax.resource.spi.security.PasswordCredential</credential-interface>
+				<credential-interface>jakarta.resource.spi.security.PasswordCredential</credential-interface>
 			</authentication-mechanism>
 			<reauthentication-support>false</reauthentication-support>
 		</outbound-resourceadapter>
