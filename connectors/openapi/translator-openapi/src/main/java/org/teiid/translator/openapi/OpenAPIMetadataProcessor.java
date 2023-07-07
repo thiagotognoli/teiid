@@ -655,21 +655,7 @@ public class OpenAPIMetadataProcessor implements MetadataProcessor<WSConnection>
                 url = "openapi"; //$NON-NLS-1$
             }
 
-            OpenAPIParser parser = new OpenAPIParser() {
-                /*
-                 * The service loader mechanism doesn't seem to work well in wildfly,
-                 * so we manually do it here
-                 */
-                @Override
-                protected List<SwaggerParserExtension> getExtensions() {
-                    List<SwaggerParserExtension> extensions = super.getExtensions();
-                    SwaggerConverter converter = new SwaggerConverter();
-                    if (!extensions.contains(converter)) {
-                        extensions.add(converter);
-                    }
-                    return extensions;
-                }
-            };
+            OpenAPIParser parser = new OpenAPIParser();
             ParseOptions parseOptions = new ParseOptions();
             parseOptions.setResolve(true);
 

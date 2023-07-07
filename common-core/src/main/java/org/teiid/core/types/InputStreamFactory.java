@@ -31,7 +31,7 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialClob;
 import javax.xml.transform.Source;

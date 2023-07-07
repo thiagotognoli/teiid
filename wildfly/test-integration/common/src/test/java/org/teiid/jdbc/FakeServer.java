@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 import javax.xml.stream.XMLStreamException;
 
 import org.teiid.adminapi.Model.Type;

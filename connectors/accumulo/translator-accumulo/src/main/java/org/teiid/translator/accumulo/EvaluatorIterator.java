@@ -288,7 +288,7 @@ public class EvaluatorIterator extends WrappingIterator {
         AccumuloMetadataProcessor.ValueIn in;
     }
 
-    private static class ColumnSet extends org.apache.accumulo.core.iterators.conf.ColumnSet {
+    private static class ColumnSet extends org.apache.accumulo.core.iteratorsImpl.conf.ColumnSet {
         private Text colf;
         private Text colq;
         public ColumnSet(Text colf, Text colq) {

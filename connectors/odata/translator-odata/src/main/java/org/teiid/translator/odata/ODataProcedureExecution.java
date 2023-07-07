@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OObject;

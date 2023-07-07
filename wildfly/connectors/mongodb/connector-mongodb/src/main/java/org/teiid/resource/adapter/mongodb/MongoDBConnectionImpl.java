@@ -20,8 +20,8 @@ package org.teiid.resource.adapter.mongodb;
 
 import java.util.List;
 
-import javax.resource.ResourceException;
-import javax.resource.cci.LocalTransaction;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.LocalTransaction;
 
 import org.teiid.core.BundleUtil;
 import org.teiid.mongodb.MongoDBConnection;

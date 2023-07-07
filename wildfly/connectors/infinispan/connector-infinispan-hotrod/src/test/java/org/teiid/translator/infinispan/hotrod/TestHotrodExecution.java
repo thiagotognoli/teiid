@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

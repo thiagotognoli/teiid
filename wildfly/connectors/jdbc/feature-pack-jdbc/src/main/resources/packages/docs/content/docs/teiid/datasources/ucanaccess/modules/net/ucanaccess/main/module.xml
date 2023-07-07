@@ -12,6 +12,6 @@
 
     <dependencies>
         <module name="javax.api"/>
-        <module name="javax.transaction.api"/>
+        <module name="jakarta.transaction.api"/>
     </dependencies>
 </module>

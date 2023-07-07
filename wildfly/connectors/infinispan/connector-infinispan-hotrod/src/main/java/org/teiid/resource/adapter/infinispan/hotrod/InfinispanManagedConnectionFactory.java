@@ -17,7 +17,7 @@
  */
 package org.teiid.resource.adapter.infinispan.hotrod;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.infinispan.transaction.lookup.WildflyTransactionManagerLookup;
 import org.teiid.infinispan.api.BaseInfinispanConnection;

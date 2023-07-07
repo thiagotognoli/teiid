@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import javax.transaction.SystemException;
+import jakarta.transaction.SystemException;
 
 import org.teiid.api.exception.query.QueryMetadataException;
 import org.teiid.api.exception.query.QueryValidatorException;

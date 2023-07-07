@@ -10,7 +10,7 @@
 
     <dependencies>
         <module name="javax.api"/>
-        <module name="javax.transaction.api"/>
+        <module name="jakarta.transaction.api"/>
         <module name="org.jboss.logging"/>
         <module name="org.infinispan.commons" slot="teiid"/>
         <module name="sun.jdk"/>
