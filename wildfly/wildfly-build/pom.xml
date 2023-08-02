@@ -86,11 +86,11 @@
                                     <artifactId>rest-service-galleon-pack</artifactId>
                                     <version>${project.version}</version>
                                 </feature-pack>
-                                <feature-pack>
-                                    <groupId>org.teiid.wildfly</groupId>
-                                    <artifactId>olingo-feature-pack</artifactId>
-                                    <version>${project.version}</version>
-                                </feature-pack>
+<!--                                <feature-pack>-->
+<!--                                    <groupId>org.teiid.wildfly</groupId>-->
+<!--                                    <artifactId>olingo-feature-pack</artifactId>-->
+<!--                                    <version>${project.version}</version>-->
+<!--                                </feature-pack>-->
                                 <feature-pack>
                                     <groupId>org.teiid.wildfly.connectors</groupId>
                                     <artifactId>feature-pack-accumulo</artifactId>
@@ -146,11 +146,11 @@
                                     <artifactId>feature-pack-mongodb</artifactId>
                                     <version>${project.version}</version>
                                 </feature-pack>
-                                <feature-pack>
-                                    <groupId>org.teiid.wildfly.connectors</groupId>
-                                    <artifactId>feature-pack-odata</artifactId>
-                                    <version>${project.version}</version>
-                                </feature-pack>
+<!--                                <feature-pack>-->
+<!--                                    <groupId>org.teiid.wildfly.connectors</groupId>-->
+<!--                                    <artifactId>feature-pack-odata</artifactId>-->
+<!--                                    <version>${project.version}</version>-->
+<!--                                </feature-pack>-->
                                 <feature-pack>
                                     <groupId>org.teiid.wildfly.connectors</groupId>
                                     <artifactId>feature-pack-openapi</artifactId>

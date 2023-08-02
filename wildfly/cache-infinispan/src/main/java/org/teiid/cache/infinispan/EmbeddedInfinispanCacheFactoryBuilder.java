@@ -29,7 +29,7 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.teiid.cache.CacheFactory;
 import org.teiid.core.TeiidRuntimeException;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 import java.io.IOException;
 import java.io.InputStream;
 

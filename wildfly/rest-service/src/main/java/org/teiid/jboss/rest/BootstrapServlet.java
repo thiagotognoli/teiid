@@ -17,8 +17,6 @@
  */
 package org.teiid.jboss.rest;
 
-import io.swagger.jaxrs.config.BeanConfig;
-
 import java.io.IOException;
 
 import jakarta.servlet.ServletConfig;
@@ -30,17 +28,6 @@ import jakarta.servlet.http.HttpServletResponse;
 public class BootstrapServlet extends HttpServlet {
 
     private static final long serialVersionUID = 5704762873796188429L;
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-
-        BeanConfig beanConfig = new BeanConfig();
-        init(beanConfig);
-    }
-
-    protected void init(BeanConfig beanConfig) {
-    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)throws ServletException, IOException {
