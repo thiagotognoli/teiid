@@ -36,22 +36,14 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-import org.jgroups.Address;
-import org.jgroups.JChannel;
-import org.jgroups.MembershipListener;
-import org.jgroups.Message;
-import org.jgroups.MessageListener;
-import org.jgroups.ReceiverAdapter;
-import org.jgroups.View;
+import org.jgroups.*;
+import org.jgroups.Receiver;
 import org.jgroups.blocks.MethodCall;
 import org.jgroups.blocks.MethodLookup;
 import org.jgroups.blocks.RequestOptions;
 import org.jgroups.blocks.ResponseMode;
 import org.jgroups.blocks.RpcDispatcher;
-import org.jgroups.util.Promise;
-import org.jgroups.util.Rsp;
-import org.jgroups.util.RspList;
-import org.jgroups.util.Util;
+import org.jgroups.util.*;
 import org.teiid.Replicated;
 import org.teiid.Replicated.ReplicationMode;
 import org.teiid.core.TeiidRuntimeException;
@@ -74,11 +66,11 @@ public class JGroupsObjectReplicator implements ObjectReplicator, Serializable {
         private final ArrayList<Method> methodList;
         Map<List<?>, JGroupsInputStream> inputStreams = new ConcurrentHashMap<List<?>, JGroupsInputStream>();
 
-        private ReplicatorRpcDispatcher(JChannel channel, MessageListener l,
-                MembershipListener l2, Object serverObj, S object,
+        private ReplicatorRpcDispatcher(JChannel channel, Receiver l,
+                                        Receiver l2, Object serverObj, S object,
                 HashMap<Method, Short> methodMap, ArrayList<Method> methodList) {
             super(channel, serverObj);
-            this.setMembershipListener(l2);
+            this.setReceiver(l2);
             this.object = object;
             this.methodMap = methodMap;
             this.methodList = methodList;
@@ -98,7 +90,9 @@ public class JGroupsObjectReplicator implements ObjectReplicator, Serializable {
             }
 
             try {
-                MethodCall method_call=methodCallFromBuffer(req.getRawBuffer(), req.getOffset(), req.getLength(), marshaller);
+                ByteArrayDataInputStream in = new ByteArrayDataInputStream(req.getArray(), req.getOffset(), req.getLength());
+                MethodCall method_call = new MethodCall();
+                method_call.readFrom(in);
 
                 if(log.isTraceEnabled())
                     log.trace("[sender=" + req.getSrc() + "], method_call: " + method_call); //$NON-NLS-1$ //$NON-NLS-2$
@@ -227,7 +221,7 @@ public class JGroupsObjectReplicator implements ObjectReplicator, Serializable {
         }
     }
 
-    private final class ReplicatedInvocationHandler<S> extends ReceiverAdapter implements
+    private final class ReplicatedInvocationHandler<S> implements Receiver,
             InvocationHandler, Serializable {
 
         private static final int PULL_RETRIES = 3;

@@ -39,36 +39,35 @@ import org.teiid.core.util.StringUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.jaxrs.listing.BaseApiListingResource;
 
 /**
  * Workaround for using a Resteasy Filter to make a ServletContext available
  * https://github.com/swagger-api/swagger-core/issues/2239
  */
 
-@Path("/swagger.{type:json|yaml}")
-public class CustomApiListingResource extends BaseApiListingResource {
+//@Path("/swagger.{type:json|yaml}")
+public class CustomApiListingResource  {
 
-    @Context
-    ServletContext context;
-
-    @GET
-    @Produces({MediaType.APPLICATION_JSON, "application/yaml"})
-    @ApiOperation(value = "The swagger definition in either JSON or YAML", hidden = true)
-    public Response getListing(
-            @Context Application app,
-            @Context ServletConfig sc,
-            @Context FilterConfig fc,
-            @Context HttpHeaders headers,
-            @Context UriInfo uriInfo,
-            @PathParam("type") String type) throws JsonProcessingException {
-        sc = getConfig(sc, fc);
-        if (!StringUtil.isEmpty(type) && type.trim().equalsIgnoreCase("yaml")) {
-            return getListingYamlResponse(app, context, sc, headers, uriInfo);
-        } else {
-            return getListingJsonResponse(app, context, sc, headers, uriInfo);
-        }
-    }
+//    @Context
+//    ServletContext context;
+//
+//    @GET
+//    @Produces({MediaType.APPLICATION_JSON, "application/yaml"})
+//    @ApiOperation(value = "The swagger definition in either JSON or YAML", hidden = true)
+//    public Response getListing(
+//            @Context Application app,
+//            @Context ServletConfig sc,
+//            @Context FilterConfig fc,
+//            @Context HttpHeaders headers,
+//            @Context UriInfo uriInfo,
+//            @PathParam("type") String type) throws JsonProcessingException {
+//        sc = getConfig(sc, fc);
+//        if (!StringUtil.isEmpty(type) && type.trim().equalsIgnoreCase("yaml")) {
+//            return getListingYamlResponse(app, context, sc, headers, uriInfo);
+//        } else {
+//            return getListingJsonResponse(app, context, sc, headers, uriInfo);
+//        }
+//    }
 
     private ServletConfig getConfig(ServletConfig sc, FilterConfig fc) {
         try {

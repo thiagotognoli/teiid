@@ -25,18 +25,15 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.jgroups.Address;
-import org.jgroups.JChannel;
-import org.jgroups.Message;
-import org.jgroups.ReceiverAdapter;
-import org.jgroups.View;
+import org.jgroups.*;
+import org.jgroups.Receiver;
 import org.teiid.logging.LogConstants;
 import org.teiid.logging.LogManager;
 import org.teiid.runtime.NodeListener;
 import org.teiid.runtime.RuntimePlugin;
 import org.teiid.runtime.RuntimePlugin.Event;
 
-public abstract class NodeTracker extends ReceiverAdapter{
+public abstract class NodeTracker implements Receiver{
 
     public abstract ScheduledExecutorService getScheduledExecutorService();
     private Map<Address, String> nodes = new HashMap<>();
@@ -97,7 +94,7 @@ public abstract class NodeTracker extends ReceiverAdapter{
         getScheduledExecutorService().schedule(
         new Runnable() {
             public void run() {
-                Message msg=new Message(null, nodeName);
+                Message msg=new BytesMessage(null, nodeName);
                 try {
                     channel.send(msg);
                 } catch (Exception e) {

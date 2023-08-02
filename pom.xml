@@ -85,7 +85,7 @@
         <version.google-api-client>1.25.0</version.google-api-client>
 
         <version.io.dropwizard.metrics.metrics-core>3.2.2</version.io.dropwizard.metrics.metrics-core>
-        <version.io.swagger>1.6.11</version.io.swagger>
+        <version.io.swagger>2.2.15</version.io.swagger>
 
         <version.jts>1.16.0</version.jts>
         <version.jts2geojson>0.13.0</version.jts2geojson>
@@ -96,7 +96,7 @@
         <version.olap4j>1.1.0</version.olap4j>
 
         <version.org.apache.ant>1.10.11</version.org.apache.ant>
-        <version.org.apache.olingo>4.9.0</version.org.apache.olingo>
+        <version.org.apache.olingo>4.10.0-SNAPSHOT</version.org.apache.olingo>
         <version.org.apache.phoenix.phoenix-core>4.2.1</version.org.apache.phoenix.phoenix-core>
         <version.org.apache.poi>3.17</version.org.apache.poi>
         <version.org.apache.xmlbeans>2.6.0</version.org.apache.xmlbeans>
@@ -105,7 +105,7 @@
         <version.org.codehaus.groovy>2.4.4</version.org.codehaus.groovy>
         <version.org.codehaus.woodstox>4.4.1</version.org.codehaus.woodstox>
         <version.org.dbunit>2.2</version.org.dbunit>
-        <version.org.eclipse.jetty>9.4.51.v20230217</version.org.eclipse.jetty>
+        <version.org.eclipse.jetty>11.0.15</version.org.eclipse.jetty>
         <version.org.eclipse.persistence>2.5.0</version.org.eclipse.persistence>
         <version.org.eclipse.persistence.javax>2.2.3</version.org.eclipse.persistence.javax>
         <version.org.hibernate.core>5.6.14.Final</version.org.hibernate.core>
@@ -910,43 +910,43 @@
                 <version>${version.org.slf4j}</version>
             </dependency>
             <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-jaxrs</artifactId>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-jaxrs2-jakarta</artifactId>
                 <version>${version.io.swagger}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.ws.rs</groupId>
-                        <artifactId>jsr311-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.google.guava</groupId>
-                        <artifactId>guava</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.validation</groupId>
-                        <artifactId>validation-api</artifactId>
-                    </exclusion>
-                </exclusions>
+<!--                <exclusions>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>javax.ws.rs</groupId>-->
+<!--                        <artifactId>jsr311-api</artifactId>-->
+<!--                    </exclusion>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>com.google.guava</groupId>-->
+<!--                        <artifactId>guava</artifactId>-->
+<!--                    </exclusion>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>javax.validation</groupId>-->
+<!--                        <artifactId>validation-api</artifactId>-->
+<!--                    </exclusion>-->
+<!--                </exclusions>-->
             </dependency>
             <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-core</artifactId>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-core-jakarta</artifactId>
                 <version>${version.io.swagger}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.validation</groupId>
-                        <artifactId>validation-api</artifactId>
-                    </exclusion>
-                </exclusions>
+<!--                <exclusions>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>javax.validation</groupId>-->
+<!--                        <artifactId>validation-api</artifactId>-->
+<!--                    </exclusion>-->
+<!--                </exclusions>-->
             </dependency>
             <dependency>
-                <groupId>io.swagger</groupId>
+                <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>${version.io.swagger}</version>
             </dependency>
             <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-models</artifactId>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-models-jakarta</artifactId>
                 <version>${version.io.swagger}</version>
             </dependency>
             <dependency>
@@ -1862,18 +1862,18 @@
 
             <dependency>
                 <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-core</artifactId>
+                <artifactId>hibernate-core-jakarta</artifactId>
                 <version>${version.org.hibernate.core}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.jboss.spec.javax.transaction</groupId>
-                        <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>javax.activation-api</artifactId>
-                    </exclusion>
-                </exclusions>
+<!--                <exclusions>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>org.jboss.spec.javax.transaction</groupId>-->
+<!--                        <artifactId>jboss-transaction-api_1.2_spec</artifactId>-->
+<!--                    </exclusion>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>javax.activation</groupId>-->
+<!--                        <artifactId>javax.activation-api</artifactId>-->
+<!--                    </exclusion>-->
+<!--                </exclusions>-->
             </dependency>
 
             <dependency>
