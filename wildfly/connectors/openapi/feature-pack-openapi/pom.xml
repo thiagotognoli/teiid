@@ -33,6 +33,11 @@
             <groupId>org.teiid.connectors</groupId>
             <artifactId>translator-openapi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
