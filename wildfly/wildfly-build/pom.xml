@@ -86,11 +86,11 @@
                                     <artifactId>rest-service-galleon-pack</artifactId>
                                     <version>${project.version}</version>
                                 </feature-pack>
-<!--                                <feature-pack>-->
-<!--                                    <groupId>org.teiid.wildfly</groupId>-->
-<!--                                    <artifactId>olingo-feature-pack</artifactId>-->
-<!--                                    <version>${project.version}</version>-->
-<!--                                </feature-pack>-->
+                                <feature-pack>
+                                    <groupId>org.teiid.wildfly</groupId>
+                                    <artifactId>olingo-feature-pack</artifactId>
+                                    <version>${project.version}</version>
+                                </feature-pack>
                                 <feature-pack>
                                     <groupId>org.teiid.wildfly.connectors</groupId>
                                     <artifactId>feature-pack-accumulo</artifactId>
@@ -98,7 +98,22 @@
                                 </feature-pack>
                                 <feature-pack>
                                     <groupId>org.teiid.wildfly.connectors</groupId>
+                                    <artifactId>feature-pack-file</artifactId>
+                                    <version>${project.version}</version>
+                                </feature-pack>
+                                <feature-pack>
+                                    <groupId>org.teiid.wildfly.connectors</groupId>
+                                    <artifactId>feature-pack-odata</artifactId>
+                                    <version>${project.version}</version>
+                                </feature-pack>
+                                <feature-pack>
+                                    <groupId>org.teiid.wildfly.connectors</groupId>
                                     <artifactId>feature-pack-amazon</artifactId>
+                                    <version>${project.version}</version>
+                                </feature-pack>
+                                <feature-pack>
+                                    <groupId>org.teiid.wildfly.connectors</groupId>
+                                    <artifactId>feature-pack-jdbc</artifactId>
                                     <version>${project.version}</version>
                                 </feature-pack>
                                 <feature-pack>
@@ -113,22 +128,12 @@
                                 </feature-pack>
                                 <feature-pack>
                                     <groupId>org.teiid.wildfly.connectors</groupId>
-                                    <artifactId>feature-pack-file</artifactId>
-                                    <version>${project.version}</version>
-                                </feature-pack>
-                                <feature-pack>
-                                    <groupId>org.teiid.wildfly.connectors</groupId>
                                     <artifactId>feature-pack-google</artifactId>
                                     <version>${project.version}</version>
                                 </feature-pack>
                                 <feature-pack>
                                     <groupId>org.teiid.wildfly.connectors</groupId>
                                     <artifactId>feature-pack-infinispan</artifactId>
-                                    <version>${project.version}</version>
-                                </feature-pack>
-                                <feature-pack>
-                                    <groupId>org.teiid.wildfly.connectors</groupId>
-                                    <artifactId>feature-pack-jdbc</artifactId>
                                     <version>${project.version}</version>
                                 </feature-pack>
                                 <feature-pack>
@@ -146,14 +151,9 @@
                                     <artifactId>feature-pack-mongodb</artifactId>
                                     <version>${project.version}</version>
                                 </feature-pack>
-<!--                                <feature-pack>-->
-<!--                                    <groupId>org.teiid.wildfly.connectors</groupId>-->
-<!--                                    <artifactId>feature-pack-odata</artifactId>-->
-<!--                                    <version>${project.version}</version>-->
-<!--                                </feature-pack>-->
                                 <feature-pack>
                                     <groupId>org.teiid.wildfly.connectors</groupId>
-                                    <artifactId>feature-pack-openapi</artifactId>
+                                    <artifactId>feature-pack-ws</artifactId>
                                     <version>${project.version}</version>
                                 </feature-pack>
                                 <feature-pack>
@@ -178,7 +178,7 @@
                                 </feature-pack>
                                 <feature-pack>
                                     <groupId>org.teiid.wildfly.connectors</groupId>
-                                    <artifactId>feature-pack-ws</artifactId>
+                                    <artifactId>feature-pack-openapi</artifactId>
                                     <version>${project.version}</version>
                                 </feature-pack>
                             </featurePacks>
