@@ -7,6 +7,7 @@
         <artifact name="${com.fasterxml.jackson.dataformat:jackson-dataformat-yaml}"/>
         <artifact name="${com.fasterxml.jackson.dataformat:jackson-dataformat-xml}"/>
         <artifact name="${com.fasterxml.jackson.datatype:jackson-datatype-joda}"/>
+        <artifact name="${com.fasterxml.jackson.datatype:jackson-datatype-jsr310}"/>
     </resources>
     
     <dependencies>

@@ -341,6 +341,11 @@
                 <version>${version.com.fasterxml.jackson.dataformat}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${version.com.fasterxml.jackson.dataformat}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jgroups</groupId>
                 <artifactId>jgroups</artifactId>
                 <version>${version.org.jgroups}</version>
