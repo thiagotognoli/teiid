@@ -15,6 +15,7 @@ Teiid is a data virtualization system that allows applications to use data from 
 - Wiki - https://community.jboss.org/wiki/TheTeiidProject
 
 ## To build Teiid
+- Note that the Jakarta EE versions of the OREVA (https://github.com/certara-dwebster/oreva) and the Olingo-OData4 (https://github.com/certara-dwebster/olingo-odata4) projects will need to be built before this project is built.
 - install JDK 1.9 or higher
 - install maven 3.2+ - http://maven.apache.org/download.html
 - Create a github account and fork Teiid
