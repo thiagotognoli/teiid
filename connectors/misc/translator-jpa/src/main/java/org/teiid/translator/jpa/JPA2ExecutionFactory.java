@@ -19,8 +19,8 @@ package org.teiid.translator.jpa;
 
 import java.util.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.teiid.language.Argument;
 import org.teiid.language.Call;

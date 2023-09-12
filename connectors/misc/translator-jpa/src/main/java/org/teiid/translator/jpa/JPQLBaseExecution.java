@@ -17,7 +17,7 @@
  */
 package org.teiid.translator.jpa;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.teiid.metadata.RuntimeMetadata;
 import org.teiid.translator.ExecutionContext;

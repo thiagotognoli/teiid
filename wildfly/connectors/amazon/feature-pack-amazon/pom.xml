@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>org.teiid.connectors</groupId>
 			<artifactId>translator-amazon-s3</artifactId>
-		</dependency>		
+		</dependency>
 	</dependencies>
 
 	<build>

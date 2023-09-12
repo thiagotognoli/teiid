@@ -24,12 +24,12 @@
             <type>zip</type>
         </dependency>
          
-<!--        <dependency>-->
-<!--            <groupId>org.teiid.wildfly.connectors</groupId>-->
-<!--            <artifactId>feature-pack-odata</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--            <type>zip</type>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.teiid.wildfly.connectors</groupId>
+            <artifactId>feature-pack-odata</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
 
         <dependency>
             <groupId>org.teiid.connectors</groupId>
@@ -42,6 +42,12 @@
         <dependency>
             <groupId>org.teiid.wildfly.connectors</groupId>
             <artifactId>connector-infinispan-hotrod</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.teiid.wildfly</groupId>
+            <artifactId>teiid-wildfly-integration-galleon-pack</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
         </dependency>
     </dependencies>
 

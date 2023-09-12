@@ -17,7 +17,7 @@
     <dependencies>
         <module name="javax.api"/>
         <module name="jakarta.activation.api"/>
-        <module name="javax.annotation.api"/>
+        <module name="jakarta.annotation.api"/>
         <module name="jakarta.xml.bind.api"/>
         <module name="org.apache.cxf"/>
         <module name="org.apache.cxf.impl"/>

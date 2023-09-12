@@ -84,7 +84,7 @@
     <module>webservice</module>
     <module>salesforce</module>
     <module>solr</module>
-<!--    <module>odata</module>-->
+    <module>odata</module>
     <module>openapi</module>
     <module>infinispan</module>
     <module>misc</module>

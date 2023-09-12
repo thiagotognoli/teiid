@@ -237,7 +237,6 @@ public class TestODataIntegration {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        http.setStopTimeout(5000);
         http.start();
     }
 

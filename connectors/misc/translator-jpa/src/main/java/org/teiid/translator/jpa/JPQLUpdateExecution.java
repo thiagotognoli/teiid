@@ -19,8 +19,8 @@ package org.teiid.translator.jpa;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.teiid.core.TeiidException;
 import org.teiid.core.util.PropertiesUtils;

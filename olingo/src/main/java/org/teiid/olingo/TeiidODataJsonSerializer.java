@@ -139,7 +139,7 @@ public class TeiidODataJsonSerializer extends ODataJsonSerializer {
             }
 
             json.close();
-        } catch (final IOException e) {
+        } catch (final IOException | DecoderException e) {
             throw new SerializerException("An I/O exception occurred.", e, SerializerException.MessageKeys.IO_EXCEPTION);
         }
         return SerializerResultImpl.with().content(buffer.getInputStream()).build();
