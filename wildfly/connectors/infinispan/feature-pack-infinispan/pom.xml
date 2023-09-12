@@ -43,6 +43,12 @@
             <groupId>org.teiid.wildfly.connectors</groupId>
             <artifactId>connector-infinispan-hotrod</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.teiid.wildfly</groupId>
+            <artifactId>teiid-wildfly-integration-galleon-pack</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>

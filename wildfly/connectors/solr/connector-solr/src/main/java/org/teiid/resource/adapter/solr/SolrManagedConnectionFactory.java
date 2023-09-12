@@ -17,7 +17,7 @@
  */
 package org.teiid.resource.adapter.solr;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.teiid.resource.spi.BasicManagedConnectionFactory;
 

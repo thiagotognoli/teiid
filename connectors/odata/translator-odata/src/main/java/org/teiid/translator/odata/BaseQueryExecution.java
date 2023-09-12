@@ -30,8 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataConstants.Charsets;
@@ -84,7 +84,7 @@ public class BaseQueryExecution {
             // if parser is written to return raw objects; then we can avoid some un-necessary object creation
             // due to time, I am not pursuing that now.
             FormatParser<Feed> parser = FormatParserFactory.getParser(
-                    Feed.class, FormatType.ATOM, new Settings(version, edsMetadata, entityTable, null));
+                    Feed.class, FormatType.ATOM, new Settings(version, edsMetadata, entityTable, null, null));
             return parser.parse(new InputStreamReader(blob.getBinaryStream()));
         } catch (SQLException e) {
             throw new TranslatorException(ODataPlugin.Event.TEIID17010, e, e.getMessage());

@@ -27,7 +27,7 @@ import org.teiid.client.xa.XidImpl;
 import org.teiid.dqp.service.TransactionContext;
 import org.teiid.resource.api.XAImporter;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
 import static org.junit.Assert.*;
@@ -37,7 +37,7 @@ public class TestTransactionServer {
     private TransactionServerImpl server;
     private XAImporter xaImporter;
     private TransactionManager tm;
-    private javax.transaction.Transaction txn;
+    private jakarta.transaction.Transaction txn;
 
     private static final String THREAD1 = "abc1"; //$NON-NLS-1$
     private static final String THREAD2 = "abc2"; //$NON-NLS-1$
@@ -54,7 +54,7 @@ public class TestTransactionServer {
     @Before public void setUp() throws Exception {
         server = new TransactionServerImpl();
         tm = Mockito.mock(TransactionManager.class);
-        txn = Mockito.mock(javax.transaction.Transaction.class);
+        txn = Mockito.mock(jakarta.transaction.Transaction.class);
         Mockito.when(tm.getTransaction()).thenReturn(txn);
         Mockito.when(tm.suspend()).thenReturn(txn);
         xaImporter = Mockito.mock(XAImporter.class);

@@ -19,8 +19,8 @@ package org.teiid.resource.adapter.file;
 
 import java.util.Map;
 
-import javax.resource.ResourceException;
-import javax.resource.spi.InvalidPropertyException;
+import jakarta.resource.ResourceException;
+import jakarta.resource.spi.InvalidPropertyException;
 
 import org.teiid.core.BundleUtil;
 import org.teiid.core.util.StringUtil;

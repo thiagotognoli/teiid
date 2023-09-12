@@ -23,14 +23,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.resource.ResourceException;
-import javax.resource.cci.Connection;
-import javax.resource.spi.ConnectionEvent;
-import javax.resource.spi.ConnectionEventListener;
-import javax.resource.spi.ConnectionRequestInfo;
-import javax.resource.spi.LocalTransaction;
-import javax.resource.spi.ManagedConnection;
-import javax.resource.spi.ManagedConnectionMetaData;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.Connection;
+import jakarta.resource.spi.ConnectionEvent;
+import jakarta.resource.spi.ConnectionEventListener;
+import jakarta.resource.spi.ConnectionRequestInfo;
+import jakarta.resource.spi.LocalTransaction;
+import jakarta.resource.spi.ManagedConnection;
+import jakarta.resource.spi.ManagedConnectionMetaData;
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
 
@@ -95,7 +95,7 @@ public class BasicManagedConnection implements ManagedConnection {
 
     @Override
     public LocalTransaction getLocalTransaction() throws ResourceException {
-        javax.resource.cci.LocalTransaction localTxn = this.physicalConnection.getLocalTransaction();
+        jakarta.resource.cci.LocalTransaction localTxn = this.physicalConnection.getLocalTransaction();
         if (localTxn == null) {
             return null;
         }

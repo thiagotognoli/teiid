@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import org.apache.olingo.commons.api.format.ContentType;
 import org.apache.olingo.commons.core.Encoder;
@@ -237,7 +237,6 @@ public class TestODataIntegration {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        http.setStopTimeout(5000);
         http.start();
     }
 

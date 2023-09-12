@@ -20,7 +20,7 @@ package org.teiid.resource.adapter.accumulo;
 
 import java.util.List;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 import javax.security.auth.Subject;
 
 import org.apache.accumulo.core.client.Accumulo;

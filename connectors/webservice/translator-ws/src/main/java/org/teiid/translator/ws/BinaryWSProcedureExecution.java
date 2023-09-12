@@ -36,12 +36,12 @@ import org.teiid.translator.ExecutionContext;
 import org.teiid.translator.ProcedureExecution;
 import org.teiid.translator.TranslatorException;
 
-import javax.activation.DataSource;
-import javax.xml.ws.Dispatch;
-import javax.xml.ws.Service.Mode;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.http.HTTPBinding;
+import jakarta.activation.DataSource;
+import jakarta.xml.ws.Dispatch;
+import jakarta.xml.ws.Service.Mode;
+import jakarta.xml.ws.WebServiceException;
+import jakarta.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.http.HTTPBinding;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;

@@ -21,9 +21,9 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
-import javax.resource.spi.XATerminator;
-import javax.resource.spi.work.WorkManager;
-import javax.transaction.TransactionManager;
+import jakarta.resource.spi.XATerminator;
+import jakarta.resource.spi.work.WorkManager;
+import jakarta.transaction.TransactionManager;
 
 import org.jboss.msc.service.Service;
 import org.jboss.msc.service.ServiceController;

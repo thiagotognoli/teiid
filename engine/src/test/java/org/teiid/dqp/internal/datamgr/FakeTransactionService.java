@@ -18,7 +18,7 @@
 
 package org.teiid.dqp.internal.datamgr;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 
 import org.teiid.core.util.SimpleMock;
 import org.teiid.dqp.internal.process.TransactionServerImpl;

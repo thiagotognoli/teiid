@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.olingo.server.api.OData;

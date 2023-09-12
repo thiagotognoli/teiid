@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.transaction.Transaction;
+import jakarta.transaction.Transaction;
 import javax.transaction.xa.Xid;
 
 import org.teiid.core.TeiidRuntimeException;

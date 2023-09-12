@@ -21,7 +21,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;

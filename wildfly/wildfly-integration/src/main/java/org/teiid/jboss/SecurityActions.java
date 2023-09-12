@@ -21,7 +21,7 @@ import java.security.AccessController;
 import java.security.Principal;
 import java.security.PrivilegedAction;
 
-import javax.resource.spi.security.PasswordCredential;
+import jakarta.resource.spi.security.PasswordCredential;
 import javax.security.auth.Subject;
 
 import org.teiid.logging.LogConstants;

@@ -19,7 +19,7 @@ package org.teiid.resource.adapter.hdfs;
 
 import java.util.Objects;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.teiid.core.BundleUtil;

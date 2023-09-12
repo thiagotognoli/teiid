@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OObject;
@@ -95,8 +95,9 @@ public class ODataProcedureExecution extends BaseQueryExecution implements Proce
                     FormatParser<? extends OObject> parser = FormatParserFactory.getParser(OSimpleObject.class,
                             FormatType.ATOM, new Settings(version, edm, this.visitor.getProcedure().getName(),
                                 null, // entitykey
-                                true, // isResponse
-                                ODataTypeManager.odataType(this.visitor.getReturnType())));
+                                null,
+                                true // isResponse
+                            ));
 
                     OSimpleObject object = (OSimpleObject)parser.parse(new InputStreamReader(blob.getBinaryStream()));
                     this.returnValue = this.translator.retrieveValue(object.getValue(), this.visitor.getReturnTypeClass());

@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stax.StAXSource;

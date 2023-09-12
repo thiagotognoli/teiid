@@ -16,12 +16,12 @@
 
     <dependencies>
         <module name="javax.api"/>
-        <module name="javax.activation.api"/>
+        <module name="jakarta.activation.api"/>
         <module name="javax.annotation.api"/>
-        <module name="javax.xml.bind.api"/>
+        <module name="jakarta.xml.bind.api"/>
         <module name="org.apache.cxf"/>
         <module name="org.apache.cxf.impl"/>
-        <module name="javax.ws.rs.api" services="export" export="true"/>
+        <module name="jakarta.ws.rs.api" services="export" export="true"/>
         <module name="net.oauth.core"/>
         <module name="org.apache.httpcomponents"/>
     </dependencies>

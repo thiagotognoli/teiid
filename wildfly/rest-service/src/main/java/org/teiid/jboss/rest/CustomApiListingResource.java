@@ -20,55 +20,54 @@ package org.teiid.jboss.rest;
 
 import java.util.Enumeration;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.teiid.core.util.StringUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.jaxrs.listing.BaseApiListingResource;
 
 /**
  * Workaround for using a Resteasy Filter to make a ServletContext available
  * https://github.com/swagger-api/swagger-core/issues/2239
  */
 
-@Path("/swagger.{type:json|yaml}")
-public class CustomApiListingResource extends BaseApiListingResource {
+//@Path("/swagger.{type:json|yaml}")
+public class CustomApiListingResource  {
 
-    @Context
-    ServletContext context;
-
-    @GET
-    @Produces({MediaType.APPLICATION_JSON, "application/yaml"})
-    @ApiOperation(value = "The swagger definition in either JSON or YAML", hidden = true)
-    public Response getListing(
-            @Context Application app,
-            @Context ServletConfig sc,
-            @Context FilterConfig fc,
-            @Context HttpHeaders headers,
-            @Context UriInfo uriInfo,
-            @PathParam("type") String type) throws JsonProcessingException {
-        sc = getConfig(sc, fc);
-        if (!StringUtil.isEmpty(type) && type.trim().equalsIgnoreCase("yaml")) {
-            return getListingYamlResponse(app, context, sc, headers, uriInfo);
-        } else {
-            return getListingJsonResponse(app, context, sc, headers, uriInfo);
-        }
-    }
+//    @Context
+//    ServletContext context;
+//
+//    @GET
+//    @Produces({MediaType.APPLICATION_JSON, "application/yaml"})
+//    @ApiOperation(value = "The swagger definition in either JSON or YAML", hidden = true)
+//    public Response getListing(
+//            @Context Application app,
+//            @Context ServletConfig sc,
+//            @Context FilterConfig fc,
+//            @Context HttpHeaders headers,
+//            @Context UriInfo uriInfo,
+//            @PathParam("type") String type) throws JsonProcessingException {
+//        sc = getConfig(sc, fc);
+//        if (!StringUtil.isEmpty(type) && type.trim().equalsIgnoreCase("yaml")) {
+//            return getListingYamlResponse(app, context, sc, headers, uriInfo);
+//        } else {
+//            return getListingJsonResponse(app, context, sc, headers, uriInfo);
+//        }
+//    }
 
     private ServletConfig getConfig(ServletConfig sc, FilterConfig fc) {
         try {

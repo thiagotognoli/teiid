@@ -25,7 +25,7 @@ import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.iterators.IteratorEnvironment;
 import org.apache.accumulo.core.iterators.SortedKeyValueIterator;
-import org.apache.accumulo.core.iterators.conf.ColumnSet;
+import org.apache.accumulo.core.iteratorsImpl.conf.ColumnSet;
 import org.apache.accumulo.core.iterators.user.RowFilter;
 
 /**
