@@ -3,7 +3,7 @@
     <parent>
         <artifactId>solr</artifactId>
        <groupId>org.teiid.wildfly.connectors</groupId>
-        <version>17.0.3-SNAPSHOT</version>
+        <version>17.0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>connector-solr</artifactId>
@@ -27,10 +27,6 @@
             <groupId>org.teiid.wildfly</groupId>
             <artifactId>teiid-resource-spi</artifactId>
         </dependency>        
-        <dependency>
-            <groupId>org.jboss.spec.javax.resource</groupId>
-            <artifactId>jboss-connector-api_1.7_spec</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>

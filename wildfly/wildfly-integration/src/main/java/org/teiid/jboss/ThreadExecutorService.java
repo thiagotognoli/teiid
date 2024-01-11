@@ -26,13 +26,17 @@ import org.teiid.dqp.internal.process.ThreadReuseExecutor;
 import org.teiid.logging.LogConstants;
 import org.teiid.logging.LogManager;
 
+import java.util.function.Consumer;
+
 public class ThreadExecutorService implements Service<TeiidExecutor> {
 
     private int threadCount;
     private ThreadReuseExecutor threadExecutor;
+    private Consumer<TeiidExecutor> providedInstance;
 
-    public ThreadExecutorService(int threadCount) {
+    public ThreadExecutorService(int threadCount, Consumer<TeiidExecutor> provides) {
         this.threadCount = threadCount;
+        this.providedInstance = provides;
     }
 
     @Override
@@ -50,6 +54,7 @@ public class ThreadExecutorService implements Service<TeiidExecutor> {
                 LogManager.logWarning(LogConstants.CTX_RUNTIME, IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50116, maximumPoolSize, poolName, highestQueueSize, warnTime));
             }
         };
+        providedInstance.accept(threadExecutor);
     }
 
     @Override

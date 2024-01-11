@@ -37,7 +37,7 @@ public class TestResteasyEnabler {
 
     @Test public void testOtherModels() throws VirtualDatabaseException {
         RestWarGenerator generator = Mockito.mock(RestWarGenerator.class);
-        ResteasyEnabler resteasyEnabler = new ResteasyEnabler(generator) {
+        ResteasyEnabler resteasyEnabler = new ResteasyEnabler(generator, null, null, null) {
             Admin getAdmin() {
                 return Mockito.mock(Admin.class);
             }

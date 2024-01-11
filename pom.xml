@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
     <name>Teiid</name>
 
-    <version>17.0.3-SNAPSHOT</version>
+    <version>17.0.4-SNAPSHOT</version>
     <description>Federated SQL and XML query engine.</description>
     <properties>
         <site.url>http://teiid.io</site.url>
@@ -140,9 +140,10 @@
         <version.com.github.mpkorstanje>3.0.0</version.com.github.mpkorstanje>
         <version.org.arrahtec>6.2.6</version.org.arrahtec>
 
-        <!-- OpenTracing -->
-        <version.opentracing.concurrent>0.1.0</version.opentracing.concurrent>
-        <version.opentracing>0.31.0</version.opentracing>
+        <!-- OpenTelemetry -->
+        <version.io.opentelemetry>1.20.0</version.io.opentelemetry>
+        <version.io.opentelemetry.autoconfigure>1.20.0-alpha</version.io.opentelemetry.autoconfigure>
+        <version.io.opentelemetry.semconv>1.20.0-alpha</version.io.opentelemetry.semconv>
 
         <version.xerces>2.12.0</version.xerces>
         <version.org.slf4j>1.7.30</version.org.slf4j>
@@ -895,13 +896,6 @@
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-core</artifactId>
                 <version>${version.io.dropwizard.metrics.metrics-core}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.opentracing</groupId>
-                <artifactId>opentracing-mock</artifactId>
-                <version>${version.opentracing}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>
@@ -1790,30 +1784,6 @@
             </dependency>
 
             <dependency>
-                <groupId>io.opentracing.contrib</groupId>
-                <artifactId>opentracing-concurrent</artifactId>
-                <version>${version.opentracing.concurrent}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.opentracing</groupId>
-                <artifactId>opentracing-api</artifactId>
-                <version>${version.opentracing}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.opentracing</groupId>
-                <artifactId>opentracing-noop</artifactId>
-                <version>${version.opentracing}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.opentracing</groupId>
-                <artifactId>opentracing-util</artifactId>
-                <version>${version.opentracing}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>com.io7m.xom</groupId>
                 <artifactId>xom</artifactId>
                 <version>1.2.10</version>
@@ -2101,6 +2071,21 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-tx</artifactId>
                 <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-api</artifactId>
+                <version>${version.io.opentelemetry}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
+                <version>${version.io.opentelemetry.autoconfigure}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-semconv</artifactId>
+                <version>${version.io.opentelemetry.semconv}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

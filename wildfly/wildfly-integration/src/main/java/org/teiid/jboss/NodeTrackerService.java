@@ -18,29 +18,31 @@
 package org.teiid.jboss;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.jboss.msc.service.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.wildfly.clustering.jgroups.ChannelFactory;
 
 class NodeTrackerService implements Service<NodeTracker> {
-    public final InjectedValue<ChannelFactory> channelFactoryInjector = new InjectedValue<ChannelFactory>();
-    private NodeTracker tracker = null;
+    public final Supplier<ChannelFactory> channelFactory;
+    private NodeTracker tracker;
     private String nodeName;
     private ScheduledExecutorService scheduler;
 
-    public NodeTrackerService(String nodeName, ScheduledExecutorService scheduler) {
+    public NodeTrackerService(String nodeName, ScheduledExecutorService scheduler, Supplier<ChannelFactory> channelFactorySupplier) {
         this.nodeName = nodeName;
         this.scheduler = scheduler;
+        this.channelFactory = channelFactorySupplier;
     }
 
     @Override
     public void start(StartContext context) throws StartException {
         try {
-            this.tracker = new NodeTracker(channelFactoryInjector.getValue().createChannel("teiid-node-tracker"), this.nodeName) {
+            NodeTracker tracker = new NodeTracker(channelFactory.get().createChannel("teiid-node-tracker"), this.nodeName) {
                 @Override
                 public ScheduledExecutorService getScheduledExecutorService() {
                     return scheduler;

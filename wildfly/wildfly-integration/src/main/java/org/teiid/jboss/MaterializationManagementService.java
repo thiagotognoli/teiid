@@ -17,28 +17,34 @@
  */
 package org.teiid.jboss;
 
-import java.util.concurrent.ScheduledExecutorService;
-
-import org.jboss.msc.service.Service;
+import org.jboss.msc.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.deployers.VDBRepository;
 import org.teiid.dqp.internal.process.DQPCore;
 import org.teiid.runtime.MaterializationManager;
 
-class MaterializationManagementService implements Service<MaterializationManager> {
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+class MaterializationManagementService implements Service {
     private ScheduledExecutorService scheduler;
     private MaterializationManager manager;
-    protected final InjectedValue<DQPCore> dqpInjector = new InjectedValue<DQPCore>();
-    protected final InjectedValue<VDBRepository> vdbRepositoryInjector = new InjectedValue<VDBRepository>();
-    protected final InjectedValue<NodeTracker> nodeTrackerInjector = new InjectedValue<NodeTracker>();
+    private final Consumer<MaterializationManager> managerCons;
+    protected final Supplier<DQPCore> dqpInjector;
+    protected final Supplier<VDBRepository> vdbRepositoryInjector;
+    protected final Supplier<NodeTracker> nodeTrackerInjector;
     private JBossLifeCycleListener shutdownListener;
 
-    public MaterializationManagementService(JBossLifeCycleListener shutdownListener, ScheduledExecutorService scheduler) {
+    public MaterializationManagementService(JBossLifeCycleListener shutdownListener, ScheduledExecutorService scheduler, Supplier<DQPCore> dqpCoreDep, Supplier<VDBRepository> vdbRepDep, Supplier<NodeTracker> nodeTrackerDep, Consumer<MaterializationManager> managerCons) {
         this.shutdownListener = shutdownListener;
         this.scheduler = scheduler;
+        this.dqpInjector = dqpCoreDep;
+        this.vdbRepositoryInjector = vdbRepDep;
+        this.nodeTrackerInjector = nodeTrackerDep;
+        this.managerCons = managerCons;
     }
 
     @Override
@@ -51,34 +57,30 @@ class MaterializationManagementService implements Service<MaterializationManager
 
             @Override
             public DQPCore getDQP() {
-                return dqpInjector.getValue();
+                return dqpInjector.get();
             }
 
             @Override
             public VDBRepository getVDBRepository() {
-                return vdbRepositoryInjector.getValue();
+                return vdbRepositoryInjector.get();
             }
         };
 
-        vdbRepositoryInjector.getValue().addListener(manager);
+        vdbRepositoryInjector.get().addListener(manager);
 
-        if (nodeTrackerInjector.getValue() != null) {
-            nodeTrackerInjector.getValue().addNodeListener(manager);
+        if (nodeTrackerInjector.get() != null) {
+            nodeTrackerInjector.get().addNodeListener(manager);
         }
+        this.managerCons.accept(manager);
     }
 
     @Override
     public void stop(StopContext context) {
         scheduler.shutdownNow();
-        vdbRepositoryInjector.getValue().removeListener(manager);
-        NodeTracker value = nodeTrackerInjector.getValue();
+        vdbRepositoryInjector.get().removeListener(manager);
+        NodeTracker value = nodeTrackerInjector.get();
         if (value != null) {
             value.removeNodeListener(manager);
         }
-    }
-
-    @Override
-    public MaterializationManager getValue() throws IllegalStateException, IllegalArgumentException {
-        return this.manager;
     }
 }

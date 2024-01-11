@@ -19,6 +19,7 @@
 package org.teiid.jboss;
 
 import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
 import org.jboss.as.server.deployment.Attachments;
 import org.jboss.as.server.deployment.DeploymentPhaseContext;
@@ -78,10 +79,11 @@ public final class TranslatorDeployer implements DeploymentUnitProcessor {
 
     static void buildService(final ServiceTarget target,
             VDBTranslatorMetaData metadata) {
-        TranslatorService translatorService = new TranslatorService(metadata);
-        ServiceBuilder<VDBTranslatorMetaData> builder = target.addService(TeiidServiceNames.translatorServiceName(metadata.getName()), translatorService);
-        builder.addDependency(TeiidServiceNames.TRANSLATOR_REPO, TranslatorRepository.class, translatorService.repositoryInjector);
-        builder.addDependency(TeiidServiceNames.VDB_STATUS_CHECKER, VDBStatusChecker.class, translatorService.statusCheckerInjector);
+        ServiceBuilder<?> builder = target.addService(TeiidServiceNames.translatorServiceName(metadata.getName()));
+        Supplier<TranslatorRepository> translatorRepo = builder.requires(TeiidServiceNames.TRANSLATOR_REPO);
+        Supplier<VDBStatusChecker> statusChecker = builder.requires(TeiidServiceNames.VDB_STATUS_CHECKER);
+        TranslatorService translatorService = new TranslatorService(metadata, translatorRepo, statusChecker);
+        builder.setInstance(translatorService);
         builder.setInitialMode(ServiceController.Mode.ACTIVE).install();
     }
 

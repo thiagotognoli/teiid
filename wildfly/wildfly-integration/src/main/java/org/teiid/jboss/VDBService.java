@@ -17,26 +17,10 @@
  */
 package org.teiid.jboss;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.concurrent.Executor;
-
-import javax.xml.stream.XMLStreamException;
-
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.server.moduleservice.ServiceModuleLoader;
-import org.jboss.msc.service.LifecycleContext;
-import org.jboss.msc.service.Service;
-import org.jboss.msc.service.ServiceBuilder;
-import org.jboss.msc.service.ServiceContainer;
-import org.jboss.msc.service.ServiceController;
-import org.jboss.msc.service.StartContext;
-import org.jboss.msc.service.StartException;
-import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
+import org.jboss.msc.Service;
+import org.jboss.msc.service.*;
 import org.teiid.adminapi.AdminProcessingException;
 import org.teiid.adminapi.Translator;
 import org.teiid.adminapi.VDB.Status;
@@ -44,15 +28,7 @@ import org.teiid.adminapi.impl.ModelMetaData;
 import org.teiid.adminapi.impl.VDBMetaData;
 import org.teiid.adminapi.impl.VDBMetadataParser;
 import org.teiid.adminapi.impl.VDBTranslatorMetaData;
-import org.teiid.deployers.CompositeVDB;
-import org.teiid.deployers.ContainerLifeCycleListener;
-import org.teiid.deployers.RuntimeVDB;
-import org.teiid.deployers.TranslatorUtil;
-import org.teiid.deployers.UDFMetaData;
-import org.teiid.deployers.VDBLifeCycleListener;
-import org.teiid.deployers.VDBRepository;
-import org.teiid.deployers.VDBStatusChecker;
-import org.teiid.deployers.VirtualDatabaseException;
+import org.teiid.deployers.*;
 import org.teiid.dqp.internal.datamgr.ConnectorManagerRepository;
 import org.teiid.dqp.internal.datamgr.ConnectorManagerRepository.ConnectorManagerException;
 import org.teiid.dqp.internal.datamgr.TranslatorRepository;
@@ -68,23 +44,39 @@ import org.teiid.translator.ExecutionFactory;
 import org.teiid.translator.TranslatorException;
 import org.teiid.vdb.runtime.VDBKey;
 
-class VDBService extends AbstractVDBDeployer implements Service<RuntimeVDB> {
+import javax.xml.stream.XMLStreamException;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+class VDBService extends AbstractVDBDeployer implements Service {
     private VDBMetaData vdb;
-    private RuntimeVDB runtimeVDB;
-    protected final InjectedValue<VDBRepository> vdbRepositoryInjector = new InjectedValue<VDBRepository>();
-    protected final InjectedValue<TranslatorRepository> translatorRepositoryInjector = new InjectedValue<TranslatorRepository>();
-    protected final InjectedValue<Executor> executorInjector = new InjectedValue<Executor>();
-    protected final InjectedValue<ObjectSerializer> serializerInjector = new InjectedValue<ObjectSerializer>();
-    protected final InjectedValue<VDBStatusChecker> vdbStatusCheckInjector = new InjectedValue<VDBStatusChecker>();
+    private Consumer<RuntimeVDB> runtimeVDB;
+    protected final Supplier<VDBRepository> vdbRepositoryInjector;
+    protected final Supplier<TranslatorRepository> translatorRepositoryInjector;
+    protected final Supplier<Executor> executorInjector;
+    protected final Supplier<ObjectSerializer> serializerInjector;
+    protected final Supplier<VDBStatusChecker> vdbStatusCheckInjector;
 
     private VDBLifeCycleListener vdbListener;
     private VDBResources vdbResources;
     private VDBKey vdbKey;
 
-    public VDBService(VDBMetaData metadata, VDBResources vdbResources, ContainerLifeCycleListener shutdownListener) {
+    public VDBService(VDBMetaData metadata, VDBResources vdbResources, ContainerLifeCycleListener shutdownListener, Supplier<VDBRepository> vdbRepo, Supplier<TranslatorRepository> translatorRepo, Supplier<Executor> executor, Supplier<ObjectSerializer> objSerializer, Supplier<VDBStatusChecker> statusChecker, Consumer<RuntimeVDB> runtimeConsumer) {
         this.vdb = metadata;
         this.vdbKey = new VDBKey(metadata.getName(), metadata.getVersion());
         this.vdbResources = vdbResources;
+        this.vdbRepositoryInjector = vdbRepo;
+        this.translatorRepositoryInjector = translatorRepo;
+        this.executorInjector = executor;
+        this.serializerInjector = objSerializer;
+        this.vdbStatusCheckInjector = statusChecker;
+        this.runtimeVDB = runtimeConsumer;
     }
 
     @Override
@@ -132,7 +124,7 @@ class VDBService extends AbstractVDBDeployer implements Service<RuntimeVDB> {
                 VDBMetaData vdbInstance = cvdb.getVDB();
                 if (vdbInstance.getStatus().equals(Status.ACTIVE)) {
                     //need to construct/install the service in a single thread
-                    final ServiceBuilder<Void> vdbService = addVDBFinishedService(context);
+                    final ServiceBuilder<?> vdbService = addVDBFinishedService(context);
                     vdbService.install();
                 }
             }
@@ -167,7 +159,7 @@ class VDBService extends AbstractVDBDeployer implements Service<RuntimeVDB> {
             throw new StartException(e);
         }
 
-        this.runtimeVDB = buildRuntimeVDB(this.vdb, context.getController().getServiceContainer());
+        this.runtimeVDB.accept(buildRuntimeVDB(this.vdb, context.getController().getServiceContainer()));
     }
 
     private RuntimeVDB buildRuntimeVDB(final VDBMetaData vdbMetadata, final ServiceContainer serviceContainer) {
@@ -205,31 +197,31 @@ class VDBService extends AbstractVDBDeployer implements Service<RuntimeVDB> {
         return new RuntimeVDB(vdbMetadata, modificationListener) {
             @Override
             protected VDBStatusChecker getVDBStatusChecker() {
-                return VDBService.this.vdbStatusCheckInjector.getValue();
+                return VDBService.this.vdbStatusCheckInjector.get();
             }
         };
     }
 
-    Service<Void> createVoidService() {
-        return new Service<Void>() {
-            @Override
-            public Void getValue() throws IllegalStateException, IllegalArgumentException {
-                return null;
-            }
-            @Override
-            public void start(StartContext sc)throws StartException {}
-            @Override
-            public void stop(StopContext sc) {}
-        };
-    }
-
-    private ServiceBuilder<Void> addVDBFinishedService(StartContext context) {
+    private ServiceBuilder<?> addVDBFinishedService(StartContext context) {
         ServiceContainer serviceContainer = context.getController().getServiceContainer();
         final ServiceController<?> controller = serviceContainer.getService(TeiidServiceNames.vdbFinishedServiceName(vdb.getName(), vdb.getVersion()));
         if (controller != null) {
             controller.setMode(ServiceController.Mode.REMOVE);
         }
-        return serviceContainer.addService(TeiidServiceNames.vdbFinishedServiceName(vdb.getName(), vdb.getVersion()), createVoidService());
+        ServiceBuilder<?> serviceBuilder = serviceContainer.addService(TeiidServiceNames.vdbFinishedServiceName(vdb.getName(), vdb.getVersion()));
+        serviceBuilder.setInstance(new org.jboss.msc.service.Service<Void>() {
+            @Override
+            public void start(StartContext context) {}
+
+            @Override
+            public void stop(StopContext context) {}
+
+            @Override
+            public Void getValue() throws IllegalStateException, IllegalArgumentException {
+                return null;
+            }
+        });
+        return serviceBuilder;
     }
 
     void cleanup(LifecycleContext context) {
@@ -246,11 +238,6 @@ class VDBService extends AbstractVDBDeployer implements Service<RuntimeVDB> {
     @Override
     public void stop(StopContext context) {
         cleanup(context);
-    }
-
-    @Override
-    public RuntimeVDB getValue() throws IllegalStateException,IllegalArgumentException {
-        return this.runtimeVDB;
     }
 
     private void createConnectorManagers(ConnectorManagerRepository cmr, final TranslatorRepository repo, final VDBMetaData deployment) throws StartException {
@@ -320,19 +307,19 @@ class VDBService extends AbstractVDBDeployer implements Service<RuntimeVDB> {
 
     @Override
     protected VDBRepository getVDBRepository() {
-        return vdbRepositoryInjector.getValue();
+        return vdbRepositoryInjector.get();
     }
 
     private TranslatorRepository getTranslatorRepository() {
-        return this.translatorRepositoryInjector.getValue();
+        return this.translatorRepositoryInjector.get();
     }
 
     private Executor getExecutor() {
-        return this.executorInjector.getValue();
+        return this.executorInjector.get();
     }
 
     private ObjectSerializer getSerializer() {
-        return serializerInjector.getValue();
+        return serializerInjector.get();
     }
 
     private void save() throws AdminProcessingException {

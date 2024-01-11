@@ -17,19 +17,8 @@
  */
 package org.teiid.jboss;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
-import static org.teiid.jboss.TeiidConstants.*;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import javax.naming.InitialContext;
-
-import org.jboss.as.controller.AbstractAddStepHandler;
-import org.jboss.as.controller.OperationContext;
-import org.jboss.as.controller.OperationFailedException;
-import org.jboss.as.controller.PathAddress;
-import org.jboss.as.controller.SimpleAttributeDefinition;
+import org.jboss.as.controller.*;
+import org.jboss.as.naming.ManagedReference;
 import org.jboss.as.naming.ManagedReferenceFactory;
 import org.jboss.as.naming.ServiceBasedNamingStore;
 import org.jboss.as.naming.deployment.ContextNames;
@@ -50,6 +39,15 @@ import org.teiid.transport.ClientServiceRegistry;
 import org.teiid.transport.LocalServerConnection;
 import org.teiid.transport.SSLConfiguration;
 import org.teiid.transport.SocketConfiguration;
+
+import javax.naming.InitialContext;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_ADDR;
+import static org.teiid.jboss.TeiidConstants.*;
 
 class TransportAdd extends AbstractAddStepHandler {
     public static TransportAdd INSTANCE = new TransportAdd();
@@ -96,7 +94,13 @@ class TransportAdd extends AbstractAddStepHandler {
         final PathAddress pathAddress = PathAddress.pathAddress(address);
         final String transportName = pathAddress.getLastElement().getValue();
 
-        TransportService transport = new TransportService(transportName);
+        ServiceBuilder<?> transportBuilder = target.addService(TeiidServiceNames.transportServiceName(transportName));
+        Consumer<ClientServiceRegistry> serviceRegistryConsumer = transportBuilder.provides(TeiidServiceNames.transportServiceName(transportName));
+        Supplier<BufferManager> bufferManager = transportBuilder.requires(TeiidServiceNames.BUFFER_MGR);
+        Supplier<VDBRepository> vdbRepo = transportBuilder.requires(TeiidServiceNames.VDB_REPO);
+        Supplier<DQPCore> dqpCore = transportBuilder.requires(TeiidServiceNames.ENGINE);
+        Supplier<SessionService> sessionService = transportBuilder.requires(TeiidServiceNames.SESSION);
+        TransportService transport = new TransportService(transportName, vdbRepo, dqpCore, bufferManager, sessionService, serviceRegistryConsumer);
 
         String socketBinding = null;
         if (isDefined(TRANSPORT_SOCKET_BINDING_ATTRIBUTE, operation, context)) {
@@ -119,24 +123,23 @@ class TransportAdd extends AbstractAddStepHandler {
                transport.setMaxODBCLobSizeAllowed(asInt(PG_MAX_LOB_SIZE_ALLOWED_ELEMENT, operation, context));
            }
 
-        ServiceBuilder<ClientServiceRegistry> transportBuilder = target.addService(TeiidServiceNames.transportServiceName(transportName), transport);
         if (socketBinding != null) {
-            transportBuilder.addDependency(ServiceName.JBOSS.append("binding", socketBinding), SocketBinding.class, transport.getSocketBindingInjector()); //$NON-NLS-1$
+            Supplier<SocketBinding> socketBindingSupplier = transportBuilder.requires(ServiceName.JBOSS.append("binding", socketBinding)); //$NON-NLS-1$
+            transport.setSocketBindingInjector(socketBindingSupplier);
         }
-        transportBuilder.addDependency(TeiidServiceNames.BUFFER_MGR, BufferManager.class, transport.getBufferManagerInjector());
-        transportBuilder.addDependency(TeiidServiceNames.VDB_REPO, VDBRepository.class, transport.getVdbRepositoryInjector());
-        transportBuilder.addDependency(TeiidServiceNames.ENGINE, DQPCore.class, transport.getDqpInjector());
-        transportBuilder.addDependency(TeiidServiceNames.SESSION, SessionService.class, transport.getSessionServiceInjector());
 
         transportBuilder.setInitialMode(ServiceController.Mode.ACTIVE);
+        transportBuilder.setInstance(transport);
         transportBuilder.install();
 
         // register a JNDI name, this looks hard.
         if (transport.isLocal() && !isLocalRegistered(transportName)) {
-            final ReferenceFactoryService<ClientServiceRegistry> referenceFactoryService = new ReferenceFactoryService<ClientServiceRegistry>();
             final ServiceName referenceFactoryServiceName = TeiidServiceNames.localTransportServiceName(transportName).append("reference-factory"); //$NON-NLS-1$
-            final ServiceBuilder<?> referenceBuilder = target.addService(referenceFactoryServiceName,referenceFactoryService);
-            referenceBuilder.addDependency(TeiidServiceNames.transportServiceName(transportName), ClientServiceRegistry.class, referenceFactoryService.getInjector());
+            final ServiceBuilder<?> referenceBuilder = target.addService(referenceFactoryServiceName);
+            Consumer<ManagedReference> referenceConsumer = referenceBuilder.provides(referenceFactoryServiceName);
+            Supplier<ClientServiceRegistry> serviceRegistrySupplier = referenceBuilder.requires(TeiidServiceNames.transportServiceName(transportName));
+            final ReferenceFactoryService<ClientServiceRegistry> referenceFactoryService = new ReferenceFactoryService<ClientServiceRegistry>(serviceRegistrySupplier, referenceConsumer);
+            referenceBuilder.setInstance(referenceFactoryService);
             referenceBuilder.setInitialMode(ServiceController.Mode.ACTIVE);
 
             final ContextNames.BindInfo bindInfo = ContextNames.bindInfoFor(LocalServerConnection.jndiNameForRuntime(transportName));

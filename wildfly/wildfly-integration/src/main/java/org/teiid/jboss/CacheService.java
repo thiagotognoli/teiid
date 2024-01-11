@@ -17,47 +17,49 @@
  */
 package org.teiid.jboss;
 
-import org.jboss.msc.service.Service;
+import org.jboss.msc.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.cache.CacheFactory;
 import org.teiid.common.buffer.TupleBufferCache;
+import org.teiid.dqp.internal.process.CachedResults;
 import org.teiid.dqp.internal.process.SessionAwareCache;
 import org.teiid.dqp.internal.process.SessionAwareCache.Type;
 
-class CacheService<T> implements Service<SessionAwareCache<T>> {
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-    private SessionAwareCache<T> cache;
-    protected InjectedValue<TupleBufferCache> tupleBufferCacheInjector = new InjectedValue<TupleBufferCache>();
-    protected InjectedValue<CacheFactory> cacheFactoryInjector = new InjectedValue<CacheFactory>();
+class CacheService<T> implements Service {
+
+    private Consumer<SessionAwareCache<T>> cache;
+    protected Supplier<TupleBufferCache> tupleBufferCacheInjector;
+    protected Supplier<CacheFactory> cacheFactoryInjector;
 
     private SessionAwareCache.Type type;
     private String cacheName;
     private int maxStaleness;
 
-    public CacheService(String cacheName, SessionAwareCache.Type type, int maxStaleness){
+    public CacheService(String cacheName, Type type, int maxStaleness, Supplier<TupleBufferCache> tbcDep, Supplier<CacheFactory> cfDep, Consumer<SessionAwareCache<T>> sacConsumer){
         this.cacheName = cacheName;
         this.type = type;
         this.maxStaleness = maxStaleness;
+        this.tupleBufferCacheInjector = tbcDep;
+        this.cacheFactoryInjector = cfDep;
+        this.cache = sacConsumer;
     }
 
     @Override
     public void start(StartContext context) throws StartException {
-        this.cache = new SessionAwareCache<T>(this.cacheName, cacheFactoryInjector.getValue(), this.type, this.maxStaleness);
+        SessionAwareCache<T> cache = new SessionAwareCache<T>(this.cacheName, cacheFactoryInjector.get(), this.type, this.maxStaleness);
         if (type == Type.RESULTSET) {
-            this.cache.setTupleBufferCache(this.tupleBufferCacheInjector.getValue());
+            cache.setTupleBufferCache(this.tupleBufferCacheInjector.get());
         }
+        this.cache.accept(cache);
     }
 
     @Override
     public void stop(StopContext context) {
         this.cache = null;
-    }
-
-    @Override
-    public SessionAwareCache<T> getValue() throws IllegalStateException, IllegalArgumentException {
-        return this.cache;
     }
 }

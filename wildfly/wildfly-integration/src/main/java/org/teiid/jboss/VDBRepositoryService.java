@@ -21,25 +21,32 @@ import org.jboss.msc.service.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.common.buffer.BufferManager;
 import org.teiid.deployers.VDBRepository;
 import org.teiid.query.ObjectReplicator;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 class VDBRepositoryService implements Service<VDBRepository> {
     private VDBRepository repo;
-    protected final InjectedValue<BufferManager> bufferManagerInjector = new InjectedValue<BufferManager>();
-    protected final InjectedValue<ObjectReplicator> objectReplicatorInjector = new InjectedValue<ObjectReplicator>();
+    private Consumer<VDBRepository> repositoryConsumer;
+    protected final Supplier<BufferManager> bufferManager;
+    protected final Supplier<ObjectReplicator> objectReplicator;
 
-    public VDBRepositoryService(VDBRepository repo) {
+    public VDBRepositoryService(VDBRepository repo, Supplier<BufferManager> bufferManagerDep, Supplier<ObjectReplicator> objectReplicatorDep, Consumer<VDBRepository> repositoryConsumer) {
         this.repo = repo;
+        this.bufferManager = bufferManagerDep;
+        this.objectReplicator = objectReplicatorDep;
+        this.repositoryConsumer = repositoryConsumer;
     }
 
     @Override
     public void start(StartContext context) throws StartException {
-        repo.setBufferManager(this.bufferManagerInjector.getValue());
-        repo.setObjectReplicator(this.objectReplicatorInjector.getValue());
+        repo.setBufferManager(this.bufferManager.get());
+        repo.setObjectReplicator(this.objectReplicator.get());
         repo.start();
+        repositoryConsumer.accept(repo);
     }
 
     @Override

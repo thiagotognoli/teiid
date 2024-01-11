@@ -18,18 +18,10 @@
 
 package org.teiid.dqp.internal.datamgr;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.naming.InitialContext;
-
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import org.teiid.core.TeiidComponentException;
 import org.teiid.core.TeiidRuntimeException;
 import org.teiid.core.util.Assertion;
@@ -54,9 +46,14 @@ import org.teiid.translator.ExecutionFactory;
 import org.teiid.translator.Translator;
 import org.teiid.translator.TranslatorException;
 
-import io.opentracing.Span;
-import io.opentracing.log.Fields;
-import io.opentracing.tag.Tags;
+import javax.naming.InitialContext;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -318,22 +315,19 @@ public class ConnectorManager  {
                 switch (cmdStatus) {
                 case SOURCE:
                     if (command != null) {
-                        Map<String, String> map = new HashMap<String, String>();
-                        map.put("source-command", Arrays.toString(command)); //$NON-NLS-1$
-                        span.log(map);
+                        Attributes commandAttributes = Attributes.of(AttributeKey.stringKey("command"), Arrays.toString(command));
+                        span.addEvent("source-command", commandAttributes);
                     }
                     break;
                 case CANCEL:
-                    span.log("cancel"); //$NON-NLS-1$
+                    span.addEvent("cancel"); //$NON-NLS-1$
                     break;
                 case END:
-                    span.finish();
+                    span.end();
                     break;
                 case ERROR:
-                    Tags.ERROR.set(span, true);
-                    Map<String, String> map = new HashMap<String, String>();
-                    map.put(Fields.EVENT, "error"); //$NON-NLS-1$
-                    span.log(map);
+                    span.setStatus(StatusCode.ERROR);
+                    span.addEvent("error");
                     break;
                 default:
                     break;

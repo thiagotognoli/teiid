@@ -18,20 +18,9 @@
 
 package org.teiid.dqp.internal.datamgr;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.context.Scope;
 import jakarta.activation.DataSource;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.Source;
-import javax.xml.transform.stax.StAXSource;
-import javax.xml.transform.stream.StreamSource;
-
 import org.teiid.GeometryInputSource;
 import org.teiid.adminapi.impl.VDBMetaData;
 import org.teiid.client.ResizingArrayList;
@@ -73,15 +62,23 @@ import org.teiid.query.sql.lang.SourceHint.SpecificHint;
 import org.teiid.query.sql.lang.StoredProcedure;
 import org.teiid.query.sql.symbol.Expression;
 import org.teiid.query.util.CommandContext;
-import org.teiid.query.util.TeiidTracingUtil;
 import org.teiid.resource.api.WrappedConnection;
 import org.teiid.translator.*;
 import org.teiid.translator.ExecutionFactory.NullOrder;
 import org.teiid.translator.ExecutionFactory.TransactionSupport;
 import org.teiid.util.XMLInputStream;
 
-import io.opentracing.Scope;
-import io.opentracing.Span;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stax.StAXSource;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ConnectorWorkItem implements ConnectorWork {
 
@@ -256,7 +253,7 @@ public class ConnectorWorkItem implements ConnectorWork {
         try {
             timer.start();
             if (span != null) {
-                scope = TeiidTracingUtil.getInstance().activateSpan(span);
+                scope = span.makeCurrent();
             }
             return handleBatch();
         } catch (Throwable t) {
@@ -286,7 +283,7 @@ public class ConnectorWorkItem implements ConnectorWork {
         try {
             timer.start();
             if (this.span != null) {
-                scope = TeiidTracingUtil.getInstance().activateSpan(this.span);
+                scope = span.makeCurrent();
             }
             if (execution != null) {
                 execution.close();
@@ -398,7 +395,7 @@ public class ConnectorWorkItem implements ConnectorWork {
                 //Log the Source Command (Must be after obtaining the execution context)
                 manager.logSRCCommand(this, this.requestMsg, this.securityContext, Event.NEW, null, null);
                 if (this.span != null) {
-                    scope = TeiidTracingUtil.getInstance().activateSpan(this.span);
+                    scope = span.makeCurrent();
                 }
             }
             // Execute query

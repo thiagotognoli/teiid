@@ -37,6 +37,8 @@ import java.util.ServiceLoader;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import jakarta.resource.spi.XATerminator;
 import jakarta.resource.spi.work.WorkManager;
@@ -56,6 +58,7 @@ import org.jboss.as.controller.access.Environment;
 import org.jboss.as.controller.registry.ImmutableManagementResourceRegistration;
 import org.jboss.as.controller.registry.Resource;
 import org.jboss.as.controller.services.path.RelativePathService;
+import org.jboss.as.naming.ManagedReference;
 import org.jboss.as.naming.ManagedReferenceFactory;
 import org.jboss.as.naming.ServiceBasedNamingStore;
 import org.jboss.as.naming.deployment.ContextNames;
@@ -68,17 +71,14 @@ import org.jboss.as.server.moduleservice.ServiceModuleLoader;
 import org.jboss.dmr.ModelNode;
 import org.jboss.modules.Module;
 import org.jboss.modules.ModuleLoadException;
-import org.jboss.msc.service.Service;
+import org.jboss.msc.Service;
 import org.jboss.msc.service.ServiceBuilder;
-import org.jboss.msc.service.ServiceBuilder.DependencyType;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.jboss.msc.service.ServiceTarget;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.service.ValueService;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.CommandContext;
 import org.teiid.PolicyDecider;
 import org.teiid.PreParser;
@@ -94,13 +94,7 @@ import org.teiid.deployers.VDBStatusChecker;
 import org.teiid.dqp.internal.datamgr.ConnectorManagerRepository;
 import org.teiid.dqp.internal.datamgr.ConnectorManagerRepository.ConnectorManagerException;
 import org.teiid.dqp.internal.datamgr.TranslatorRepository;
-import org.teiid.dqp.internal.process.AuthorizationValidator;
-import org.teiid.dqp.internal.process.CachedResults;
-import org.teiid.dqp.internal.process.DQPConfiguration;
-import org.teiid.dqp.internal.process.DQPCore;
-import org.teiid.dqp.internal.process.DefaultAuthorizationValidator;
-import org.teiid.dqp.internal.process.PreparedPlan;
-import org.teiid.dqp.internal.process.SessionAwareCache;
+import org.teiid.dqp.internal.process.*;
 import org.teiid.dqp.service.SessionService;
 import org.teiid.events.EventDistributorFactory;
 import org.teiid.logging.LogConstants;
@@ -261,17 +255,12 @@ class TeiidAdd extends AbstractAddStepHandler {
         buildThreadService(maxThreads, target);
 
         // translator repository
+        ServiceBuilder<?> trService = target.addService(TeiidServiceNames.TRANSLATOR_REPO);
+        Consumer<TranslatorRepository> repoProvider = trService.provides(TeiidServiceNames.TRANSLATOR_REPO);
         final TranslatorRepository translatorRepo = new TranslatorRepository();
-        ValueService<TranslatorRepository> translatorService = new ValueService<TranslatorRepository>(
-                new org.jboss.msc.value.Value<TranslatorRepository>() {
-            @Override
-            public TranslatorRepository getValue() throws IllegalStateException, IllegalArgumentException {
-                return translatorRepo;
-            }
-        });
-
-        ServiceController<TranslatorRepository> service = target.addService(
-                TeiidServiceNames.TRANSLATOR_REPO, translatorService).install();
+        Service rpService = Service.newInstance(repoProvider, translatorRepo);
+        trService.setInstance(rpService);
+        trService.install();
 
         final ConnectorManagerRepository connectorManagerRepo = buildConnectorManagerRepository(translatorRepo);
 
@@ -292,63 +281,84 @@ class TeiidAdd extends AbstractAddStepHandler {
             vdbRepository.setAllowEnvFunction(false);
         }
 
-        VDBRepositoryService vdbRepositoryService = new VDBRepositoryService(vdbRepository);
-        ServiceBuilder<VDBRepository> vdbRepoService = target.addService(TeiidServiceNames.VDB_REPO, vdbRepositoryService);
-        vdbRepoService.addDependency(TeiidServiceNames.BUFFER_MGR, BufferManager.class, vdbRepositoryService.bufferManagerInjector);
-        vdbRepoService.addDependency(DependencyType.OPTIONAL, TeiidServiceNames.OBJECT_REPLICATOR, ObjectReplicator.class, vdbRepositoryService.objectReplicatorInjector);
-        vdbRepoService.install();
-
         // VDB Status manager
-        final VDBStatusCheckerExecutorService statusChecker = new VDBStatusCheckerExecutorService();
-        ValueService<VDBStatusChecker> statusService = new ValueService<VDBStatusChecker>(new org.jboss.msc.value.Value<VDBStatusChecker>() {
-            @Override
-            public VDBStatusChecker getValue() throws IllegalStateException, IllegalArgumentException {
-                return statusChecker;
-            }
-        });
-        ServiceBuilder<VDBStatusChecker> statusBuilder = target.addService(TeiidServiceNames.VDB_STATUS_CHECKER, statusService);
-        statusBuilder.addDependency(TeiidServiceNames.THREAD_POOL_SERVICE, Executor.class,  statusChecker.executorInjector);
-        statusBuilder.addDependency(TeiidServiceNames.VDB_REPO, VDBRepository.class,  statusChecker.vdbRepoInjector);
+        ServiceBuilder<?> statusBuilder = target.addService(TeiidServiceNames.VDB_STATUS_CHECKER);
+        Consumer<VDBStatusChecker> statusCheckerConsumer = statusBuilder.provides(TeiidServiceNames.VDB_STATUS_CHECKER);
+        Supplier<Executor> executorDep = statusBuilder.requires(TeiidServiceNames.THREAD_POOL_SERVICE);
+        Supplier<VDBRepository> vdbRepoDep = statusBuilder.requires(TeiidServiceNames.VDB_REPO);
+        final VDBStatusCheckerExecutorService statusChecker = new VDBStatusCheckerExecutorService(executorDep, vdbRepoDep);
+        statusBuilder.setInstance(Service.newInstance(statusCheckerConsumer, statusChecker));
         statusBuilder.install();
 
         RelativePathService.addService(TeiidServiceNames.DATA_DIR, "teiid-data", "jboss.server.data.dir", target); //$NON-NLS-1$ //$NON-NLS-2$
-        final ObjectsSerializerService serializer = new ObjectsSerializerService();
-        ServiceBuilder<ObjectSerializer> objectSerializerService = target.addService(TeiidServiceNames.OBJECT_SERIALIZER, serializer);
-        objectSerializerService.addDependency(TeiidServiceNames.DATA_DIR, String.class, serializer.getPathInjector());
+        ServiceBuilder<?> objectSerializerService = target.addService(TeiidServiceNames.OBJECT_SERIALIZER);
+        Consumer<ObjectSerializer> osCons = objectSerializerService.provides(TeiidServiceNames.OBJECT_SERIALIZER);
+        Supplier<String> pathDep = objectSerializerService.requires(TeiidServiceNames.DATA_DIR);
+        final ObjectsSerializerService serializer = new ObjectsSerializerService(pathDep, osCons);
+        objectSerializerService.setInstance(serializer);
         objectSerializerService.install();
 
         // Object Replicator
         boolean replicatorAvailable = false;
+        ServiceController<?> objectReplicatorController = null;
         if (isDefined(DC_STACK_ATTRIBUTE, operation, context)) {
             String stack = asString(DC_STACK_ATTRIBUTE, operation, context);
 
             replicatorAvailable = true;
-            JGroupsObjectReplicatorService replicatorService = new JGroupsObjectReplicatorService();
-            ServiceBuilder<JGroupsObjectReplicator> serviceBuilder = target.addService(TeiidServiceNames.OBJECT_REPLICATOR, replicatorService);
-            serviceBuilder.addDependency(JGroupsRequirement.CHANNEL_FACTORY.getServiceName(context, stack), ChannelFactory.class, replicatorService.channelFactoryInjector); //$NON-NLS-1$ //$NON-NLS-2$
-            serviceBuilder.addDependency(TeiidServiceNames.THREAD_POOL_SERVICE, Executor.class,  replicatorService.executorInjector);
-            serviceBuilder.install();
+            ServiceBuilder<?> serviceBuilder = target.addService(TeiidServiceNames.OBJECT_REPLICATOR);
+            Consumer<JGroupsObjectReplicator> replicatorInstance = serviceBuilder.provides(TeiidServiceNames.OBJECT_REPLICATOR);
+            Supplier<ChannelFactory> channelFactorySupplier = serviceBuilder.requires(JGroupsRequirement.CHANNEL_FACTORY.getServiceName(context, stack));//$NON-NLS-1$ //$NON-NLS-2$
+            Supplier<Executor> poolServiceSupplier = serviceBuilder.requires(TeiidServiceNames.THREAD_POOL_SERVICE);
+            JGroupsObjectReplicatorService replicatorService = new JGroupsObjectReplicatorService(channelFactorySupplier, poolServiceSupplier, replicatorInstance);
+            serviceBuilder.setInstance(replicatorService);
+            objectReplicatorController = serviceBuilder.install();
             LogManager.logInfo(LogConstants.CTX_RUNTIME, IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50003));
 
-            NodeTrackerService trackerService = new NodeTrackerService(nodeName, scheduler);
-            ServiceBuilder<NodeTracker> nodeTrackerBuilder = target.addService(TeiidServiceNames.NODE_TRACKER_SERVICE, trackerService);
-            nodeTrackerBuilder.addDependency(JGroupsRequirement.CHANNEL_FACTORY.getServiceName(context, stack), ChannelFactory.class, trackerService.channelFactoryInjector); //$NON-NLS-1$ //$NON-NLS-2$
+            ServiceBuilder<?> nodeTrackerBuilder = target.addService(TeiidServiceNames.NODE_TRACKER_SERVICE);
+            Supplier<ChannelFactory> channelFactoryDep = nodeTrackerBuilder.requires(JGroupsRequirement.CHANNEL_FACTORY.getServiceName(context, stack));//$NON-NLS-1$ //$NON-NLS-2$
+            NodeTrackerService trackerService = new NodeTrackerService(nodeName, scheduler, channelFactoryDep);
+            nodeTrackerBuilder.setInstance(trackerService);
             nodeTrackerBuilder.install();
         } else {
             LogManager.logDetail(LogConstants.CTX_RUNTIME, IntegrationPlugin.Util.getString("distributed_cache_not_enabled")); //$NON-NLS-1$
         }
 
+        ServiceBuilder<?> vdbRepoService = target.addService(TeiidServiceNames.VDB_REPO);
+        Supplier<BufferManager> bufferManagerDep = vdbRepoService.requires(TeiidServiceNames.BUFFER_MGR);
+        Supplier<ObjectReplicator> objectReplicatorDep = replicatorAvailable ? vdbRepoService.requires(TeiidServiceNames.OBJECT_REPLICATOR) : new Supplier<ObjectReplicator>() {
+            @Override
+            public ObjectReplicator get() {
+                return null;
+            }
+        };
+        Consumer<VDBRepository> vdbRepoConsumer = vdbRepoService.provides(TeiidServiceNames.VDB_REPO);
+        VDBRepositoryService vdbRepositoryService = new VDBRepositoryService(vdbRepository, bufferManagerDep, objectReplicatorDep, vdbRepoConsumer);
+        vdbRepoService.setInstance(vdbRepositoryService);
+        vdbRepoService.install();
+
         // TODO: remove verbose service by moving the buffer service from runtime project
         RelativePathService.addService(TeiidServiceNames.BUFFER_DIR, "teiid-buffer", "jboss.server.temp.dir", target); //$NON-NLS-1$ //$NON-NLS-2$
-        BufferManagerService bufferService = buildBufferManager(context, operation);
-        ServiceBuilder<BufferManager> bufferServiceBuilder = target.addService(TeiidServiceNames.BUFFER_MGR, bufferService);
-        bufferServiceBuilder.addDependency(TeiidServiceNames.BUFFER_DIR, String.class, bufferService.pathInjector);
+        ServiceBuilder<?> bufferServiceBuilder = target.addService(TeiidServiceNames.BUFFER_MGR);
+        Consumer<BufferManager> provides = bufferServiceBuilder.provides(TeiidServiceNames.BUFFER_MGR);
+        Supplier<String> pathSupplier = bufferServiceBuilder.requires(TeiidServiceNames.BUFFER_DIR);
+        BufferManagerService bufferService = buildBufferManager(context, operation, pathSupplier, provides);
+        bufferServiceBuilder.setInstance(bufferService);
         bufferServiceBuilder.install();
 
-        TupleBufferCacheService tupleBufferService = new TupleBufferCacheService();
-        ServiceBuilder<TupleBufferCache> tupleBufferBuilder = target.addService(TeiidServiceNames.TUPLE_BUFFER, tupleBufferService);
-        tupleBufferBuilder.addDependency(TeiidServiceNames.BUFFER_MGR, BufferManager.class, tupleBufferService.bufferMgrInjector);
-        tupleBufferBuilder.addDependency(replicatorAvailable?DependencyType.REQUIRED:DependencyType.OPTIONAL, TeiidServiceNames.OBJECT_REPLICATOR, ObjectReplicator.class, tupleBufferService.replicatorInjector);
+        ServiceBuilder<?> tupleBufferBuilder = target.addService(TeiidServiceNames.TUPLE_BUFFER);
+        Supplier<BufferManager> bmDep = tupleBufferBuilder.requires(TeiidServiceNames.BUFFER_MGR);
+        Consumer<TupleBufferCache> tupleBufferSupplier = tupleBufferBuilder.provides(TeiidServiceNames.TUPLE_BUFFER);
+        TupleBufferCacheService tupleBufferService = new TupleBufferCacheService(bmDep, tupleBufferSupplier);
+        if(replicatorAvailable) {
+            final ServiceController<JGroupsObjectReplicator> orcCopy = (ServiceController<JGroupsObjectReplicator>) objectReplicatorController;
+            tupleBufferService.replicatorInjector = new Supplier<ObjectReplicator>() {
+                @Override
+                public ObjectReplicator get() {
+                    return orcCopy.getValue();
+                }
+            };
+        }
+        tupleBufferBuilder.setInstance(tupleBufferService);
         tupleBufferBuilder.install();
 
         PolicyDecider policyDecider = null;
@@ -366,13 +376,10 @@ class TeiidAdd extends AbstractAddStepHandler {
             authValidator = dap;
         }
 
-        ValueService<AuthorizationValidator> authValidatorService = new ValueService<AuthorizationValidator>(new org.jboss.msc.value.Value<AuthorizationValidator>() {
-            @Override
-            public AuthorizationValidator getValue() throws IllegalStateException, IllegalArgumentException {
-                return authValidator;
-            }
-        });
-        target.addService(TeiidServiceNames.AUTHORIZATION_VALIDATOR, authValidatorService).install();
+        ServiceBuilder<?> authValidatorService = target.addService(TeiidServiceNames.AUTHORIZATION_VALIDATOR);
+        Consumer<AuthorizationValidator> authValidatorConsumer = authValidatorService.provides(TeiidServiceNames.AUTHORIZATION_VALIDATOR);
+        authValidatorService.setInstance(Service.newInstance(authValidatorConsumer, authValidator));
+        authValidatorService.install();
 
         final PreParser preParser;
         if (isDefined(PREPARSER_MODULE_ELEMENT, operation, context)) {
@@ -387,13 +394,10 @@ class TeiidAdd extends AbstractAddStepHandler {
             };
         }
 
-        ValueService<PreParser> preParserService = new ValueService<PreParser>(new org.jboss.msc.value.Value<PreParser>() {
-            @Override
-            public PreParser getValue() throws IllegalStateException, IllegalArgumentException {
-                return preParser;
-            }
-        });
-        target.addService(TeiidServiceNames.PREPARSER, preParserService).install();
+        ServiceBuilder<?> preParserService = target.addService(TeiidServiceNames.PREPARSER);
+        Consumer<PreParser> preParserConsumer = preParserService.provides(TeiidServiceNames.PREPARSER);
+        preParserService.setInstance(Service.newInstance(preParserConsumer, preParser));
+        preParserService.install();
 
         // resultset cache
         boolean rsCache = true;
@@ -412,12 +416,12 @@ class TeiidAdd extends AbstractAddStepHandler {
         }
 
         if (rsCache) {
-            CacheFactoryService cfs = new CacheFactoryService();
-            ServiceBuilder<CacheFactory> cacheFactoryBuilder = target.addService(TeiidServiceNames.RESULTSET_CACHE_FACTORY, cfs);
-
+            ServiceBuilder<?> cacheFactoryBuilder = target.addService(TeiidServiceNames.RESULTSET_CACHE_FACTORY);
+            Consumer<CacheFactory> cfCons = cacheFactoryBuilder.provides(TeiidServiceNames.RESULTSET_CACHE_FACTORY);
             String ispnName = asString(RSC_CONTAINER_NAME_ATTRIBUTE, operation, context);
-            cacheFactoryBuilder.addDependency(InfinispanRequirement.CONTAINER.getServiceName(context, ispnName),
-                    EmbeddedCacheManager.class, cfs.cacheContainerInjector); // $NON-NLS-1$
+            Supplier<EmbeddedCacheManager> cmDep = cacheFactoryBuilder.requires(InfinispanRequirement.CONTAINER.getServiceName(context, ispnName)); // $NON-NLS-1$
+            CacheFactoryService cfs = new CacheFactoryService(cmDep, cfCons);
+            cacheFactoryBuilder.setInstance(cfs);
             cacheFactoryBuilder.install();
 
             int maxStaleness = DQPConfiguration.DEFAULT_MAX_STALENESS_SECONDS;
@@ -425,12 +429,14 @@ class TeiidAdd extends AbstractAddStepHandler {
                 maxStaleness = asInt(RSC_MAX_STALENESS_ATTRIBUTE, operation, context);
             }
 
-            CacheService<CachedResults> resultSetService = new CacheService<CachedResults>(cacheName, SessionAwareCache.Type.RESULTSET, maxStaleness);
-            ServiceBuilder<SessionAwareCache<CachedResults>> resultsCacheBuilder = target.addService(TeiidServiceNames.CACHE_RESULTSET, resultSetService);
-            resultsCacheBuilder.addDependency(TeiidServiceNames.TUPLE_BUFFER, TupleBufferCache.class, resultSetService.tupleBufferCacheInjector);
-            resultsCacheBuilder.addDependency(TeiidServiceNames.RESULTSET_CACHE_FACTORY, CacheFactory.class, resultSetService.cacheFactoryInjector);
-            resultsCacheBuilder.addDependency(InfinispanCacheRequirement.CACHE.getServiceName(context, ispnName, cacheName)); //$NON-NLS-1$
-            resultsCacheBuilder.addDependency(InfinispanCacheRequirement.CACHE.getServiceName(context, ispnName, cacheName+SessionAwareCache.REPL)); //$NON-NLS-1$
+            ServiceBuilder<?> resultsCacheBuilder = target.addService(TeiidServiceNames.CACHE_RESULTSET);
+            Consumer<SessionAwareCache<CachedResults>> sacConsumer = resultsCacheBuilder.provides(TeiidServiceNames.CACHE_RESULTSET);
+            Supplier<TupleBufferCache> tbcDep = resultsCacheBuilder.requires(TeiidServiceNames.TUPLE_BUFFER);
+            Supplier<CacheFactory> cfDep = resultsCacheBuilder.requires(TeiidServiceNames.RESULTSET_CACHE_FACTORY);
+            resultsCacheBuilder.requires(InfinispanCacheRequirement.CACHE.getServiceName(context, ispnName, cacheName)); //$NON-NLS-1$
+            resultsCacheBuilder.requires(InfinispanCacheRequirement.CACHE.getServiceName(context, ispnName, cacheName+SessionAwareCache.REPL)); //$NON-NLS-1$
+            CacheService<CachedResults> resultSetService = new CacheService<CachedResults>(cacheName, SessionAwareCache.Type.RESULTSET, maxStaleness, tbcDep, cfDep, sacConsumer);
+            resultsCacheBuilder.setInstance(resultSetService);
             resultsCacheBuilder.install();
 
 
@@ -452,29 +458,35 @@ class TeiidAdd extends AbstractAddStepHandler {
         }
 
         if (ppCache) {
-            CacheFactoryService cfs = new CacheFactoryService();
-            ServiceBuilder<CacheFactory> cacheFactoryBuilder = target.addService(TeiidServiceNames.PREPAREDPLAN_CACHE_FACTORY, cfs);
-
+            ServiceBuilder<?> cacheFactoryBuilder = target.addService(TeiidServiceNames.PREPAREDPLAN_CACHE_FACTORY);
+            Consumer<CacheFactory> ppcfCons = cacheFactoryBuilder.provides(TeiidServiceNames.PREPAREDPLAN_CACHE_FACTORY);
             String ispnName = asString(PPC_CONTAINER_NAME_ATTRIBUTE, operation, context);
-            cacheFactoryBuilder.addDependency(InfinispanRequirement.CONTAINER.getServiceName(context, ispnName),
-                    EmbeddedCacheManager.class, cfs.cacheContainerInjector); // $NON-NLS-1$
+            Supplier<EmbeddedCacheManager> ecmDep = cacheFactoryBuilder.requires(InfinispanRequirement.CONTAINER.getServiceName(context, ispnName)); // $NON-NLS-1$
+            CacheFactoryService cfs = new CacheFactoryService(ecmDep, ppcfCons);
+            cacheFactoryBuilder.setInstance(cfs);
             cacheFactoryBuilder.install();
 
-            CacheService<PreparedPlan> preparedPlanService = new CacheService<PreparedPlan>(cacheName, SessionAwareCache.Type.PREPAREDPLAN, 0);
-            ServiceBuilder<SessionAwareCache<PreparedPlan>> preparedPlanCacheBuilder = target.addService(TeiidServiceNames.CACHE_PREPAREDPLAN, preparedPlanService);
-            preparedPlanCacheBuilder.addDependency(TeiidServiceNames.PREPAREDPLAN_CACHE_FACTORY, CacheFactory.class, preparedPlanService.cacheFactoryInjector);
-            preparedPlanCacheBuilder.addDependency(InfinispanCacheRequirement.CACHE.getServiceName(context, ispnName, cacheName)); // $NON-NLS-1$
+            ServiceBuilder<?> preparedPlanCacheBuilder = target.addService(TeiidServiceNames.CACHE_PREPAREDPLAN);
+            Consumer<SessionAwareCache<PreparedPlan>> ppConsumer = preparedPlanCacheBuilder.provides(TeiidServiceNames.CACHE_PREPAREDPLAN);
+            Supplier<CacheFactory> ppcDep = preparedPlanCacheBuilder.requires(TeiidServiceNames.PREPAREDPLAN_CACHE_FACTORY);
+            preparedPlanCacheBuilder.requires(InfinispanCacheRequirement.CACHE.getServiceName(context, ispnName, cacheName)); // $NON-NLS-1$
+            CacheService<PreparedPlan> preparedPlanService = new CacheService<>(cacheName, SessionAwareCache.Type.PREPAREDPLAN, 0, null, ppcDep, ppConsumer);
+            preparedPlanCacheBuilder.setInstance(preparedPlanService);
             preparedPlanCacheBuilder.install();
         }
 
         // Query Engine
-        final DQPCoreService engine = buildQueryEngine(context, operation);
-
-        EventDistributorFactoryService edfs = new EventDistributorFactoryService();
-        ServiceBuilder<InternalEventDistributorFactory> edfsServiceBuilder = target.addService(TeiidServiceNames.EVENT_DISTRIBUTOR_FACTORY, edfs);
-        edfsServiceBuilder.addDependency(TeiidServiceNames.VDB_REPO, VDBRepository.class, edfs.vdbRepositoryInjector);
-        edfsServiceBuilder.addDependency(replicatorAvailable?DependencyType.REQUIRED:DependencyType.OPTIONAL, TeiidServiceNames.OBJECT_REPLICATOR, ObjectReplicator.class, edfs.objectReplicatorInjector);
-        edfs.dqpCore = engine.getValue();
+        ServiceBuilder<?> edfsServiceBuilder = target.addService(TeiidServiceNames.EVENT_DISTRIBUTOR_FACTORY);
+        Consumer<InternalEventDistributorFactory> factoryConsumer = edfsServiceBuilder.provides(TeiidServiceNames.EVENT_DISTRIBUTOR_FACTORY);
+        Supplier<VDBRepository> vrDep = edfsServiceBuilder.requires(TeiidServiceNames.VDB_REPO);
+        Supplier<ObjectReplicator> orepDep = replicatorAvailable ? edfsServiceBuilder.requires(TeiidServiceNames.OBJECT_REPLICATOR) : new Supplier<ObjectReplicator>() {
+            @Override
+            public ObjectReplicator get() {
+                return null;
+            }
+        };
+        EventDistributorFactoryService edfs = new EventDistributorFactoryService(vrDep, orepDep, factoryConsumer);
+        edfsServiceBuilder.setInstance(edfs);
         edfsServiceBuilder.install();
 
         String workManager = "default"; //$NON-NLS-1$
@@ -482,28 +494,33 @@ class TeiidAdd extends AbstractAddStepHandler {
             workManager = asString(WORKMANAGER, operation, context);
         }
 
-        ServiceBuilder<DQPCore> engineBuilder = target.addService(TeiidServiceNames.ENGINE, engine);
-        engineBuilder.addDependency(ServiceName.JBOSS.append("connector", "workmanager", workManager), WorkManager.class, engine.getWorkManagerInjector()); //$NON-NLS-1$ //$NON-NLS-2$
-        engineBuilder.addDependency(ServiceName.JBOSS.append("txn", "XATerminator"), XATerminator.class, engine.getXaTerminatorInjector()); //$NON-NLS-1$ //$NON-NLS-2$
-        engineBuilder.addDependency(ServiceName.JBOSS.append("txn", "TransactionManager"), TransactionManager.class, engine.getTxnManagerInjector()); //$NON-NLS-1$ //$NON-NLS-2$
-        engineBuilder.addDependency(TeiidServiceNames.BUFFER_MGR, BufferManager.class, engine.getBufferManagerInjector());
-        engineBuilder.addDependency(TeiidServiceNames.TRANSLATOR_REPO, TranslatorRepository.class, engine.getTranslatorRepositoryInjector());
-        engineBuilder.addDependency(TeiidServiceNames.VDB_REPO, VDBRepository.class, engine.getVdbRepositoryInjector());
-        engineBuilder.addDependency(TeiidServiceNames.AUTHORIZATION_VALIDATOR, AuthorizationValidator.class, engine.getAuthorizationValidatorInjector());
-        engineBuilder.addDependency(TeiidServiceNames.PREPARSER, PreParser.class, engine.getPreParserInjector());
-        engineBuilder.addDependency(rsCache?DependencyType.REQUIRED:DependencyType.OPTIONAL, TeiidServiceNames.CACHE_RESULTSET, SessionAwareCache.class, engine.getResultSetCacheInjector());
-        engineBuilder.addDependency(TeiidServiceNames.CACHE_PREPAREDPLAN, SessionAwareCache.class, engine.getPreparedPlanCacheInjector());
-        engineBuilder.addDependency(TeiidServiceNames.EVENT_DISTRIBUTOR_FACTORY, InternalEventDistributorFactory.class, engine.getEventDistributorFactoryInjector());
-
+        ServiceBuilder<?> engineBuilder = target.addService(TeiidServiceNames.ENGINE);
+        Consumer<DQPCore> dqpConsumer = engineBuilder.provides(TeiidServiceNames.ENGINE);
+        Supplier<WorkManager> workManagerDep = engineBuilder.requires(ServiceName.JBOSS.append("connector", "workmanager", workManager)); //$NON-NLS-1$ //$NON-NLS-2$
+        Supplier<XATerminator> xatDep = engineBuilder.requires(ServiceName.JBOSS.append("txn", "XATerminator")); //$NON-NLS-1$ //$NON-NLS-2$
+        Supplier<TransactionManager> tmDep = engineBuilder.requires(ServiceName.JBOSS.append("txn", "TransactionManager")); //$NON-NLS-1$ //$NON-NLS-2$
+        Supplier<BufferManager> bufmanDep = engineBuilder.requires(TeiidServiceNames.BUFFER_MGR);
+        Supplier<TranslatorRepository> transRepDep = engineBuilder.requires(TeiidServiceNames.TRANSLATOR_REPO);
+        Supplier<VDBRepository> vdbRepDep = engineBuilder.requires(TeiidServiceNames.VDB_REPO);
+        Supplier<AuthorizationValidator> authValdep = engineBuilder.requires(TeiidServiceNames.AUTHORIZATION_VALIDATOR);
+        Supplier<PreParser> preParDep = engineBuilder.requires(TeiidServiceNames.PREPARSER);
+        Supplier<SessionAwareCache<CachedResults>> resultsetDep = engineBuilder.requires(TeiidServiceNames.CACHE_RESULTSET);
+        Supplier<SessionAwareCache<PreparedPlan>> pplanDep = engineBuilder.requires(TeiidServiceNames.CACHE_PREPAREDPLAN);
+        Supplier<InternalEventDistributorFactory> evtDistDep = engineBuilder.requires(TeiidServiceNames.EVENT_DISTRIBUTOR_FACTORY);
         engineBuilder.setInitialMode(ServiceController.Mode.ACTIVE);
+        final DQPCoreService engine = buildQueryEngine(context, operation, workManagerDep, xatDep, tmDep, bufmanDep, transRepDep, vdbRepDep, authValdep, preParDep, resultsetDep, pplanDep, evtDistDep, dqpConsumer);
+        edfs.dqpCore = engine.getValue();
+        engineBuilder.setInstance(engine);
         engineBuilder.install();
 
         // add JNDI for event distributor
-        final ReferenceFactoryService<EventDistributorFactory> referenceFactoryService = new ReferenceFactoryService<EventDistributorFactory>();
         final ServiceName referenceFactoryServiceName = TeiidServiceNames.EVENT_DISTRIBUTOR_FACTORY.append("reference-factory"); //$NON-NLS-1$
-        final ServiceBuilder<?> referenceBuilder = target.addService(referenceFactoryServiceName, referenceFactoryService);
-        referenceBuilder.addDependency(TeiidServiceNames.EVENT_DISTRIBUTOR_FACTORY, EventDistributorFactory.class, referenceFactoryService.getInjector());
+        final ServiceBuilder<?> referenceBuilder = target.addService(referenceFactoryServiceName);
+        Consumer<ManagedReference> referenceConsumer = referenceBuilder.provides(referenceFactoryServiceName);
+        Supplier<EventDistributorFactory> edfDep = referenceBuilder.requires(TeiidServiceNames.EVENT_DISTRIBUTOR_FACTORY);
         referenceBuilder.setInitialMode(ServiceController.Mode.ACTIVE);
+        final ReferenceFactoryService<EventDistributorFactory> referenceFactoryService = new ReferenceFactoryService<>(edfDep, referenceConsumer);
+        referenceBuilder.setInstance(referenceFactoryService);
 
         String jndiName = "teiid/event-distributor-factory";//$NON-NLS-1$
         final ContextNames.BindInfo bindInfo = ContextNames.bindInfoFor(jndiName);
@@ -519,11 +536,18 @@ class TeiidAdd extends AbstractAddStepHandler {
         LogManager.logDetail(LogConstants.CTX_RUNTIME, IntegrationPlugin.Util.getString("event_distributor_bound", jndiName)); //$NON-NLS-1$
 
         // Materialization management service
-        MaterializationManagementService matviewService = new MaterializationManagementService(shutdownListener, scheduler);
-        ServiceBuilder<MaterializationManager> matviewBuilder = target.addService(TeiidServiceNames.MATVIEW_SERVICE, matviewService);
-        matviewBuilder.addDependency(TeiidServiceNames.ENGINE, DQPCore.class,  matviewService.dqpInjector);
-        matviewBuilder.addDependency(TeiidServiceNames.VDB_REPO, VDBRepository.class, matviewService.vdbRepositoryInjector);
-        matviewBuilder.addDependency(replicatorAvailable?DependencyType.REQUIRED:DependencyType.OPTIONAL, TeiidServiceNames.NODE_TRACKER_SERVICE, NodeTracker.class, matviewService.nodeTrackerInjector);
+        ServiceBuilder<?> matviewBuilder = target.addService(TeiidServiceNames.MATVIEW_SERVICE);
+        Consumer<MaterializationManager> matviewCons = matviewBuilder.provides(TeiidServiceNames.MATVIEW_SERVICE);
+        Supplier<DQPCore> dqpCoreDep = matviewBuilder.requires(TeiidServiceNames.ENGINE);
+        Supplier<VDBRepository> vdbDep = matviewBuilder.requires(TeiidServiceNames.VDB_REPO);
+        Supplier<NodeTracker> nodeTrackerDep = replicatorAvailable ? matviewBuilder.requires(TeiidServiceNames.NODE_TRACKER_SERVICE) : new Supplier<NodeTracker>() {
+            @Override
+            public NodeTracker get() {
+                return null;
+            }
+        };
+        MaterializationManagementService matviewService = new MaterializationManagementService(shutdownListener, scheduler, dqpCoreDep, vdbDep, nodeTrackerDep, matviewCons);
+        matviewBuilder.setInstance(matviewService);
         matviewBuilder.install();
 
         // Register VDB deployer
@@ -590,17 +614,20 @@ class TeiidAdd extends AbstractAddStepHandler {
            sessionServiceImpl.setSecurityHelper(new JBossSecurityHelper());
            sessionServiceImpl.start();
 
-           ContainerSessionService containerSessionService = new ContainerSessionService(sessionServiceImpl);
-        ServiceBuilder<SessionService> sessionServiceBuilder = target.addService(TeiidServiceNames.SESSION, containerSessionService);
+        ServiceBuilder<?> sessionServiceBuilder = target.addService(TeiidServiceNames.SESSION);
+        Consumer<SessionService> sessionServiceConsumer = sessionServiceBuilder.provides(TeiidServiceNames.SESSION);
+        ContainerSessionService containerSessionService = new ContainerSessionService(sessionServiceImpl, sessionServiceConsumer);
+        sessionServiceBuilder.setInstance(containerSessionService);
            sessionServiceBuilder.install();
 
           // rest war service
            RestWarGenerator warGenerator= TeiidAdd.buildService(RestWarGenerator.class, "org.jboss.teiid.rest-service");
-           ResteasyEnabler restEnabler = new ResteasyEnabler(warGenerator);
-        ServiceBuilder<Void> warGeneratorSvc = target.addService(TeiidServiceNames.REST_WAR_SERVICE, restEnabler);
-        warGeneratorSvc.addDependency(Services.JBOSS_SERVER_CONTROLLER, ModelController.class, restEnabler.controllerValue);
-        warGeneratorSvc.addDependency(TeiidServiceNames.THREAD_POOL_SERVICE, Executor.class,  restEnabler.executorInjector);
-        warGeneratorSvc.addDependency(TeiidServiceNames.VDB_REPO, VDBRepository.class, restEnabler.vdbRepoInjector);
+        ServiceBuilder<?> warGeneratorSvc = target.addService(TeiidServiceNames.REST_WAR_SERVICE);
+        Supplier<ModelController> modelContDep = warGeneratorSvc.requires(Services.JBOSS_SERVER_CONTROLLER);
+        Supplier<Executor> exDep = warGeneratorSvc.requires(TeiidServiceNames.THREAD_POOL_SERVICE);
+        Supplier<VDBRepository> repDep = warGeneratorSvc.requires(TeiidServiceNames.VDB_REPO);
+        ResteasyEnabler restEnabler = new ResteasyEnabler(warGenerator, modelContDep, exDep, repDep);
+        warGeneratorSvc.setInstance(restEnabler);
         warGeneratorSvc.install();
     }
 
@@ -628,17 +655,21 @@ class TeiidAdd extends AbstractAddStepHandler {
     }
 
     private void buildThreadService(int maxThreads, ServiceTarget target) {
-        ThreadExecutorService service = new ThreadExecutorService(maxThreads);
-        final ServiceBuilder<?> serviceBuilder = target.addService(TeiidServiceNames.THREAD_POOL_SERVICE, service);
+        final ServiceBuilder<?> serviceBuilder = target.addService(TeiidServiceNames.THREAD_POOL_SERVICE);
+        Consumer<TeiidExecutor> provides = serviceBuilder.provides(TeiidServiceNames.THREAD_POOL_SERVICE);
+        ThreadExecutorService service = new ThreadExecutorService(maxThreads, provides);
+        serviceBuilder.setInstance(service);
         serviceBuilder.install();
     }
 
     private static final class ContainerSessionService implements
-            Service<SessionService> {
+            org.jboss.msc.service.Service<SessionService> {
         private final SessionServiceImpl sessionServiceImpl;
+        private final Consumer<SessionService> serviceConsumer;
 
-        private ContainerSessionService(SessionServiceImpl sessionServiceImpl) {
+        private ContainerSessionService(SessionServiceImpl sessionServiceImpl, Consumer<SessionService> sessionServiceConsumer) {
             this.sessionServiceImpl = sessionServiceImpl;
+            this.serviceConsumer = sessionServiceConsumer;
         }
 
         @Override
@@ -654,6 +685,7 @@ class TeiidAdd extends AbstractAddStepHandler {
 
         @Override
         public void start(StartContext context) throws StartException {
+            this.serviceConsumer.accept(sessionServiceImpl);
         }
     }
 
@@ -713,8 +745,8 @@ class TeiidAdd extends AbstractAddStepHandler {
         return iter.next();
     }
 
-    private BufferManagerService buildBufferManager(final OperationContext context, ModelNode node) throws OperationFailedException {
-        BufferManagerService bufferManger = new BufferManagerService();
+    private BufferManagerService buildBufferManager(final OperationContext context, ModelNode node, Supplier<String> pathSupplier, Consumer<BufferManager> provides) throws OperationFailedException {
+        BufferManagerService bufferManger = new BufferManagerService(pathSupplier, provides);
 
         if (node == null) {
             return bufferManger;
@@ -783,8 +815,8 @@ class TeiidAdd extends AbstractAddStepHandler {
         return bufferManger;
     }
 
-    private DQPCoreService buildQueryEngine(final OperationContext context, ModelNode node) throws OperationFailedException {
-        DQPCoreService engine = new DQPCoreService();
+    private DQPCoreService buildQueryEngine(final OperationContext context, ModelNode node, Supplier<WorkManager> workManagerDep, Supplier<XATerminator> xatDep, Supplier<TransactionManager> tmDep, Supplier<BufferManager> bufmanDep, Supplier<TranslatorRepository> transRepDep, Supplier<VDBRepository> vdbRepDep, Supplier<AuthorizationValidator> authValdep, Supplier<PreParser> preParDep, Supplier<SessionAwareCache<CachedResults>> resultsetDep, Supplier<SessionAwareCache<PreparedPlan>> pplanDep, Supplier<InternalEventDistributorFactory> evtDistDep, Consumer<DQPCore> dqpConsumer) throws OperationFailedException {
+        DQPCoreService engine = new DQPCoreService(workManagerDep, xatDep, tmDep, bufmanDep, transRepDep, vdbRepDep, authValdep, preParDep, resultsetDep, pplanDep, evtDistDep, dqpConsumer);
 
         if (isDefined(MAX_THREADS_ELEMENT, node, context)) {
             engine.setMaxThreads(asInt(MAX_THREADS_ELEMENT, node, context));
@@ -823,17 +855,22 @@ class TeiidAdd extends AbstractAddStepHandler {
     }
 
     static class VDBStatusCheckerExecutorService extends VDBStatusChecker{
-        final InjectedValue<Executor> executorInjector = new InjectedValue<Executor>();
-        final InjectedValue<VDBRepository> vdbRepoInjector = new InjectedValue<VDBRepository>();
+        final Supplier<Executor> executorInjector;
+        final Supplier<VDBRepository> vdbRepoInjector;
+
+        public VDBStatusCheckerExecutorService(Supplier<Executor> executorDep, Supplier<VDBRepository> vdbRepoDep) {
+            this.executorInjector = executorDep;
+            this.vdbRepoInjector = vdbRepoDep;
+        }
 
         @Override
         public Executor getExecutor() {
-            return this.executorInjector.getValue();
+            return this.executorInjector.get();
         }
 
         @Override
         public VDBRepository getVDBRepository() {
-            return this.vdbRepoInjector.getValue();
+            return this.vdbRepoInjector.get();
         }
     }
 

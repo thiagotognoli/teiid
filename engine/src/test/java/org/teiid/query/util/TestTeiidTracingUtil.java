@@ -18,26 +18,26 @@
 
 package org.teiid.query.util;
 
-import static org.junit.Assert.*;
-
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Context;
 import org.junit.Test;
 import org.teiid.logging.CommandLogMessage;
 
-import io.opentracing.Span;
-import io.opentracing.SpanContext;
-import io.opentracing.mock.MockTracer;
+import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
 public class TestTeiidTracingUtil {
 
     @Test public void testTracing() {
         TeiidTracingUtil ttu = new TeiidTracingUtil();
-        MockTracer tracer = new MockTracer();
+        Tracer tracer = GlobalOpenTelemetry.getTracer("test");
         ttu.setTracer(tracer);
         assertNotNull(ttu.extractSpanContext("{\"spanid\":\"1\",\"traceid\":\"2\"}"));
-        SpanContext spanContext = ttu.extractSpanContext("corrupted");
+        Context spanContext = ttu.extractSpanContext("corrupted");
         assertNull(spanContext);
-        assertNull(tracer.activeSpan()); //should be null, no side effect just from extract
+        assertTrue(Span.current() == Span.getInvalid()); //should be null, no side effect just from extract
 
         Span span = ttu.buildSpan(new Options().tracingWithActiveSpanOnly(false), new CommandLogMessage(0, "", null, null, null, null, null, null, "", null), null);
         assertNotNull(span);
@@ -48,7 +48,7 @@ public class TestTeiidTracingUtil {
 
     @Test public void testTracingEnabled() {
         TeiidTracingUtil ttu = new TeiidTracingUtil();
-        MockTracer tracer = new MockTracer();
+        Tracer tracer = GlobalOpenTelemetry.getTracer("test");
         ttu.setTracer(tracer);
         assertFalse(ttu.isTracingEnabled(new Options().tracingWithActiveSpanOnly(true), null));
     }

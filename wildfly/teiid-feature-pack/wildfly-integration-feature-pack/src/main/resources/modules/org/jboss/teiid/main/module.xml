@@ -60,7 +60,6 @@
         <module name="org.jboss.ironjacamar.api"/>
         <module name="org.jboss.ironjacamar.impl"/>
         <module name="org.jgroups"/>
-        <module name="nu.xom"/>
         <module name="net.sf.saxon"/>
 
         <!-- geo -->
@@ -76,9 +75,8 @@
         <module name="org.jboss.as.controller-client"/> <!-- Admin -->
         <module name="org.jboss.as.controller"/> <!-- Admin -->
 
-        <module name="io.opentracing.opentracing-api"/>
-        <module name="io.opentracing.opentracing-noop"/>
-        <module name="io.opentracing.opentracing-util"/>
-        <module name="io.opentracing.contrib.opentracing-concurrent"/>
+        <module name="io.opentelemetry.api"/>
+        <module name="io.opentelemetry.sdk"/>
+        <module name="io.opentelemetry.context"/>
     </dependencies>
 </module>

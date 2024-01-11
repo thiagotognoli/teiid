@@ -17,19 +17,13 @@
  */
 package org.teiid.jboss;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
-
 import jakarta.resource.spi.XATerminator;
 import jakarta.resource.spi.work.WorkManager;
 import jakarta.transaction.TransactionManager;
-
-import org.jboss.msc.service.Service;
+import org.jboss.msc.Service;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.PreParser;
 import org.teiid.adminapi.impl.SessionMetadata;
 import org.teiid.common.buffer.BufferManager;
@@ -38,11 +32,7 @@ import org.teiid.deployers.CompositeVDB;
 import org.teiid.deployers.VDBLifeCycleListener;
 import org.teiid.deployers.VDBRepository;
 import org.teiid.dqp.internal.datamgr.TranslatorRepository;
-import org.teiid.dqp.internal.process.AuthorizationValidator;
-import org.teiid.dqp.internal.process.DQPConfiguration;
-import org.teiid.dqp.internal.process.DQPCore;
-import org.teiid.dqp.internal.process.SessionAwareCache;
-import org.teiid.dqp.internal.process.TransactionServerImpl;
+import org.teiid.dqp.internal.process.*;
 import org.teiid.dqp.service.SessionService;
 import org.teiid.dqp.service.TransactionService;
 import org.teiid.logging.LogConstants;
@@ -52,39 +42,61 @@ import org.teiid.resource.spi.XAImporterImpl;
 import org.teiid.runtime.jmx.JMXService;
 import org.teiid.services.InternalEventDistributorFactory;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public class DQPCoreService extends DQPConfiguration implements Serializable, Service<DQPCore>  {
+
+public class DQPCoreService extends DQPConfiguration implements Serializable, Service  {
     private static final long serialVersionUID = -4676205340262775388L;
 
     private transient TransactionServerImpl transactionServerImpl = new TransactionServerImpl();
     private transient DQPCore dqpCore = new DQPCore();
+    private final Consumer<DQPCore> dqpConsumer;
     private transient JMXService jmx;
 
-    private final InjectedValue<WorkManager> workManagerInjector = new InjectedValue<WorkManager>();
-    private final InjectedValue<XATerminator> xaTerminatorInjector = new InjectedValue<XATerminator>();
-    private final InjectedValue<TransactionManager> txnManagerInjector = new InjectedValue<TransactionManager>();
-    private final InjectedValue<BufferManager> bufferManagerInjector = new InjectedValue<BufferManager>();
-    private final InjectedValue<TranslatorRepository> translatorRepositoryInjector = new InjectedValue<TranslatorRepository>();
-    private final InjectedValue<VDBRepository> vdbRepositoryInjector = new InjectedValue<VDBRepository>();
-    private final InjectedValue<AuthorizationValidator> authorizationValidatorInjector = new InjectedValue<AuthorizationValidator>();
-    private final InjectedValue<PreParser> preParserInjector = new InjectedValue<PreParser>();
-    private final InjectedValue<SessionAwareCache> preparedPlanCacheInjector = new InjectedValue<SessionAwareCache>();
-    private final InjectedValue<SessionAwareCache> resultSetCacheInjector = new InjectedValue<SessionAwareCache>();
-    private final InjectedValue<InternalEventDistributorFactory> eventDistributorFactoryInjector = new InjectedValue<InternalEventDistributorFactory>();
+    private final Supplier<WorkManager> workManagerInjector;
+    private final Supplier<XATerminator> xaTerminatorInjector;
+    private final Supplier<TransactionManager> txnManagerInjector;
+    private final Supplier<BufferManager> bufferManagerInjector;
+    private final Supplier<TranslatorRepository> translatorRepositoryInjector;
+    private final Supplier<VDBRepository> vdbRepositoryInjector;
+    private final Supplier<AuthorizationValidator> authorizationValidatorInjector;
+    private final Supplier<PreParser> preParserInjector;
+    private final Supplier<SessionAwareCache<PreparedPlan>> preparedPlanCacheInjector;
+    private final Supplier<SessionAwareCache<CachedResults>> resultSetCacheInjector;
+    private final Supplier<InternalEventDistributorFactory> eventDistributorFactoryInjector;
+
+    public DQPCoreService(Supplier<WorkManager> workManagerDep, Supplier<XATerminator> xatDep, Supplier<TransactionManager> tmDep, Supplier<BufferManager> bufmanDep, Supplier<TranslatorRepository> transRepDep, Supplier<VDBRepository> vdbRepDep, Supplier<AuthorizationValidator> authValdep, Supplier<PreParser> preParDep, Supplier<SessionAwareCache<CachedResults>> resultsetDep, Supplier<SessionAwareCache<PreparedPlan>> pplanDep, Supplier<InternalEventDistributorFactory> evtDistDep, Consumer<DQPCore> dqpConsumer) {
+        this.workManagerInjector = workManagerDep;
+        this.xaTerminatorInjector = xatDep;
+        this.txnManagerInjector = tmDep;
+        this.bufferManagerInjector = bufmanDep;
+        this.translatorRepositoryInjector = transRepDep;
+        this.vdbRepositoryInjector = vdbRepDep;
+        this.authorizationValidatorInjector = authValdep;
+        this.preParserInjector = preParDep;
+        this.preparedPlanCacheInjector = pplanDep;
+        this.resultSetCacheInjector = resultsetDep;
+        this.eventDistributorFactoryInjector = evtDistDep;
+        this.dqpConsumer = dqpConsumer;
+    }
 
     @Override
     public void start(final StartContext context) {
-        this.transactionServerImpl.setXaImporter(new XAImporterImpl(getXaTerminatorInjector().getValue(), getWorkManagerInjector().getValue()));
-        this.transactionServerImpl.setTransactionManager(getTxnManagerInjector().getValue());
+        this.transactionServerImpl.setXaImporter(new XAImporterImpl(getXaTerminatorInjector().get(), getWorkManagerInjector().get()));
+        this.transactionServerImpl.setTransactionManager(getTxnManagerInjector().get());
         this.transactionServerImpl.setDetectTransactions(true);
-        setPreParser(preParserInjector.getValue());
-        setAuthorizationValidator(authorizationValidatorInjector.getValue());
-        this.dqpCore.setBufferManager(bufferManagerInjector.getValue());
+        setPreParser(preParserInjector.get());
+        setAuthorizationValidator(authorizationValidatorInjector.get());
+        this.dqpCore.setBufferManager(bufferManagerInjector.get());
 
         this.dqpCore.setTransactionService((TransactionService)LogManager.createLoggingProxy(LogConstants.CTX_TXN_LOG, transactionServerImpl, new Class[] {TransactionService.class}, MessageLevel.DETAIL, Thread.currentThread().getContextClassLoader()));
-        this.dqpCore.setEventDistributor(getEventDistributorFactoryInjector().getValue().getReplicatedEventDistributor());
-        this.dqpCore.setResultsetCache(getResultSetCacheInjector().getValue());
-        this.dqpCore.setPreparedPlanCache(getPreparedPlanCacheInjector().getValue());
+        this.dqpCore.setEventDistributor(getEventDistributorFactoryInjector().get().getReplicatedEventDistributor());
+        this.dqpCore.setResultsetCache(getResultSetCacheInjector().get());
+        this.dqpCore.setPreparedPlanCache(getPreparedPlanCacheInjector().get());
         this.dqpCore.start(this);
 
         final SessionService sessionService = (SessionService) context.getController().getServiceContainer().getService(TeiidServiceNames.SESSION).getValue();
@@ -105,11 +117,11 @@ public class DQPCoreService extends DQPConfiguration implements Serializable, Se
 
                 // dump the caches.
                 try {
-                    SessionAwareCache<?> value = getResultSetCacheInjector().getValue();
+                    SessionAwareCache<?> value = getResultSetCacheInjector().get();
                     if (value != null) {
                         value.clearForVDB(vdb.getVDBKey());
                     }
-                    value = getPreparedPlanCacheInjector().getValue();
+                    value = getPreparedPlanCacheInjector().get();
                     if (value != null) {
                         value.clearForVDB(vdb.getVDBKey());
                     }
@@ -132,9 +144,9 @@ public class DQPCoreService extends DQPConfiguration implements Serializable, Se
         });
 
         LogManager.logInfo(LogConstants.CTX_RUNTIME, IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50001, this.dqpCore.getRuntimeVersion(), new Date(System.currentTimeMillis()).toString()));
+        this.dqpConsumer.accept(dqpCore);
     }
 
-    @Override
     public DQPCore getValue() throws IllegalStateException, IllegalArgumentException {
         return this.dqpCore;
     }
@@ -153,51 +165,51 @@ public class DQPCoreService extends DQPConfiguration implements Serializable, Se
         LogManager.logInfo(LogConstants.CTX_RUNTIME, IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50002, new Date(System.currentTimeMillis()).toString()));
     }
 
-    public InjectedValue<SessionAwareCache> getResultSetCacheInjector() {
+    public Supplier<SessionAwareCache<CachedResults>> getResultSetCacheInjector() {
         return resultSetCacheInjector;
     }
 
-    public InjectedValue<SessionAwareCache> getPreparedPlanCacheInjector() {
+    public Supplier<SessionAwareCache<PreparedPlan>> getPreparedPlanCacheInjector() {
         return preparedPlanCacheInjector;
     }
 
-    public InjectedValue<TranslatorRepository> getTranslatorRepositoryInjector() {
+    public Supplier<TranslatorRepository> getTranslatorRepositoryInjector() {
         return translatorRepositoryInjector;
     }
 
-    public InjectedValue<VDBRepository> getVdbRepositoryInjector() {
+    public Supplier<VDBRepository> getVdbRepositoryInjector() {
         return vdbRepositoryInjector;
     }
 
     private VDBRepository getVdbRepository() {
-        return vdbRepositoryInjector.getValue();
+        return vdbRepositoryInjector.get();
     }
 
-    public InjectedValue<AuthorizationValidator> getAuthorizationValidatorInjector() {
+    public Supplier<AuthorizationValidator> getAuthorizationValidatorInjector() {
         return authorizationValidatorInjector;
     }
 
-    public InjectedValue<PreParser> getPreParserInjector() {
+    public Supplier<PreParser> getPreParserInjector() {
         return preParserInjector;
     }
 
-    public InjectedValue<BufferManager> getBufferManagerInjector() {
+    public Supplier<BufferManager> getBufferManagerInjector() {
         return bufferManagerInjector;
     }
 
-    public InjectedValue<TransactionManager> getTxnManagerInjector() {
+    public Supplier<TransactionManager> getTxnManagerInjector() {
         return txnManagerInjector;
     }
 
-    public InjectedValue<XATerminator> getXaTerminatorInjector() {
+    public Supplier<XATerminator> getXaTerminatorInjector() {
         return xaTerminatorInjector;
     }
 
-    public InjectedValue<WorkManager> getWorkManagerInjector() {
+    public Supplier<WorkManager> getWorkManagerInjector() {
         return workManagerInjector;
     }
 
-    public InjectedValue<InternalEventDistributorFactory> getEventDistributorFactoryInjector() {
+    public Supplier<InternalEventDistributorFactory> getEventDistributorFactoryInjector() {
         return eventDistributorFactoryInjector;
     }
 }

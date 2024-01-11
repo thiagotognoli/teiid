@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>teiid-parent</artifactId>
 		<groupId>org.teiid</groupId>
-        <version>17.0.3-SNAPSHOT</version>
+        <version>17.0.4-SNAPSHOT</version>
 	</parent>
 	<licenses>
         <license>
@@ -95,23 +95,18 @@
             <groupId>jakarta.activation</groupId>
             <artifactId>jakarta.activation-api</artifactId>
         </dependency>
-        
+
         <dependency>
-            <groupId>io.opentracing.contrib</groupId>
-            <artifactId>opentracing-concurrent</artifactId>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-semconv</artifactId>
         </dependency>
-                
         <dependency>
-            <groupId>io.opentracing</groupId>
-            <artifactId>opentracing-api</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.opentracing</groupId>
-            <artifactId>opentracing-mock</artifactId>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
+            <version>${version.io.opentelemetry}</version>
             <scope>test</scope>
-        </dependency>    
-                                  
+        </dependency>
+
 	</dependencies>
 
 </project>

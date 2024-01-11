@@ -16,8 +16,13 @@
  */
 package org.teiid.query.util;
 
-import java.util.Map;
-
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanBuilder;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Context;
+import io.opentelemetry.context.ContextKey;
+import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import org.teiid.jdbc.tracing.GlobalTracerInjector;
 import org.teiid.json.simple.JSONParser;
 import org.teiid.json.simple.ParseException;
@@ -26,13 +31,7 @@ import org.teiid.logging.CommandLogMessage;
 import org.teiid.logging.LogConstants;
 import org.teiid.logging.LogManager;
 
-import io.opentracing.Scope;
-import io.opentracing.Span;
-import io.opentracing.SpanContext;
-import io.opentracing.Tracer;
-import io.opentracing.propagation.Format.Builtin;
-import io.opentracing.propagation.TextMapExtractAdapter;
-import io.opentracing.tag.Tags;
+import java.util.Map;
 
 public class TeiidTracingUtil {
 
@@ -62,30 +61,25 @@ public class TeiidTracingUtil {
             return null;
         }
 
-        Tracer.SpanBuilder spanBuilder = getTracer()
-                .buildSpan("USER COMMAND") //$NON-NLS-1$
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_SERVER);
+        SpanBuilder spanBuilder = getTracer().spanBuilder("USER COMMAND").setSpanKind(SpanKind.SERVER);
 
         if (spanContextJson != null) {
-            SpanContext parent = extractSpanContext(spanContextJson);
+            Context parent = extractSpanContext(spanContextJson);
             if (parent != null) {
-                spanBuilder.asChildOf(parent);
+                spanBuilder.setParent(parent);
             } else if (options.isTracingWithActiveSpanOnly()) {
                 return null;
             }
         }
 
-        Span span = spanBuilder.start();
-
-        Tags.COMPONENT.set(span, "java-teiid"); //$NON-NLS-1$
-
-        Tags.DB_STATEMENT.set(span, msg.getSql());
-        Tags.DB_TYPE.set(span, "teiid"); //$NON-NLS-1$
-        Tags.DB_INSTANCE.set(span, msg.getVdbName());
-        Tags.DB_USER.set(span, msg.getPrincipal());
-
-        span.setTag("teiid-session", msg.getSessionID()); //$NON-NLS-1$
-        span.setTag("teiid-request", msg.getRequestID()); //$NON-NLS-1$
+        Span span = spanBuilder.startSpan();
+        span.setAttribute("component", "java-teiid"); //$NON-NLS-1$
+        span.setAttribute(SemanticAttributes.DB_STATEMENT, msg.getSql());
+        span.setAttribute("db.type", "teiid"); //$NON-NLS-1$
+        span.setAttribute("db.instance", msg.getVdbName());
+        span.setAttribute(SemanticAttributes.DB_USER, msg.getPrincipal());
+        span.setAttribute("teiid-session", msg.getSessionID()); //$NON-NLS-1$
+        span.setAttribute("teiid-request", msg.getRequestID()); //$NON-NLS-1$
 
         return span;
     }
@@ -100,7 +94,7 @@ public class TeiidTracingUtil {
      */
     public boolean isTracingEnabled(Options options, String spanContextJson) {
         boolean withActiveSpanOnly = options == null?true:options.isTracingWithActiveSpanOnly();
-        return !withActiveSpanOnly || getTracer().activeSpan() != null || spanContextJson != null;
+        return !withActiveSpanOnly || Span.current() != Span.getInvalid() || spanContextJson != null;
     }
 
     /**
@@ -111,34 +105,20 @@ public class TeiidTracingUtil {
      */
     public Span buildSourceSpan(CommandLogMessage msg, String translatorType) {
         Tracer tr = getTracer();
-        if (tr.activeSpan() == null) {
+        if (Span.current() == null) {
             return null;
         }
 
-        Tracer.SpanBuilder spanBuilder = tr
-                .buildSpan("SRC COMMAND") //$NON-NLS-1$
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
+        SpanBuilder spanBuilder = tr.spanBuilder("SRC COMMAND").setSpanKind(SpanKind.CLIENT); //$NON-NLS-1$
 
-        Span span = spanBuilder.start();
-
-        Tags.COMPONENT.set(span, "java-teiid-connector"); //$NON-NLS-1$
-
-        Tags.DB_STATEMENT.set(span, msg.getSql());
-        Tags.DB_TYPE.set(span, translatorType);
-        Tags.DB_USER.set(span, msg.getPrincipal());
-
-        span.setTag("teiid-source-request", msg.getSourceCommandID()); //$NON-NLS-1$
+        Span span = spanBuilder.startSpan();
+        span.setAttribute("component", "java-teiid-connector"); //$NON-NLS-1$
+        span.setAttribute(SemanticAttributes.DB_STATEMENT, msg.getSql());
+        span.setAttribute("db.type", translatorType);
+        span.setAttribute(SemanticAttributes.DB_USER, msg.getPrincipal());
+        span.setAttribute("teiid-source-request", msg.getSourceCommandID()); //$NON-NLS-1$
 
         return span;
-    }
-
-    public Scope activateSpan(Span span) {
-        Tracer tr = getTracer();
-        if (tr.activeSpan() == span) {
-            //when a workitem adds itself to a queue the span will already be active
-            return null;
-        }
-        return tr.scopeManager().activate(span, false);
     }
 
     private Tracer getTracer() {
@@ -148,13 +128,17 @@ public class TeiidTracingUtil {
         return GlobalTracerInjector.getTracer();
     }
 
-    protected SpanContext extractSpanContext(String spanContextJson) {
+    protected Context extractSpanContext(String spanContextJson) {
         try {
             JSONParser parser = new JSONParser();
             SimpleContentHandler sch = new SimpleContentHandler();
             parser.parse(spanContextJson, sch);
             Map<String, String> result = (Map<String, String>) sch.getResult();
-            return getTracer().extract(Builtin.TEXT_MAP, new TextMapExtractAdapter(result));
+            Context extracted = Context.current();
+            for (Map.Entry<String, String> entry : result.entrySet()) {
+                extracted = extracted.with(ContextKey.named(entry.getKey()), entry.getValue());
+            }
+            return extracted;
         } catch (IllegalArgumentException | ClassCastException | ParseException e) {
             LogManager.logDetail(LogConstants.CTX_DQP, e, "Could not extract the span context"); //$NON-NLS-1$
             return null;

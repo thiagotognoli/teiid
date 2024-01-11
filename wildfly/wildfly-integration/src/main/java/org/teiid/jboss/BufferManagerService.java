@@ -21,20 +21,28 @@ import org.jboss.msc.service.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.common.buffer.BufferManager;
 import org.teiid.services.BufferServiceImpl;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 class BufferManagerService extends BufferServiceImpl implements Service<BufferManager> {
     private static final long serialVersionUID = -6797455072198476318L;
 
-    public final InjectedValue<String> pathInjector = new InjectedValue<String>();
+    public final Supplier<String> pathInjector;
+    private Consumer<BufferManager> providedInstance;
+
+    public BufferManagerService(Supplier<String> pathSupplier, Consumer<BufferManager> provides) {
+        this.pathInjector = pathSupplier;
+        this.providedInstance = provides;
+    }
 
     @Override
     public void start(StartContext context) throws StartException {
-        setDiskDirectory(pathInjector.getValue());
+        setDiskDirectory(pathInjector.get());
         start();
-
+        providedInstance.accept(getBufferManager());
     }
 
     @Override
