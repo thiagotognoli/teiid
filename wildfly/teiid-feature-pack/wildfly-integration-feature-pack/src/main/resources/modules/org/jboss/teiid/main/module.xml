@@ -60,6 +60,7 @@
         <module name="org.jboss.ironjacamar.api"/>
         <module name="org.jboss.ironjacamar.impl"/>
         <module name="org.jgroups"/>
+        <module name="nu.xom"/>
         <module name="net.sf.saxon"/>
 
         <!-- geo -->
