@@ -17,16 +17,11 @@
  */
 package org.teiid.jboss;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.concurrent.Executor;
-
 import org.jboss.as.controller.ModelController;
-import org.jboss.msc.service.Service;
+import org.jboss.msc.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.adminapi.Admin;
 import org.teiid.adminapi.AdminException;
 import org.teiid.adminapi.VDB.Status;
@@ -40,18 +35,26 @@ import org.teiid.deployers.VDBRepository;
 import org.teiid.logging.LogConstants;
 import org.teiid.logging.LogManager;
 
-public class ResteasyEnabler implements VDBLifeCycleListener, Service<Void> {
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.function.Supplier;
+
+public class ResteasyEnabler implements VDBLifeCycleListener, Service {
 
     private static String VERSION_DELIM = PropertiesUtils.getHierarchicalProperty("org.teiid.rest.versionDelim", "_"); //$NON-NLS-1$ //$NON-NLS-2$
 
-    protected final InjectedValue<ModelController> controllerValue = new InjectedValue<ModelController>();
-    protected final InjectedValue<Executor> executorInjector = new InjectedValue<Executor>();
-    final InjectedValue<VDBRepository> vdbRepoInjector = new InjectedValue<VDBRepository>();
+    protected final Supplier<ModelController> controllerValue;
+    protected final Supplier<Executor> executorInjector;
+    final Supplier<VDBRepository> vdbRepoInjector;
 
     final private RestWarGenerator generator;
 
-    public ResteasyEnabler(RestWarGenerator generator) {
+    public ResteasyEnabler(RestWarGenerator generator, Supplier<ModelController> modelContDep, Supplier<Executor> exDep, Supplier<VDBRepository> repDep) {
         this.generator = generator;
+        this.controllerValue = modelContDep;
+        this.executorInjector = exDep;
+        this.vdbRepoInjector = repDep;
     }
 
     @Override
@@ -112,13 +115,8 @@ public class ResteasyEnabler implements VDBLifeCycleListener, Service<Void> {
     }
 
     @Override
-    public Void getValue() throws IllegalStateException, IllegalArgumentException {
-        return null;
-    }
-
-    @Override
     public void start(StartContext arg0) throws StartException {
-        this.vdbRepoInjector.getValue().addListener(this);
+        this.vdbRepoInjector.get().addListener(this);
     }
 
     @Override
@@ -127,10 +125,10 @@ public class ResteasyEnabler implements VDBLifeCycleListener, Service<Void> {
 
     Admin getAdmin() {
         return AdminFactory.getInstance()
-        .createAdmin(controllerValue.getValue().createClient(executorInjector.getValue()));
+        .createAdmin(controllerValue.get().createClient(executorInjector.get()));
     }
 
     Executor getExecutor() {
-        return executorInjector.getValue();
+        return executorInjector.get();
     }
 }

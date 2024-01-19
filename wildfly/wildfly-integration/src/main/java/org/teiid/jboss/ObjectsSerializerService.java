@@ -21,30 +21,39 @@ import org.jboss.msc.service.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 class ObjectsSerializerService implements Service<ObjectSerializer> {
-    private InjectedValue<String> pathInjector = new InjectedValue<String>();
+    private Supplier<String> pathInjector;
     private ObjectSerializer serializer;
+    private Consumer<ObjectSerializer> serializerConsumer;
 
-    public ObjectsSerializerService(){
+    public ObjectsSerializerService(Supplier<String> pathDep, Consumer<ObjectSerializer> serializerCons){
+        this.pathInjector = pathDep;
+        this.serializerConsumer = serializerCons;
     }
 
     @Override
     public void start(StartContext context) throws StartException {
-        this.serializer = new ObjectSerializer(pathInjector.getValue());
+        this.serializer = new ObjectSerializer(pathInjector.get());
+        this.serializerConsumer.accept(serializer);
     }
 
     @Override
     public void stop(StopContext context) {
     }
 
+    /**
+     * Get the actual dependency value.
+     *
+     * @return the actual dependency value
+     * @throws IllegalStateException    if the value is time-sensitive and the current state does not allow retrieval.
+     * @throws IllegalArgumentException when the value cannot be read due to misconfiguration
+     */
     @Override
     public ObjectSerializer getValue() throws IllegalStateException, IllegalArgumentException {
-        return this.serializer;
-    }
-
-    public InjectedValue<String> getPathInjector() {
-        return this.pathInjector;
+        return serializer;
     }
 }

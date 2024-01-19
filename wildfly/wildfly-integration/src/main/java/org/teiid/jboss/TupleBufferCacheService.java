@@ -17,45 +17,49 @@
  */
 package org.teiid.jboss;
 
-import org.jboss.msc.service.Service;
+import org.jboss.msc.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.common.buffer.BufferManager;
+import org.teiid.common.buffer.TupleBuffer;
 import org.teiid.common.buffer.TupleBufferCache;
 import org.teiid.query.ObjectReplicator;
 
-class TupleBufferCacheService implements Service<TupleBufferCache>{
-    public final InjectedValue<ObjectReplicator> replicatorInjector = new InjectedValue<ObjectReplicator>();
-    protected InjectedValue<BufferManager> bufferMgrInjector = new InjectedValue<BufferManager>();
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+class TupleBufferCacheService implements Service {
+    public Supplier<ObjectReplicator> replicatorInjector;
+    protected Supplier<BufferManager> bufferMgrInjector;
 
     private TupleBufferCache tupleBufferCache;
+    private Consumer<TupleBufferCache> tupleBufferCacheConsumer;
+
+    public TupleBufferCacheService(Supplier<BufferManager> bufferManagerDep, Consumer<TupleBufferCache> tupleBufferSupplier) {
+        this.bufferMgrInjector = bufferManagerDep;
+        this.tupleBufferCacheConsumer = tupleBufferSupplier;
+    }
 
     @Override
     public void start(StartContext context) throws StartException {
-        if (this.replicatorInjector.getValue() != null) {
+        if (this.replicatorInjector != null) {
             try {
                 //use a mux name that will not conflict with any vdb
-                this.tupleBufferCache = this.replicatorInjector.getValue().replicate("$TEIID_BM$", TupleBufferCache.class, bufferMgrInjector.getValue(), 0); //$NON-NLS-1$
+                this.tupleBufferCache = this.replicatorInjector.get().replicate("$TEIID_BM$", TupleBufferCache.class, bufferMgrInjector.get(), 0); //$NON-NLS-1$
+                this.tupleBufferCacheConsumer.accept(tupleBufferCache);
             } catch (Exception e) {
                 throw new StartException(e);
             }
+        } else {
+            this.tupleBufferCacheConsumer.accept(bufferMgrInjector.get());
         }
     }
 
     @Override
     public void stop(StopContext context) {
-        if (this.replicatorInjector.getValue() != null && this.tupleBufferCache != null) {
-            this.replicatorInjector.getValue().stop(this.tupleBufferCache);
+        if (this.replicatorInjector != null && this.tupleBufferCache != null) {
+            this.replicatorInjector.get().stop(this.tupleBufferCache);
         }
-    }
-
-    @Override
-    public TupleBufferCache getValue() throws IllegalStateException, IllegalArgumentException {
-        if (this.tupleBufferCache!= null) {
-            return tupleBufferCache;
-        }
-        return bufferMgrInjector.getValue();
     }
 }

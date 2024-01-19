@@ -18,24 +18,21 @@
 
 package org.teiid.jdbc.tracing;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import org.teiid.jdbc.tracing.TracingHelper.Injector;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.teiid.jdbc.tracing.TracingHelper.Injector;
-
-import io.opentracing.Span;
-import io.opentracing.Tracer;
-import io.opentracing.propagation.Format.Builtin;
-import io.opentracing.propagation.TextMapInjectAdapter;
-import io.opentracing.util.GlobalTracer;
-
 /**
- * Uses the opentracing library to create a json string representation of the span context
+ * Uses the opentelemetry library to create a json string representation of the span context
  * and provides a way to manipulate a static tracer without using the GlobalTracer registration
  */
 public class GlobalTracerInjector implements Injector {
 
-    private static Tracer TRACER = GlobalTracer.get();
+    private static Tracer TRACER = GlobalOpenTelemetry.getTracer("org.teiid.jdbc.tracing");
 
     @Override
     public String getSpanContext() {
@@ -43,12 +40,12 @@ public class GlobalTracerInjector implements Injector {
     }
 
     protected static String getSpanContext(Tracer tracer) {
-        Span span = tracer.activeSpan();
+        Span span = Span.current();
         if (span == null) {
             return null;
         }
         Map<String,String> spanMap = new HashMap<String, String>();
-        tracer.inject(span.context(), Builtin.TEXT_MAP, new TextMapInjectAdapter(spanMap));
+//        AutoConfiguredOpenTelemetrySdk.initialize().getOpenTelemetrySdk().getPropagators().getTextMapPropagator().inject(Context.current(), Builtin.TEXT_MAP, new TextMapInjectAdapter(spanMap));
 
         //simple json creation
         StringBuilder json = new StringBuilder();

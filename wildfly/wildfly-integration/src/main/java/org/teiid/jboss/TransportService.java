@@ -17,17 +17,12 @@
  */
 package org.teiid.jboss;
 
-import java.lang.reflect.Proxy;
-import java.net.InetSocketAddress;
-import java.util.Properties;
-
 import org.jboss.as.network.SocketBinding;
 import org.jboss.modules.Module;
-import org.jboss.msc.service.Service;
+import org.jboss.msc.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.client.DQP;
 import org.teiid.client.security.ILogon;
 import org.teiid.common.buffer.BufferManager;
@@ -44,18 +39,16 @@ import org.teiid.logging.MessageLevel;
 import org.teiid.net.CommunicationException;
 import org.teiid.net.ConnectionException;
 import org.teiid.net.socket.AuthenticationType;
-import org.teiid.transport.ClientServiceRegistry;
-import org.teiid.transport.ClientServiceRegistryImpl;
-import org.teiid.transport.LocalServerConnection;
-import org.teiid.transport.LogonImpl;
-import org.teiid.transport.ODBCSocketListener;
-import org.teiid.transport.SessionCheckingProxy;
-import org.teiid.transport.SocketConfiguration;
-import org.teiid.transport.SocketListener;
-import org.teiid.transport.WireProtocol;
+import org.teiid.transport.*;
 import org.teiid.vdb.runtime.VDBKey;
 
-public class TransportService extends ClientServiceRegistryImpl implements Service<ClientServiceRegistry> {
+import java.lang.reflect.Proxy;
+import java.net.InetSocketAddress;
+import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+public class TransportService extends ClientServiceRegistryImpl implements Service {
     private transient LogonImpl logon;
     private SocketConfiguration socketConfig;
     private SocketListener socketListener;
@@ -65,25 +58,26 @@ public class TransportService extends ClientServiceRegistryImpl implements Servi
     private InetSocketAddress address = null;
     private String transportName;
 
-    private final InjectedValue<SocketBinding> socketBindingInjector = new InjectedValue<SocketBinding>();
-    private final InjectedValue<VDBRepository> vdbRepositoryInjector = new InjectedValue<VDBRepository>();
-    private final InjectedValue<DQPCore> dqpInjector = new InjectedValue<DQPCore>();
-    private final InjectedValue<BufferManager> bufferManagerInjector = new InjectedValue<BufferManager>();
-    private final InjectedValue<SessionService> sessionServiceInjector = new InjectedValue<SessionService>();
+    private Supplier<SocketBinding> socketBindingInjector;
+    private final Supplier<VDBRepository> vdbRepositoryInjector;
+    private final Supplier<DQPCore> dqpInjector;
+    private final Supplier<BufferManager> bufferManagerInjector;
+    private final Supplier<SessionService> sessionServiceInjector;
+    private final Consumer<ClientServiceRegistry> registryConsumer;
 
-    public TransportService(String transportName) {
+    public TransportService(String transportName, Supplier<VDBRepository> vdbRepository, Supplier<DQPCore> dqp, Supplier<BufferManager> bufferManager, Supplier<SessionService> sessionService, Consumer<ClientServiceRegistry> registryConsumer) {
         this.transportName = transportName;
-    }
-
-    @Override
-    public ClientServiceRegistry getValue() throws IllegalStateException, IllegalArgumentException {
-        return this;
+        this.vdbRepositoryInjector = vdbRepository;
+        this.dqpInjector = dqp;
+        this.bufferManagerInjector = bufferManager;
+        this.sessionServiceInjector = sessionService;
+        this.registryConsumer = registryConsumer;
     }
 
     @Override
     public void waitForFinished(VDBKey vdbKey,
             int timeOutMillis) throws ConnectionException {
-        VDBRepository repo = this.vdbRepositoryInjector.getValue();
+        VDBRepository repo = this.vdbRepositoryInjector.get();
         repo.waitForFinished(vdbKey, timeOutMillis);
     }
 
@@ -95,7 +89,7 @@ public class TransportService extends ClientServiceRegistryImpl implements Servi
     @Override
     public void start(StartContext context) throws StartException {
         this.setVDBRepository(this.getVdbRepository());
-        SessionService ss = sessionServiceInjector.getValue();
+        SessionService ss = sessionServiceInjector.get();
         this.setSecurityHelper(ss.getSecurityHelper());
 
         // create the necessary services
@@ -116,7 +110,7 @@ public class TransportService extends ClientServiceRegistryImpl implements Servi
                 throw new StartException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50013));
             }
             */
-            this.address = getSocketBindingInjector().getValue().getSocketAddress();
+            this.address = getSocketBindingInjector().get().getSocketAddress();
             this.socketConfig.setBindAddress(this.address.getHostName());
             this.socketConfig.setPortNumber(this.address.getPort());
             boolean sslEnabled = false;
@@ -124,7 +118,7 @@ public class TransportService extends ClientServiceRegistryImpl implements Servi
                 sslEnabled = this.socketConfig.getSSLConfiguration().isSslEnabled();
             }
             if (socketConfig.getProtocol() == WireProtocol.teiid) {
-                this.socketListener = new SocketListener(address, this.socketConfig, this, getBufferManagerInjector().getValue());
+                this.socketListener = new SocketListener(address, this.socketConfig, this, getBufferManagerInjector().get());
                 LogManager.logInfo(LogConstants.CTX_RUNTIME, IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50012, this.transportName, address.getHostName(), String.valueOf(address.getPort()), (sslEnabled?"ON":"OFF"))); //$NON-NLS-1$ //$NON-NLS-2$
             }
             else if (socketConfig.getProtocol() == WireProtocol.pg) {
@@ -147,7 +141,7 @@ public class TransportService extends ClientServiceRegistryImpl implements Servi
                         }
                     }
                 });
-                ODBCSocketListener odbc = new ODBCSocketListener(address, this.socketConfig, this, getBufferManagerInjector().getValue(), getMaxODBCLobSizeAllowed(), this.logon, driver);
+                ODBCSocketListener odbc = new ODBCSocketListener(address, this.socketConfig, this, getBufferManagerInjector().get(), getMaxODBCLobSizeAllowed(), this.logon, driver);
                 this.socketListener = odbc;
                 LogManager.logInfo(LogConstants.CTX_RUNTIME, IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50037, this.transportName, address.getHostName(), String.valueOf(address.getPort()), (sslEnabled?"ON":"OFF"))); //$NON-NLS-1$ //$NON-NLS-2$
             }
@@ -158,6 +152,7 @@ public class TransportService extends ClientServiceRegistryImpl implements Servi
         else {
             LogManager.logInfo(LogConstants.CTX_RUNTIME, IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50038, LocalServerConnection.jndiNameForRuntime(transportName)));
         }
+        registryConsumer.accept(this);
     }
 
     @Override
@@ -189,8 +184,12 @@ public class TransportService extends ClientServiceRegistryImpl implements Servi
         return iface.cast(Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] {iface}, new SessionCheckingProxy(instance, context, MessageLevel.TRACE)));
     }
 
-    public InjectedValue<SocketBinding> getSocketBindingInjector() {
+    public Supplier<SocketBinding> getSocketBindingInjector() {
         return this.socketBindingInjector;
+    }
+
+    public void setSocketBindingInjector(Supplier<SocketBinding> socketBindingInjector) {
+        this.socketBindingInjector = socketBindingInjector;
     }
 
     public SocketConfiguration getSocketConfig() {
@@ -201,23 +200,23 @@ public class TransportService extends ClientServiceRegistryImpl implements Servi
         this.socketConfig = socketConfig;
     }
 
-    public InjectedValue<VDBRepository> getVdbRepositoryInjector() {
+    public Supplier<VDBRepository> getVdbRepositoryInjector() {
         return vdbRepositoryInjector;
     }
 
     private VDBRepository getVdbRepository() {
-        return vdbRepositoryInjector.getValue();
+        return vdbRepositoryInjector.get();
     }
 
     private DQPCore getDQP() {
-        return getDqpInjector().getValue();
+        return getDqpInjector().get();
     }
 
-    public InjectedValue<DQPCore> getDqpInjector() {
+    public Supplier<DQPCore> getDqpInjector() {
         return dqpInjector;
     }
 
-    public InjectedValue<BufferManager> getBufferManagerInjector() {
+    public Supplier<BufferManager> getBufferManagerInjector() {
         return bufferManagerInjector;
     }
 
@@ -231,7 +230,7 @@ public class TransportService extends ClientServiceRegistryImpl implements Servi
         this.authenticationType = authenticationType;
     }
 
-    public InjectedValue<SessionService> getSessionServiceInjector() {
+    public Supplier<SessionService> getSessionServiceInjector() {
         return sessionServiceInjector;
     }
 

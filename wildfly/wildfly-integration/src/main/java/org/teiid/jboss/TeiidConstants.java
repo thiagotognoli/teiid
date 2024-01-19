@@ -445,7 +445,7 @@ public class TeiidConstants {
 
     public static SimpleAttributeDefinition TRANSPORT_NAME_ATTRIBUTE = new SimpleAttributeDefinitionBuilder(Element.TRANSPORT_NAME_ATTRIBUTE.getModelName(), ModelType.STRING)
         .setXmlName(Element.TRANSPORT_NAME_ATTRIBUTE.getXMLName())
-        .setAllowNull(false)
+        .setNullSignificant(true)
         .setAllowExpression(false)
         .build();
 
@@ -632,7 +632,7 @@ public class TeiidConstants {
     public static SimpleAttributeDefinition TRANSLATOR_NAME_ATTRIBUTE = new SimpleAttributeDefinitionBuilder(Element.TRANSLATOR_NAME_ATTRIBUTE.getModelName(), ModelType.STRING)
         .setXmlName(Element.TRANSLATOR_NAME_ATTRIBUTE.getXMLName())
         .setAllowExpression(false)
-        .setAllowNull(false)
+        .setNullSignificant(true)
         .build();
 
     public static SimpleAttributeDefinition TRANSLATOR_MODULE_ATTRIBUTE = new SimpleAttributeDefinitionBuilder(Element.TRANSLATOR_MODULE_ATTRIBUTE.getModelName(), ModelType.STRING)

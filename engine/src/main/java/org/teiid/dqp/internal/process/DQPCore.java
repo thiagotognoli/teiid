@@ -18,35 +18,15 @@
 
 package org.teiid.dqp.internal.process;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-
-import javax.transaction.xa.Xid;
-
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
+import io.opentelemetry.context.Context;
 import org.teiid.PreParser;
 import org.teiid.adminapi.AdminException;
 import org.teiid.adminapi.Request.ProcessingState;
 import org.teiid.adminapi.Request.ThreadState;
 import org.teiid.adminapi.VDB.Status;
-import org.teiid.adminapi.impl.RequestMetadata;
-import org.teiid.adminapi.impl.SessionMetadata;
-import org.teiid.adminapi.impl.TransactionMetadata;
-import org.teiid.adminapi.impl.VDBMetaData;
-import org.teiid.adminapi.impl.WorkerPoolStatisticsMetadata;
+import org.teiid.adminapi.impl.*;
 import org.teiid.client.DQP;
 import org.teiid.client.RequestMessage;
 import org.teiid.client.RequestMessage.StatementType;
@@ -75,7 +55,6 @@ import org.teiid.dqp.service.TransactionService;
 import org.teiid.events.EventDistributor;
 import org.teiid.jdbc.EnhancedTimer;
 import org.teiid.jdbc.LocalProfile;
-import org.teiid.jdbc.tracing.GlobalTracerInjector;
 import org.teiid.logging.CommandLogMessage;
 import org.teiid.logging.CommandLogMessage.Event;
 import org.teiid.logging.LogConstants;
@@ -89,10 +68,11 @@ import org.teiid.query.tempdata.TempTableStore.TransactionMode;
 import org.teiid.query.util.Options;
 import org.teiid.query.util.TeiidTracingUtil;
 
-import io.opentracing.Span;
-import io.opentracing.contrib.concurrent.TracedExecutorService;
-import io.opentracing.log.Fields;
-import io.opentracing.tag.Tags;
+import javax.transaction.xa.Xid;
+import java.lang.ref.WeakReference;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Implements the core DQP processing.
@@ -644,19 +624,17 @@ public class DQPCore implements DQP {
             if (span != null) {
                 switch (status) {
                 case PLAN:
-                    span.log("planning complete"); //$NON-NLS-1$
+                    span.addEvent("planning complete"); //$NON-NLS-1$
                     break;
                 case CANCEL:
-                    span.log("cancel"); //$NON-NLS-1$
+                    span.addEvent("cancel"); //$NON-NLS-1$
                     break;
                 case END:
-                    span.finish();
+                    span.end();
                     break;
                 case ERROR:
-                    Tags.ERROR.set(span, true);
-                    Map<String, String> map = new HashMap<String, String>();
-                    map.put(Fields.EVENT, "error"); //$NON-NLS-1$
-                    span.log(map);
+                    span.setStatus(StatusCode.ERROR);
+                    span.addEvent("error"); //$NON-NLS-1$
                     break;
                 default:
                     //nothing
@@ -703,7 +681,7 @@ public class DQPCore implements DQP {
         this.processWorkerPool = config.getTeiidExecutor();
         //we don't want cancellations waiting on normal processing, so they get a small dedicated pool
         //TODO: overflow to the worker pool
-        timeoutExecutor = new TracedExecutorService(ExecutorUtils.newFixedThreadPool(3, "Server Side Timeout"), GlobalTracerInjector.getTracer()); //$NON-NLS-1$
+        timeoutExecutor = Context.taskWrapping(ExecutorUtils.newFixedThreadPool(3, "Server Side Timeout")); //$NON-NLS-1$
         this.cancellationTimer = new EnhancedTimer(timeoutExecutor, timeoutExecutor);
         this.maxActivePlans = config.getMaxActivePlans();
 

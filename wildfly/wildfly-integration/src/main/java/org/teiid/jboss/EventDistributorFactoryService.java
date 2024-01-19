@@ -17,26 +17,36 @@
  */
 package org.teiid.jboss;
 
-import org.jboss.msc.service.Service;
+import org.jboss.msc.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.deployers.VDBRepository;
 import org.teiid.dqp.internal.process.DQPCore;
 import org.teiid.query.ObjectReplicator;
 import org.teiid.services.AbstractEventDistributorFactoryService;
 import org.teiid.services.InternalEventDistributorFactory;
 
-public class EventDistributorFactoryService extends AbstractEventDistributorFactoryService implements Service<InternalEventDistributorFactory> {
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-    InjectedValue<ObjectReplicator> objectReplicatorInjector = new InjectedValue<ObjectReplicator>();
-    InjectedValue<VDBRepository> vdbRepositoryInjector = new InjectedValue<VDBRepository>();
+public class EventDistributorFactoryService extends AbstractEventDistributorFactoryService implements Service {
+
+    Supplier<ObjectReplicator> objectReplicatorInjector;
+    Supplier<VDBRepository> vdbRepositoryInjector;
+    private Consumer<InternalEventDistributorFactory> factoryConsumer;
     DQPCore dqpCore;
+
+    public EventDistributorFactoryService(Supplier<VDBRepository> vrDep, Supplier<ObjectReplicator> orepDep, Consumer<InternalEventDistributorFactory> factoryConsumer) {
+        this.vdbRepositoryInjector = vrDep;
+        this.objectReplicatorInjector = orepDep;
+        this.factoryConsumer = factoryConsumer;
+    }
 
     @Override
     public void start(StartContext context) throws StartException {
         start();
+        this.factoryConsumer.accept(getValue());
     }
 
     @Override
@@ -46,12 +56,12 @@ public class EventDistributorFactoryService extends AbstractEventDistributorFact
 
     @Override
     protected ObjectReplicator getObjectReplicator() {
-        return objectReplicatorInjector.getValue();
+        return objectReplicatorInjector.get();
     }
 
     @Override
     protected VDBRepository getVdbRepository() {
-        return vdbRepositoryInjector.getValue();
+        return vdbRepositoryInjector.get();
     }
 
     @Override

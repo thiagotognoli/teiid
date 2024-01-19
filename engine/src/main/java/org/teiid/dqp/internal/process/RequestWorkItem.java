@@ -18,21 +18,7 @@
 
 package org.teiid.dqp.internal.process;
 
-import java.lang.ref.WeakReference;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicLong;
-
+import io.opentelemetry.api.trace.Span;
 import org.teiid.api.exception.query.QueryMetadataException;
 import org.teiid.client.BatchSerializer;
 import org.teiid.client.RequestMessage;
@@ -79,19 +65,19 @@ import org.teiid.query.parser.QueryParser;
 import org.teiid.query.processor.BatchCollector;
 import org.teiid.query.processor.QueryProcessor;
 import org.teiid.query.processor.QueryProcessor.ExpiredTimeSliceException;
-import org.teiid.query.sql.lang.CacheHint;
-import org.teiid.query.sql.lang.Command;
-import org.teiid.query.sql.lang.Insert;
-import org.teiid.query.sql.lang.SPParameter;
-import org.teiid.query.sql.lang.StoredProcedure;
+import org.teiid.query.sql.lang.*;
 import org.teiid.query.sql.symbol.ElementSymbol;
 import org.teiid.query.sql.symbol.Expression;
 import org.teiid.query.util.CommandContext;
 import org.teiid.query.util.GeneratedKeysImpl;
 import org.teiid.query.util.Options;
-import org.teiid.query.util.TeiidTracingUtil;
 
-import io.opentracing.Span;
+import java.lang.ref.WeakReference;
+import java.sql.ResultSet;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Compiles results and other information for the client.  There is quite a bit of logic
@@ -272,9 +258,9 @@ public class RequestWorkItem extends AbstractWorkItem implements PrioritizedRunn
 
     @Override
     public void run() {
-        io.opentracing.Scope scope = null;
+        io.opentelemetry.context.Scope scope = null;
         if (this.span != null) {
-            scope = TeiidTracingUtil.getInstance().activateSpan(this.span);
+            scope = span.makeCurrent();
         }
         hasThread = true;
         timer.start();
@@ -1281,7 +1267,7 @@ public class RequestWorkItem extends AbstractWorkItem implements PrioritizedRunn
 
     public void requestMore(int batchFirst, int batchLast, ResultsReceiver<ResultsMessage> receiver) {
         if (span != null) {
-            span.log("requested more results"); //$NON-NLS-1$
+            span.addEvent("requested more results"); //$NON-NLS-1$
         }
         this.requestResults(batchFirst, batchLast, receiver);
         this.doMoreWork();

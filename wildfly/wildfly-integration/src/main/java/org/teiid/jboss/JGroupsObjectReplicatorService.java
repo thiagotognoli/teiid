@@ -17,33 +17,42 @@
  */
 package org.teiid.jboss;
 
-import java.util.concurrent.Executor;
-
 import org.jboss.msc.service.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.jgroups.JChannel;
 import org.teiid.replication.jgroups.JGroupsObjectReplicator;
 import org.wildfly.clustering.jgroups.ChannelFactory;
 
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 class JGroupsObjectReplicatorService implements Service<JGroupsObjectReplicator> {
 
-    public final InjectedValue<ChannelFactory> channelFactoryInjector = new InjectedValue<ChannelFactory>();
-    final InjectedValue<Executor> executorInjector = new InjectedValue<Executor>();
+    public final Supplier<ChannelFactory> channelFactory;
+    final Supplier<Executor> executor;
     private JGroupsObjectReplicator replicator;
+    private Consumer<JGroupsObjectReplicator> replicatorConsumer;
+
+    public JGroupsObjectReplicatorService(Supplier<ChannelFactory> channelFactorySupplier, Supplier<Executor> poolServiceSupplier, Consumer<JGroupsObjectReplicator> replicatorInstance) {
+        this.channelFactory = channelFactorySupplier;
+        this.executor = poolServiceSupplier;
+        this.replicatorConsumer = replicatorInstance;
+    }
 
 
     @Override
     public void start(StartContext context) throws StartException {
-        this.replicator = new JGroupsObjectReplicator(new org.teiid.replication.jgroups.ChannelFactory() {
+        JGroupsObjectReplicator replicator = new JGroupsObjectReplicator(new org.teiid.replication.jgroups.ChannelFactory() {
             @Override
             public JChannel createChannel(String id) throws Exception {
-                JChannel c = channelFactoryInjector.getValue().createChannel(id);
+                JChannel c = channelFactory.get().createChannel(id);
                 return c;
             }
-        }, executorInjector.getValue());
+        }, executor.get());
+        this.replicatorConsumer.accept(replicator);
     }
 
     @Override

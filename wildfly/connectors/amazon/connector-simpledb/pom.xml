@@ -4,7 +4,7 @@
     <parent>        
         <groupId>org.teiid.wildfly.connectors</groupId>
         <artifactId>amazon</artifactId>
-        <version>17.0.3-SNAPSHOT</version>
+        <version>17.0.4-SNAPSHOT</version>
     </parent>
 	<artifactId>connector-simpledb</artifactId>
     <name>SimpleDB Connector</name>
@@ -22,10 +22,6 @@
 		<dependency>
             <groupId>org.teiid.wildfly</groupId>
             <artifactId>teiid-resource-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.resource</groupId>
-            <artifactId>jboss-connector-api_1.7_spec</artifactId>
         </dependency>
 		<dependency>
 			<groupId>org.teiid.connectors</groupId>

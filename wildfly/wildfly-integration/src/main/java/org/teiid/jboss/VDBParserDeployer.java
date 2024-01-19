@@ -17,20 +17,8 @@
  */
 package org.teiid.jboss;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import javax.xml.stream.XMLStreamException;
-
-import org.jboss.as.server.deployment.Attachments;
-import org.jboss.as.server.deployment.DeploymentPhaseContext;
-import org.jboss.as.server.deployment.DeploymentUnit;
-import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
-import org.jboss.as.server.deployment.DeploymentUnitProcessor;
+import org.jboss.as.server.deployment.*;
 import org.jboss.metadata.property.PropertyReplacer;
-import org.jboss.metadata.property.PropertyReplacers;
-import org.jboss.metadata.property.PropertyResolver;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.vfs.VirtualFile;
 import org.jboss.vfs.VirtualFileFilter;
@@ -44,6 +32,11 @@ import org.teiid.logging.LogConstants;
 import org.teiid.logging.LogManager;
 import org.teiid.metadatastore.DeploymentBasedDatabaseStore;
 import org.xml.sax.SAXException;
+
+import javax.xml.stream.XMLStreamException;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 
 /**
@@ -109,8 +102,7 @@ class VDBParserDeployer implements DeploymentUnitProcessor {
             DeploymentPhaseContext phaseContext, boolean xmlDeployment) throws DeploymentUnitProcessingException {
         try {
             VDBMetadataParser.validate(file.openStream());
-            PropertyResolver propertyResolver = deploymentUnit.getAttachment(org.jboss.as.ee.metadata.property.Attachments.FINAL_PROPERTY_RESOLVER);
-            PropertyReplacer replacer = PropertyReplacers.resolvingReplacer(propertyResolver);
+            PropertyReplacer replacer = deploymentUnit.getAttachment(org.jboss.as.ee.metadata.property.Attachments.FINAL_PROPERTY_REPLACER);
             String vdbContents = replacer.replaceProperties(ObjectConverterUtil.convertToString(file.openStream()));
             VDBMetaData vdb = VDBMetadataParser.unmarshall(new ByteArrayInputStream(vdbContents.getBytes("UTF-8"))); //$NON-NLS-1$
             ServiceController<?> sc = phaseContext.getServiceRegistry().getService(TeiidServiceNames.OBJECT_SERIALIZER);

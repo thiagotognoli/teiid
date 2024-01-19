@@ -19,23 +19,31 @@ package org.teiid.jboss;
 
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.modules.Module;
-import org.jboss.msc.service.Service;
+import org.jboss.msc.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.teiid.cache.CacheFactory;
 import org.teiid.cache.infinispan.InfinispanCacheFactory;
 
-class CacheFactoryService implements Service<CacheFactory> {
-    protected InjectedValue<EmbeddedCacheManager> cacheContainerInjector = new InjectedValue<EmbeddedCacheManager>();
-    private CacheFactory cacheFactory;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+class CacheFactoryService implements Service {
+    protected Supplier<EmbeddedCacheManager> cacheContainerInjector;
+    private Consumer<CacheFactory> cacheFactory;
+
+    public CacheFactoryService(Supplier<EmbeddedCacheManager> cmDep, Consumer<CacheFactory> cfCons) {
+        this.cacheContainerInjector = cmDep;
+        this.cacheFactory = cfCons;
+    }
 
     @Override
     public void start(StartContext context) throws StartException {
-        EmbeddedCacheManager cc = cacheContainerInjector.getValue();
+        EmbeddedCacheManager cc = cacheContainerInjector.get();
         if (cc != null) {
-            this.cacheFactory = new InfinispanCacheFactory(cc, Module.getCallerModule().getClassLoader());
+            CacheFactory cacheFactory = new InfinispanCacheFactory(cc, Module.getCallerModule().getClassLoader());
+            this.cacheFactory.accept(cacheFactory);
         }
         else {
             throw new StartException(IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50093));
@@ -44,12 +52,6 @@ class CacheFactoryService implements Service<CacheFactory> {
 
     @Override
     public void stop(StopContext context) {
-        this.cacheFactory.destroy();
         this.cacheFactory = null;
-    }
-
-    @Override
-    public CacheFactory getValue() throws IllegalStateException, IllegalArgumentException {
-        return this.cacheFactory;
     }
 }

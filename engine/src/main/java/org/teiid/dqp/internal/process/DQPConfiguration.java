@@ -17,16 +17,16 @@
  */
 package org.teiid.dqp.internal.process;
 
-import java.util.Properties;
-
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Context;
 import org.teiid.PreParser;
 import org.teiid.client.RequestMessage;
 import org.teiid.core.util.PropertiesUtils;
 import org.teiid.jdbc.tracing.GlobalTracerInjector;
 import org.teiid.query.util.Options;
 
-import io.opentracing.Tracer;
-import io.opentracing.contrib.concurrent.TracedRunnable;
+import java.util.Properties;
 
 public class DQPConfiguration{
 
@@ -183,8 +183,8 @@ public class DQPConfiguration{
             Tracer tracer = GlobalTracerInjector.getTracer();
             @Override
             public void execute(Runnable command) {
-                super.execute(tracer.activeSpan() == null ? command :
-                    new TracedRunnable(command, tracer));
+                super.execute(Span.current() == null ? command :
+                        Context.current().wrap(command));
             }
         };
     }

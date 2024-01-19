@@ -3,7 +3,7 @@
   <parent>
     <artifactId>teiid-parent</artifactId>
     <groupId>org.teiid</groupId>
-    <version>17.0.3-SNAPSHOT</version>
+    <version>17.0.4-SNAPSHOT</version>
   </parent>
   <licenses>
         <license>
@@ -80,16 +80,6 @@
         <artifactId>jboss-logging</artifactId>
     </dependency>
     <dependency>
-        <groupId>io.opentracing</groupId>
-        <artifactId>opentracing-api</artifactId>
-        <scope>runtime</scope>
-    </dependency>
-    <dependency>
-        <groupId>io.opentracing</groupId>
-        <artifactId>opentracing-util</artifactId>
-        <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.teiid</groupId>
       <artifactId>teiid-metadata</artifactId>
       <scope>test</scope>
@@ -98,11 +88,6 @@
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.opentracing</groupId>
-      <artifactId>opentracing-mock</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.teiid</groupId>

@@ -18,24 +18,25 @@
 
 package org.teiid.jdbc.tracing;
 
-import static org.junit.Assert.*;
-
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
 import org.junit.Test;
 
-import io.opentracing.Scope;
-import io.opentracing.mock.MockTracer;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @SuppressWarnings("nls")
 public class TestTracing {
 
     @Test public void testSpanContextInjection() {
-        MockTracer tracer = new MockTracer();
+        Tracer tracer = GlobalOpenTelemetry.getTracer("test");
         assertNull(GlobalTracerInjector.getSpanContext(tracer));
-        Scope ignored = tracer.buildSpan("x").startActive(true);
+        Span ignored = tracer.spanBuilder("x").startSpan();
         try {
             assertEquals("{\"spanid\":\"2\",\"traceid\":\"1\"}", GlobalTracerInjector.getSpanContext(tracer));
         } finally {
-            ignored.close();
+            ignored.end();
         }
     }
 

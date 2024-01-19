@@ -216,7 +216,7 @@ public class TestRowBasedSecurity {
         }
     }
 
-    private static class SimpleGroup extends org.jboss.security.SimplePrincipal implements Iterable<Principal> {
+    private static class SimpleGroup extends SimplePrincipal implements Iterable<Principal> {
         private HashSet<Principal> members = new HashSet<>();
 
         private SimpleGroup(String name) {
