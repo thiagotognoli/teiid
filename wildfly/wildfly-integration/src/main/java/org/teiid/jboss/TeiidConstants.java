@@ -22,7 +22,10 @@ import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
+import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
+import org.jboss.as.controller.capability.RuntimeCapability;
 import org.jboss.as.controller.client.helpers.MeasurementUnit;
+import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.teiid.dqp.internal.process.DQPConfiguration;
@@ -449,12 +452,14 @@ public class TeiidConstants {
         .setAllowExpression(false)
         .build();
 
-    public static SimpleAttributeDefinition TRANSPORT_SOCKET_BINDING_ATTRIBUTE = new SimpleAttributeDefinitionBuilder(Element.TRANSPORT_SOCKET_BINDING_ATTRIBUTE.getModelName(), ModelType.STRING)
-        .setXmlName(Element.TRANSPORT_SOCKET_BINDING_ATTRIBUTE.getXMLName())
-        .setAllowExpression(false)
-        .setRequired(false)
-        /*.addAccessConstraint(SensitiveTargetAccessConstraintDefinition.SOCKET_BINDING_REF)*/
-        .build();
+    static final String SOCKET_CAPABILITY_NAME = "org.wildfly.network.socket-binding";
+    static final RuntimeCapability<Void> CONNECTOR_CAPABILITY = RuntimeCapability.Builder.of("org.wildfly.remoting.connector", true).build();
+    static final SimpleAttributeDefinition TRANSPORT_SOCKET_BINDING_ATTRIBUTE =
+            new SimpleAttributeDefinitionBuilder(ModelDescriptionConstants.SOCKET_BINDING, ModelType.STRING, false)
+                    .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.SOCKET_BINDING_REF)
+                    .setCapabilityReference(SOCKET_CAPABILITY_NAME, CONNECTOR_CAPABILITY)
+                    .setRequired(false)
+                    .build();
 
     public static SimpleAttributeDefinition TRANSPORT_MAX_SOCKET_THREADS_ATTRIBUTE = new SimpleAttributeDefinitionBuilder(Element.TRANSPORT_MAX_SOCKET_THREADS_ATTRIBUTE.getModelName(), ModelType.INT)
        .setXmlName(Element.TRANSPORT_MAX_SOCKET_THREADS_ATTRIBUTE.getXMLName())

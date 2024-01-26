@@ -97,7 +97,7 @@ class VDBDependencyDeployer implements DeploymentUnitProcessor {
                     for (final VirtualFile archive : archives) {
                         try {
                             final Closeable closable = VFS.mountZip(archive, archive,TempFileProviderService.provider());
-                            final ResourceRoot jarArchiveRoot = new ResourceRoot(archive.getName(), archive, new MountHandle(closable));
+                            final ResourceRoot jarArchiveRoot = new ResourceRoot(archive.getName(), archive, MountHandle.create(closable));
                             ModuleRootMarker.mark(jarArchiveRoot);
                             deploymentUnit.addToAttachmentList(Attachments.RESOURCE_ROOTS, jarArchiveRoot);
                         } catch (IOException e) {

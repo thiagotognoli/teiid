@@ -4,10 +4,8 @@
         <property name="jboss.api" value="private"/>
     </properties>
     <resources>
-        <artifact name="${com.fasterxml.jackson.dataformat:jackson-dataformat-yaml}"/>
         <artifact name="${com.fasterxml.jackson.dataformat:jackson-dataformat-xml}"/>
         <artifact name="${com.fasterxml.jackson.datatype:jackson-datatype-joda}"/>
-        <artifact name="${com.fasterxml.jackson.datatype:jackson-datatype-jsr310}"/>
     </resources>
     
     <dependencies>
@@ -16,6 +14,9 @@
         <module name="com.fasterxml.jackson.core.jackson-core"/>
         <module name="com.fasterxml.jackson.core.jackson-annotations"/>
         <module name="com.fasterxml.jackson.core.jackson-databind"/>
+        <module name="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml"/>
+        <module name="com.fasterxml.jackson.dataformat.cbor"/>
+        <module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
         <module name="org.yaml.snakeyaml" />
         <module name="org.codehaus.woodstox"/>        
     </dependencies>

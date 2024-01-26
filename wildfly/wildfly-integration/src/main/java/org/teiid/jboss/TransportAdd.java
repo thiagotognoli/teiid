@@ -124,7 +124,8 @@ class TransportAdd extends AbstractAddStepHandler {
            }
 
         if (socketBinding != null) {
-            Supplier<SocketBinding> socketBindingSupplier = transportBuilder.requires(ServiceName.JBOSS.append("binding", socketBinding)); //$NON-NLS-1$
+            ServiceName socketBindingName = context.getCapabilityServiceName(TeiidConstants.SOCKET_CAPABILITY_NAME, socketBinding, SocketBinding.class);
+            Supplier<SocketBinding> socketBindingSupplier = transportBuilder.requires(socketBindingName); //$NON-NLS-1$
             transport.setSocketBindingInjector(socketBindingSupplier);
         }
 

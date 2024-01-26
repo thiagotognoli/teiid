@@ -73,13 +73,10 @@ public abstract class BaseOperationHandler<T> implements OperationStepHandler {
                     final PathAddress pathAddress = PathAddress.pathAddress(address);
 
                     executeOperation(context, getService(context, pathAddress, operation), operation);
-
-                    context.stepCompleted();
                 }
 
             }, OperationContext.Stage.RUNTIME);
         }
-        context.stepCompleted();
     }
 
     @SuppressWarnings("unused")

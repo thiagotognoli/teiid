@@ -73,7 +73,7 @@ public class FileRootMountProcessor implements DeploymentUnitProcessor {
         boolean failed = false;
         try {
             handle = deploymentMountProvider.mountDeploymentContent( deploymentContents, deploymentRoot, MountType.REAL );
-            mountHandle = new MountHandle( handle );
+            mountHandle = MountHandle.create( handle );
         } catch (IOException e) {
             failed = true;
             throw new DeploymentUnitProcessingException( "Failed to mount " + this.fileSuffix + " file", e );

@@ -23,49 +23,49 @@ import org.jboss.dmr.ModelType;
 import org.teiid.adminapi.Admin;
 
 class OperationsConstants {
-    public static final SimpleAttributeDefinition SESSION = new SimpleAttributeDefinition("session", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition VDB_NAME = new SimpleAttributeDefinition("vdb-name", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition VDB_VERSION = new SimpleAttributeDefinition("vdb-version", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition EXECUTION_ID = new SimpleAttributeDefinition("execution-id", ModelType.STRING, false); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition SESSION = SimpleAttributeDefinitionBuilder.create("session", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition VDB_NAME = SimpleAttributeDefinitionBuilder.create("vdb-name", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition VDB_VERSION = SimpleAttributeDefinitionBuilder.create("vdb-version", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition EXECUTION_ID = SimpleAttributeDefinitionBuilder.create("execution-id", ModelType.STRING, false).build(); //$NON-NLS-1$
     public static final SimpleAttributeDefinition CACHE_TYPE = new SimpleAttributeDefinitionBuilder("cache-type", ModelType.STRING) //$NON-NLS-1$
         .setNullSignificant(true)
         .setAllowExpression(false)
         .setAllowedValues(Admin.Cache.PREPARED_PLAN_CACHE.name(), Admin.Cache.QUERY_SERVICE_RESULT_SET_CACHE.name())
         .build();
-    public static final SimpleAttributeDefinition XID = new SimpleAttributeDefinition("xid", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition DATA_ROLE = new SimpleAttributeDefinition("data-role", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition MAPPED_ROLE = new SimpleAttributeDefinition("mapped-role", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition CONNECTION_TYPE = new SimpleAttributeDefinition("connection-type", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition MODEL_NAME = new SimpleAttributeDefinition("model-name", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition SOURCE_NAME = new SimpleAttributeDefinition("source-name", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition DS_NAME = new SimpleAttributeDefinition("ds-name", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition RAR_NAME = new SimpleAttributeDefinition("rar-name", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition MODEL_NAMES = new SimpleAttributeDefinition("model-names", ModelType.STRING, true); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition SOURCE_VDBNAME = new SimpleAttributeDefinition("source-vdb-name", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition SOURCE_VDBVERSION = new SimpleAttributeDefinition("source-vdb-version", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition TARGET_VDBNAME = new SimpleAttributeDefinition("target-vdb-name", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition TARGET_VDBVERSION = new SimpleAttributeDefinition("target-vdb-version", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition SQL_QUERY = new SimpleAttributeDefinition("sql-query", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition TIMEOUT_IN_MILLI = new SimpleAttributeDefinition("timeout-in-milli", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition TRANSLATOR_NAME = new SimpleAttributeDefinition("translator-name", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition PROPERTY_TYPE = new SimpleAttributeDefinition("type", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition ENTITY_TYPE = new SimpleAttributeDefinition("entity-type", ModelType.STRING, true); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition ENTITY_PATTERN = new SimpleAttributeDefinition("entity-pattern", ModelType.STRING, true); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition XID = SimpleAttributeDefinitionBuilder.create("xid", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition DATA_ROLE = SimpleAttributeDefinitionBuilder.create("data-role", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition MAPPED_ROLE = SimpleAttributeDefinitionBuilder.create("mapped-role", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition CONNECTION_TYPE = SimpleAttributeDefinitionBuilder.create("connection-type", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition MODEL_NAME = SimpleAttributeDefinitionBuilder.create("model-name", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition SOURCE_NAME = SimpleAttributeDefinitionBuilder.create("source-name", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition DS_NAME = SimpleAttributeDefinitionBuilder.create("ds-name", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition RAR_NAME = SimpleAttributeDefinitionBuilder.create("rar-name", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition MODEL_NAMES = SimpleAttributeDefinitionBuilder.create("model-names", ModelType.STRING, true).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition SOURCE_VDBNAME = SimpleAttributeDefinitionBuilder.create("source-vdb-name", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition SOURCE_VDBVERSION = SimpleAttributeDefinitionBuilder.create("source-vdb-version", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition TARGET_VDBNAME = SimpleAttributeDefinitionBuilder.create("target-vdb-name", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition TARGET_VDBVERSION = SimpleAttributeDefinitionBuilder.create("target-vdb-version", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition SQL_QUERY = SimpleAttributeDefinitionBuilder.create("sql-query", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition TIMEOUT_IN_MILLI = SimpleAttributeDefinitionBuilder.create("timeout-in-milli", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition TRANSLATOR_NAME = SimpleAttributeDefinitionBuilder.create("translator-name", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition PROPERTY_TYPE = SimpleAttributeDefinitionBuilder.create("type", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition ENTITY_TYPE = SimpleAttributeDefinitionBuilder.create("entity-type", ModelType.STRING, true).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition ENTITY_PATTERN = SimpleAttributeDefinitionBuilder.create("entity-pattern", ModelType.STRING, true).build(); //$NON-NLS-1$
     public static final SimpleAttributeDefinition FORMAT = new SimpleAttributeDefinitionBuilder("format", ModelType.STRING) //$NON-NLS-1$
             .setNullSignificant(false)
             .setAllowExpression(false)
             .build();
-    public static final SimpleAttributeDefinition INCLUDE_SOURCE = new SimpleAttributeDefinition("include-source", ModelType.BOOLEAN, true); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition INCLUDE_SOURCE = SimpleAttributeDefinitionBuilder.create("include-source", ModelType.BOOLEAN, true).build(); //$NON-NLS-1$
 
-    public static final SimpleAttributeDefinition OPTIONAL_VDB_NAME = new SimpleAttributeDefinition("vdb-name", ModelType.STRING, true); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition OPTIONAL_VDB_VERSION = new SimpleAttributeDefinition("vdb-version", ModelType.STRING, true); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition OPTIONAL_VDB_NAME = SimpleAttributeDefinitionBuilder.create("vdb-name", ModelType.STRING, true).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition OPTIONAL_VDB_VERSION = SimpleAttributeDefinitionBuilder.create("vdb-version", ModelType.STRING, true).build(); //$NON-NLS-1$
 
 
-    public static final SimpleAttributeDefinition DBNAME = new SimpleAttributeDefinition("vdb-name", ModelType.STRING, true); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition VERSION = new SimpleAttributeDefinition("vdb-version", ModelType.STRING, true); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition SCHEMA = new SimpleAttributeDefinition("schema", ModelType.STRING, true); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition DDL = new SimpleAttributeDefinition("ddl", ModelType.STRING, false); //$NON-NLS-1$
-    public static final SimpleAttributeDefinition PERSIST = new SimpleAttributeDefinition("persist", ModelType.BOOLEAN, false); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition DBNAME = SimpleAttributeDefinitionBuilder.create("vdb-name", ModelType.STRING, true).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition VERSION = SimpleAttributeDefinitionBuilder.create("vdb-version", ModelType.STRING, true).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition SCHEMA = SimpleAttributeDefinitionBuilder.create("schema", ModelType.STRING, true).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition DDL = SimpleAttributeDefinitionBuilder.create("ddl", ModelType.STRING, false).build(); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition PERSIST = SimpleAttributeDefinitionBuilder.create("persist", ModelType.BOOLEAN, false).build(); //$NON-NLS-1$
 
-    public static final SimpleAttributeDefinition INCLUDE_SCHEMA = new SimpleAttributeDefinition("include-schema", ModelType.BOOLEAN, true); //$NON-NLS-1$
+    public static final SimpleAttributeDefinition INCLUDE_SCHEMA = SimpleAttributeDefinitionBuilder.create("include-schema", ModelType.BOOLEAN, true).build(); //$NON-NLS-1$
 }

@@ -45,15 +45,7 @@ import jakarta.resource.spi.work.WorkManager;
 import jakarta.transaction.TransactionManager;
 
 import org.infinispan.manager.EmbeddedCacheManager;
-import org.jboss.as.controller.AbstractAddStepHandler;
-import org.jboss.as.controller.ModelController;
-import org.jboss.as.controller.OperationContext;
-import org.jboss.as.controller.OperationFailedException;
-import org.jboss.as.controller.OperationStepHandler;
-import org.jboss.as.controller.PathAddress;
-import org.jboss.as.controller.PathElement;
-import org.jboss.as.controller.ProcessType;
-import org.jboss.as.controller.SimpleAttributeDefinition;
+import org.jboss.as.controller.*;
 import org.jboss.as.controller.access.Environment;
 import org.jboss.as.controller.registry.ImmutableManagementResourceRegistration;
 import org.jboss.as.controller.registry.Resource;
@@ -623,7 +615,8 @@ class TeiidAdd extends AbstractAddStepHandler {
           // rest war service
            RestWarGenerator warGenerator= TeiidAdd.buildService(RestWarGenerator.class, "org.jboss.teiid.rest-service");
         ServiceBuilder<?> warGeneratorSvc = target.addService(TeiidServiceNames.REST_WAR_SERVICE);
-        Supplier<ModelController> modelContDep = warGeneratorSvc.requires(Services.JBOSS_SERVER_CONTROLLER);
+        ServiceName modelControllerClientFactory = context.getCapabilityServiceName("org.wildfly.management.model-controller-client-factory", ModelControllerClientFactory.class);
+        Supplier<ModelControllerClientFactory> modelContDep = warGeneratorSvc.requires(modelControllerClientFactory);
         Supplier<Executor> exDep = warGeneratorSvc.requires(TeiidServiceNames.THREAD_POOL_SERVICE);
         Supplier<VDBRepository> repDep = warGeneratorSvc.requires(TeiidServiceNames.VDB_REPO);
         ResteasyEnabler restEnabler = new ResteasyEnabler(warGenerator, modelContDep, exDep, repDep);

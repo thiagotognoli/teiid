@@ -26,7 +26,8 @@
         <module name="com.fasterxml.jackson.core.jackson-annotations"/>
         <module name="com.fasterxml.jackson.core.jackson-databind"/>
         <module name="com.fasterxml.jackson.dataformat"/>
-        <module name="com.fasterxml.jackson.dataformat.jackson-dataformat-cbor"/>
+        <module name="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml"/>
+        <module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
         <module name="javax.api"/>
         <module name="jakarta.validation.api"/>
         <module name="com.google.guava"/>
