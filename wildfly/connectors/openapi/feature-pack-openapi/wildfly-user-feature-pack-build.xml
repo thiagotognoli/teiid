@@ -32,6 +32,7 @@
         <package name="io.swagger.core"/>
         <package name="org.reflections"/>
         <package name="com.fasterxml.jackson.dataformat"/>
+        <package name="com.fasterxml.jackson.dataformat.cbor"/>
         <package name="org.apache.commons.commons-lang3"/>
         <package name="com.google.code.findbugs"/>
     </default-packages>

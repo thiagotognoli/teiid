@@ -17,7 +17,7 @@
  */
 package org.teiid.jboss;
 
-import org.jboss.as.controller.ModelController;
+import org.jboss.as.controller.ModelControllerClientFactory;
 import org.jboss.msc.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
@@ -44,13 +44,13 @@ public class ResteasyEnabler implements VDBLifeCycleListener, Service {
 
     private static String VERSION_DELIM = PropertiesUtils.getHierarchicalProperty("org.teiid.rest.versionDelim", "_"); //$NON-NLS-1$ //$NON-NLS-2$
 
-    protected final Supplier<ModelController> controllerValue;
+    protected final Supplier<ModelControllerClientFactory> controllerValue;
     protected final Supplier<Executor> executorInjector;
     final Supplier<VDBRepository> vdbRepoInjector;
 
     final private RestWarGenerator generator;
 
-    public ResteasyEnabler(RestWarGenerator generator, Supplier<ModelController> modelContDep, Supplier<Executor> exDep, Supplier<VDBRepository> repDep) {
+    public ResteasyEnabler(RestWarGenerator generator, Supplier<ModelControllerClientFactory> modelContDep, Supplier<Executor> exDep, Supplier<VDBRepository> repDep) {
         this.generator = generator;
         this.controllerValue = modelContDep;
         this.executorInjector = exDep;
