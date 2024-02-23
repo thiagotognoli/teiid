@@ -231,7 +231,7 @@ class TeiidAdd extends AbstractAddStepHandler {
 
     private void initilaizeTeiidEngine(final OperationContext context,
             final ModelNode operation) throws OperationFailedException {
-        ServiceTarget target = context.getServiceTarget();
+        ServiceTarget target = context.getCapabilityServiceTarget();
 
         final String nodeName = getNodeName();
 

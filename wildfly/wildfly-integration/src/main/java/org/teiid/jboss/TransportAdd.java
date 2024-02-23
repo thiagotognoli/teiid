@@ -88,7 +88,7 @@ class TransportAdd extends AbstractAddStepHandler {
             final ModelNode operation, final ModelNode model)
             throws OperationFailedException {
 
-        ServiceTarget target = context.getServiceTarget();
+        ServiceTarget target = context.getCapabilityServiceTarget();
 
         final ModelNode address = operation.require(OP_ADDR);
         final PathAddress pathAddress = PathAddress.pathAddress(address);
