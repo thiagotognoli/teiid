@@ -18,56 +18,13 @@
 
 package org.teiid.common.buffer.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.lang.ref.PhantomReference;
-import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.teiid.adminapi.impl.SessionMetadata;
 import org.teiid.client.BatchSerializer;
 import org.teiid.client.ResizingArrayList;
 import org.teiid.client.util.ExceptionUtil;
-import org.teiid.common.buffer.AutoCleanupUtil;
+import org.teiid.common.buffer.*;
 import org.teiid.common.buffer.AutoCleanupUtil.Removable;
-import org.teiid.common.buffer.BatchManager;
-import org.teiid.common.buffer.BlockedException;
-import org.teiid.common.buffer.BufferManager;
-import org.teiid.common.buffer.Cache;
-import org.teiid.common.buffer.CacheEntry;
-import org.teiid.common.buffer.CacheKey;
-import org.teiid.common.buffer.FileStore;
-import org.teiid.common.buffer.LobManager;
 import org.teiid.common.buffer.LobManager.ReferenceMode;
-import org.teiid.common.buffer.STree;
-import org.teiid.common.buffer.Serializer;
-import org.teiid.common.buffer.StorageManager;
-import org.teiid.common.buffer.TupleBatch;
-import org.teiid.common.buffer.TupleBuffer;
 import org.teiid.core.TeiidComponentException;
 import org.teiid.core.TeiidRuntimeException;
 import org.teiid.core.types.DataTypeManager;
@@ -87,6 +44,16 @@ import org.teiid.query.sql.symbol.ElementSymbol;
 import org.teiid.query.sql.symbol.Expression;
 import org.teiid.query.util.CommandContext;
 import org.teiid.query.util.Options;
+
+import java.io.*;
+import java.lang.ref.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
@@ -1026,14 +993,16 @@ public class BufferManagerImpl implements BufferManager, ReplicatedObject<String
             maxToFree = Math.min(maxToFree, this.maxProcessingBytes);
         }
         long freed = 0;
+        CacheEntry priorAuditedEntry = null;
         while (freed <= maxToFree && (
                 ageOut
                 || (queue == evictionQueue && activeBatchBytes.get() + overheadBytes.get() + this.maxReserveBytes/2 > reserveBatchBytes.get()) //nominal cleaning criterion
                 || (queue != evictionQueue && activeBatchBytes.get() + overheadBytes.get() + 3*this.maxReserveBytes/4 > reserveBatchBytes.get()))) { //assume that basically all initial batches will need to be written out at some point
             CacheEntry ce = queue.firstEntry(!ageOut);
-            if (ce == null) {
+            if (ce == null || (priorAuditedEntry != null && priorAuditedEntry == ce)) {
                 break;
             }
+            priorAuditedEntry = ce;
             synchronized (ce) {
                 if (!memoryEntries.containsKey(ce.getId())) {
                     if (!ageOut) {
