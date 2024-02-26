@@ -18,6 +18,7 @@
 
 package org.teiid.dqp.internal.process;
 
+import jakarta.transaction.TransactionManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -27,7 +28,6 @@ import org.teiid.client.xa.XidImpl;
 import org.teiid.dqp.service.TransactionContext;
 import org.teiid.resource.api.XAImporter;
 
-import jakarta.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
 import static org.junit.Assert.*;
@@ -163,7 +163,7 @@ public class TestTransactionServer {
         try {
             server.commit(THREAD1);
         } catch (XATransactionException e) {
-            assertEquals("TEIID30526 javax.transaction.InvalidTransactionException: No transaction found for client abc1.", e.getMessage()); //$NON-NLS-1$
+            assertEquals("TEIID30526 jakarta.transaction.InvalidTransactionException: No transaction found for client abc1.", e.getMessage()); //$NON-NLS-1$
         }
     }
 
@@ -183,7 +183,7 @@ public class TestTransactionServer {
         try {
             server.rollback(THREAD1);
         } catch (XATransactionException e) {
-            assertEquals("TEIID30526 javax.transaction.InvalidTransactionException: No transaction found for client abc1.", e.getMessage()); //$NON-NLS-1$
+            assertEquals("TEIID30526 jakarta.transaction.InvalidTransactionException: No transaction found for client abc1.", e.getMessage()); //$NON-NLS-1$
         }
     }
 

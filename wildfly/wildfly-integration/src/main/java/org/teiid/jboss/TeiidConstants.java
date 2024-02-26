@@ -453,13 +453,11 @@ public class TeiidConstants {
         .build();
 
     static final String SOCKET_CAPABILITY_NAME = "org.wildfly.network.socket-binding";
-    static final RuntimeCapability<Void> CONNECTOR_CAPABILITY = RuntimeCapability.Builder.of("org.wildfly.remoting.connector", true).build();
-    static final SimpleAttributeDefinition TRANSPORT_SOCKET_BINDING_ATTRIBUTE =
-            new SimpleAttributeDefinitionBuilder(ModelDescriptionConstants.SOCKET_BINDING, ModelType.STRING, false)
-                    .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.SOCKET_BINDING_REF)
-                    .setCapabilityReference(SOCKET_CAPABILITY_NAME, CONNECTOR_CAPABILITY)
-                    .setRequired(false)
-                    .build();
+    public static SimpleAttributeDefinition TRANSPORT_SOCKET_BINDING_ATTRIBUTE = new SimpleAttributeDefinitionBuilder(Element.TRANSPORT_SOCKET_BINDING_ATTRIBUTE.getModelName(), ModelType.STRING)
+            .setXmlName(Element.TRANSPORT_SOCKET_BINDING_ATTRIBUTE.getXMLName())
+            .setAllowExpression(false)
+            .setRequired(false)
+            .build();
 
     public static SimpleAttributeDefinition TRANSPORT_MAX_SOCKET_THREADS_ATTRIBUTE = new SimpleAttributeDefinitionBuilder(Element.TRANSPORT_MAX_SOCKET_THREADS_ATTRIBUTE.getModelName(), ModelType.INT)
        .setXmlName(Element.TRANSPORT_MAX_SOCKET_THREADS_ATTRIBUTE.getXMLName())

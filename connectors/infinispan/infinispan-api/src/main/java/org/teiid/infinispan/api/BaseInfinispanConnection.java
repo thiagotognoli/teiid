@@ -19,8 +19,6 @@
 package org.teiid.infinispan.api;
 
 
-import java.util.Map;
-
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.configuration.TransactionMode;
 import org.infinispan.commons.api.BasicCache;
@@ -30,6 +28,8 @@ import org.teiid.metadata.RuntimeMetadata;
 import org.teiid.metadata.Table;
 import org.teiid.translator.ExecutionFactory.TransactionSupport;
 import org.teiid.translator.TranslatorException;
+
+import java.util.Map;
 
 public class BaseInfinispanConnection implements InfinispanConnection {
     private RemoteCacheManager cacheManager;
@@ -68,7 +68,7 @@ public class BaseInfinispanConnection implements InfinispanConnection {
     public <K, V> BasicCache<K, V> getCache(String cacheName) throws TranslatorException{
         if (ProtobufMetadataManagerConstants.PROTOBUF_METADATA_CACHE_NAME.equals(cacheName)) {
             //special handling for protobuf - don't create, and it can't be transactional
-            return cacheManager.getCache(cacheName, TransactionMode.NONE);
+            return cacheManager.getCache(cacheName);
         }
 
         TransactionMode transactionMode = icf.getTransactionMode();
