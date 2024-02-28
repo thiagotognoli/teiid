@@ -133,7 +133,7 @@
 
 
         <!-- Infinispan Translator -->
-        <version.org.infinispan>14.0.21.Final</version.org.infinispan>
+        <version.org.infinispan>14.0.24.Final</version.org.infinispan>
         <version.protostream>4.6.5.Final</version.protostream>
 
         <!--  Data Quality -->
