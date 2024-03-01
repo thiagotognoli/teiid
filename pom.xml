@@ -60,9 +60,9 @@
         <version.cassandra-driver-core>3.11.3</version.cassandra-driver-core>
         <version.com.couchbase.client>2.4.2</version.com.couchbase.client>
         <version.com.fasterxml.aalto-xml>0.9.10</version.com.fasterxml.aalto-xml>
-        <version.com.fasterxml.jackson.core>2.15.2</version.com.fasterxml.jackson.core>
-        <version.com.fasterxml.jackson.dataformat>2.15.2</version.com.fasterxml.jackson.dataformat>
-        <version.com.fasterxml.jackson.core.jackson-databind>2.15.2</version.com.fasterxml.jackson.core.jackson-databind>
+        <version.com.fasterxml.jackson.core>2.15.3</version.com.fasterxml.jackson.core>
+        <version.com.fasterxml.jackson.dataformat>2.15.3</version.com.fasterxml.jackson.dataformat>
+        <version.com.fasterxml.jackson.core.jackson-databind>2.15.3</version.com.fasterxml.jackson.core.jackson-databind>
         <version.com.force.api.34>34.0.0</version.com.force.api.34>
         <version.com.force.api.41>45.1.0</version.com.force.api.41>
         <version.com.google.code.findbugs>3.0.2</version.com.google.code.findbugs>
@@ -133,7 +133,7 @@
 
 
         <!-- Infinispan Translator -->
-        <version.org.infinispan>14.0.20.Final</version.org.infinispan>
+        <version.org.infinispan>14.0.24.Final</version.org.infinispan>
         <version.protostream>4.6.5.Final</version.protostream>
 
         <!--  Data Quality -->

@@ -7,11 +7,11 @@
     <resources>
         <artifact name="${org.olap4j:olap4j}" />
         <artifact name="${org.olap4j:olap4j-xmla}"/>
+        <artifact name="${xerces:xercesImpl}"/>
     </resources>
 
     <dependencies>
         <module name="javax.api" />
-        <module name="org.apache.xerces"/>
     </dependencies>
 
 </module>
