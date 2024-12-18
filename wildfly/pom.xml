@@ -38,7 +38,7 @@
         <version.wildfly.org.infinispan>14.0.29.Final</version.wildfly.org.infinispan>
         <version.org.jgroups>5.2.27.Final</version.org.jgroups>
 
-        <version.javax.xml.bind.api>2.3.0</version.javax.xml.bind.api>
+      <version.jakarta.xml.bind.api>4.0.2</version.jakarta.xml.bind.api>
         <version.javax.ws.rs>2.0.2.Final</version.javax.ws.rs>
         <version.io.swagger>1.5.22</version.io.swagger>
   </properties>
