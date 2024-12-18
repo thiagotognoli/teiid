@@ -20,7 +20,7 @@ package org.teiid.jboss;
 import jakarta.resource.spi.XATerminator;
 import jakarta.resource.spi.work.WorkManager;
 import jakarta.transaction.TransactionManager;
-import org.jboss.msc.Service;
+import org.jboss.msc.service.Service;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StopContext;

@@ -17,7 +17,7 @@
  */
 package org.teiid.jboss;
 
-import org.jboss.msc.Service;
+import org.jboss.msc.service.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 class CacheService<T> implements Service {
 
     private Consumer<SessionAwareCache<T>> cache;
+    private transient SessionAwareCache<T> actualCache;
     protected Supplier<TupleBufferCache> tupleBufferCacheInjector;
     protected Supplier<CacheFactory> cacheFactoryInjector;
 
@@ -56,10 +57,16 @@ class CacheService<T> implements Service {
             cache.setTupleBufferCache(this.tupleBufferCacheInjector.get());
         }
         this.cache.accept(cache);
+        this.actualCache = cache;
     }
 
     @Override
     public void stop(StopContext context) {
         this.cache = null;
+    }
+
+    @Override
+    public SessionAwareCache<T> getValue() throws IllegalStateException, IllegalArgumentException {
+        return this.actualCache;
     }
 }
