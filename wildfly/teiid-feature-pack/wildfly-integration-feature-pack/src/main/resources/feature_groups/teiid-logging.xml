@@ -11,6 +11,14 @@
             <param name="pattern" value="&quot;%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %X{teiid-session} %s%e%n&quot;"/>
         </feature>
         <feature spec="subsystem.logging.logger">
+            <param name="logger" value="org.teiid"/>
+            <param name="level" value="WARN"/>
+        </feature>
+        <feature spec="subsystem.logging.logger">
+            <param name="logger" value="org.teiid.AUDIT_LOG"/>
+            <param name="level" value="WARN"/>
+        </feature>
+        <feature spec="subsystem.logging.logger">
             <param name="logger" value="org.teiid.COMMAND_LOG"/>
             <param name="level" value="WARN"/>
         </feature>
