@@ -16,13 +16,13 @@
  */
 package org.teiid.query.util;
 
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.ContextKey;
-import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import org.teiid.jdbc.tracing.GlobalTracerInjector;
 import org.teiid.json.simple.JSONParser;
 import org.teiid.json.simple.ParseException;
@@ -74,10 +74,17 @@ public class TeiidTracingUtil {
 
         Span span = spanBuilder.startSpan();
         span.setAttribute("component", "java-teiid"); //$NON-NLS-1$
-        span.setAttribute(SemanticAttributes.DB_STATEMENT, msg.getSql());
+
+        // Wildfly exposes a different package structure than io.opentelemetry.semconv in 1.25.0-alpha
+        // span.setAttribute(SemanticAttributes.DB_STATEMENT, msg.getSql());
+        span.setAttribute(AttributeKey.stringKey("db.statement"), msg.getSql());
+
         span.setAttribute("db.type", "teiid"); //$NON-NLS-1$
         span.setAttribute("db.instance", msg.getVdbName());
-        span.setAttribute(SemanticAttributes.DB_USER, msg.getPrincipal());
+
+        //span.setAttribute(SemanticAttributes.DB_USER, msg.getPrincipal());
+        span.setAttribute(AttributeKey.stringKey("db.user"), msg.getPrincipal());
+
         span.setAttribute("teiid-session", msg.getSessionID()); //$NON-NLS-1$
         span.setAttribute("teiid-request", msg.getRequestID()); //$NON-NLS-1$
 
@@ -113,9 +120,15 @@ public class TeiidTracingUtil {
 
         Span span = spanBuilder.startSpan();
         span.setAttribute("component", "java-teiid-connector"); //$NON-NLS-1$
-        span.setAttribute(SemanticAttributes.DB_STATEMENT, msg.getSql());
+
+        //span.setAttribute(SemanticAttributes.DB_STATEMENT, msg.getSql());
+        span.setAttribute(AttributeKey.stringKey("db.statement"), msg.getSql());
+
         span.setAttribute("db.type", translatorType);
-        span.setAttribute(SemanticAttributes.DB_USER, msg.getPrincipal());
+
+        //span.setAttribute(SemanticAttributes.DB_USER, msg.getPrincipal());
+        span.setAttribute(AttributeKey.stringKey("db.user"), msg.getPrincipal());
+
         span.setAttribute("teiid-source-request", msg.getSourceCommandID()); //$NON-NLS-1$
 
         return span;
