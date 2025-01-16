@@ -60,9 +60,9 @@
         <version.cassandra-driver-core>3.11.3</version.cassandra-driver-core>
         <version.com.couchbase.client>2.4.2</version.com.couchbase.client>
         <version.com.fasterxml.aalto-xml>0.9.10</version.com.fasterxml.aalto-xml>
-        <version.com.fasterxml.jackson.core>2.17.0</version.com.fasterxml.jackson.core>
-        <version.com.fasterxml.jackson.dataformat>2.17.0</version.com.fasterxml.jackson.dataformat>
-        <version.com.fasterxml.jackson.core.jackson-databind>2.17.0</version.com.fasterxml.jackson.core.jackson-databind>
+        <version.com.fasterxml.jackson.core>2.18.2</version.com.fasterxml.jackson.core>
+        <version.com.fasterxml.jackson.dataformat>2.18.2</version.com.fasterxml.jackson.dataformat>
+        <version.com.fasterxml.jackson.core.jackson-databind>2.18.2</version.com.fasterxml.jackson.core.jackson-databind>
         <version.com.force.api.34>34.0.0</version.com.force.api.34>
         <version.com.force.api.41>45.1.0</version.com.force.api.41>
         <version.com.google.code.findbugs>3.0.2</version.com.google.code.findbugs>
@@ -133,17 +133,18 @@
 
 
         <!-- Infinispan Translator -->
-        <version.org.infinispan>14.0.32.Final</version.org.infinispan>
-        <version.protostream>4.6.5.Final</version.protostream>
+        <version.org.infinispan>15.0.11.Final</version.org.infinispan>
+        <version.protostream>5.0.10.Final</version.protostream>
+        <version.square.protoparser>4.0.3</version.square.protoparser>
 
         <!--  Data Quality -->
         <version.com.github.mpkorstanje>3.0.0</version.com.github.mpkorstanje>
         <version.org.arrahtec>6.2.6</version.org.arrahtec>
 
         <!-- OpenTelemetry -->
-        <version.io.opentelemetry>1.29.0</version.io.opentelemetry>
+        <version.io.opentelemetry>1.42.1</version.io.opentelemetry>
         <version.io.opentelemetry.autoconfigure>1.20.0-alpha</version.io.opentelemetry.autoconfigure>
-        <version.io.opentelemetry.semconv>1.21.0-alpha</version.io.opentelemetry.semconv>
+        <version.io.opentelemetry.semconv>1.25.0-alpha</version.io.opentelemetry.semconv>
 
         <version.xerces>2.12.0</version.xerces>
         <version.org.slf4j>1.7.30</version.org.slf4j>
@@ -542,6 +543,11 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.squareup</groupId>
+                <artifactId>protoparser</artifactId>
+                <version>${version.square.protoparser}</version>
+            </dependency>
             <dependency>
                 <groupId>ant-contrib</groupId>
                 <artifactId>ant-contrib</artifactId>

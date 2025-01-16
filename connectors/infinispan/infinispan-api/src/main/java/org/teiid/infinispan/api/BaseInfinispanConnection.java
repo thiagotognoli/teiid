@@ -22,7 +22,7 @@ package org.teiid.infinispan.api;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.configuration.TransactionMode;
 import org.infinispan.commons.api.BasicCache;
-import org.infinispan.commons.configuration.XMLStringConfiguration;
+import org.infinispan.commons.configuration.StringConfiguration;
 import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 import org.teiid.metadata.RuntimeMetadata;
 import org.teiid.metadata.Table;
@@ -90,7 +90,7 @@ public class BaseInfinispanConnection implements InfinispanConnection {
                 && transactionMode != TransactionMode.NONE) {
             //there doesn't seem to be a default transactional template, so
             //here's one - TODO externalize
-            return cacheManager.administration().getOrCreateCache(cacheName, new XMLStringConfiguration(
+            return cacheManager.administration().getOrCreateCache(cacheName, new StringConfiguration(
                     "<infinispan><cache-container>" +
                     "  <distributed-cache-configuration name=\""+cacheName+"\">" +
                     "    <locking isolation=\"REPEATABLE_READ\"/>" +
