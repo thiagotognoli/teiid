@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.teiid.connectors</groupId>
 		<artifactId>infinispan</artifactId>
-		<version>17.0.8-SNAPSHOT</version>
+		<version>17.0.8</version>
 	</parent>
 	<artifactId>translator-infinispan-hotrod</artifactId>
 	<name>Infinispan Protobuf Translator</name>
