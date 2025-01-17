@@ -18,38 +18,34 @@
 
 package org.teiid.infinispan.api;
 
-import java.io.IOException;
-
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.infinispan.protostream.BaseMarshaller;
-import org.infinispan.protostream.ImmutableSerializationContext;
-import org.infinispan.protostream.RawProtoStreamReader;
-import org.infinispan.protostream.RawProtoStreamWriter;
-import org.infinispan.protostream.RawProtobufMarshaller;
+import org.infinispan.protostream.ProtobufTagMarshaller;
 import org.infinispan.protostream.SerializationContext.MarshallerProvider;
 import org.teiid.core.TeiidRuntimeException;
 import org.teiid.metadata.RuntimeMetadata;
 import org.teiid.metadata.Table;
 import org.teiid.translator.TranslatorException;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+import java.io.IOException;
 
 public class TeiidMarshallerProvider implements MarshallerProvider {
 
     private Cache<String, Table> types =
             Caffeine.newBuilder().weakValues().build();
-    private Cache<Table, RawProtobufMarshaller<InfinispanDocument>> marshallers =
+    private Cache<Table, ProtobufTagMarshaller<InfinispanDocument>> marshallers =
             Caffeine.newBuilder().weakKeys().build();
 
     private static ThreadLocal<InfinispanDocument> CURRENT_DOCUMENT = new ThreadLocal<>();
 
     @Override
-    public RawProtobufMarshaller<InfinispanDocument> getMarshaller(String typeName) {
+    public ProtobufTagMarshaller<InfinispanDocument> getMarshaller(String typeName) {
         Table table = types.getIfPresent(typeName);
         if (table == null) {
             return null;
         }
-        RawProtobufMarshaller<InfinispanDocument> marshaller = marshallers.getIfPresent(table);
+        ProtobufTagMarshaller<InfinispanDocument> marshaller = marshallers.getIfPresent(table);
         if (marshaller == null) {
             return null;
         }
@@ -68,7 +64,7 @@ public class TeiidMarshallerProvider implements MarshallerProvider {
         }
         String type = current.getName();
         if (InfinispanDocument.class.isAssignableFrom(javaClass)) {
-            return new RawProtobufMarshaller<InfinispanDocument>() {
+            return new ProtobufTagMarshaller<InfinispanDocument>() {
 
                 @Override
                 public Class<? extends InfinispanDocument> getJavaClass() {
@@ -81,21 +77,17 @@ public class TeiidMarshallerProvider implements MarshallerProvider {
                 }
 
                 @Override
-                public InfinispanDocument readFrom(
-                        ImmutableSerializationContext ctx,
-                        RawProtoStreamReader in) throws IOException {
+                public InfinispanDocument read(ReadContext ctx) throws IOException {
                     throw new AssertionError();
                 }
 
                 @Override
-                public void writeTo(ImmutableSerializationContext ctx,
-                        RawProtoStreamWriter out, InfinispanDocument t)
-                        throws IOException {
-                    RawProtobufMarshaller<InfinispanDocument> marshaller = getMarshaller(type);
+                public void write(WriteContext ctx, InfinispanDocument infinispanDocument) throws IOException {
+                    ProtobufTagMarshaller<InfinispanDocument> marshaller = getMarshaller(type);
                     if (marshaller == null) {
                         throw new IllegalStateException();
                     }
-                    marshaller.writeTo(ctx, out, t);
+                    marshaller.write(ctx, infinispanDocument);
                 }
             };
         }

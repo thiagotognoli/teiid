@@ -79,5 +79,6 @@
         <module name="io.opentelemetry.api"/>
         <module name="io.opentelemetry.sdk"/>
         <module name="io.opentelemetry.context"/>
+        <module name="io.opentelemetry.semconv"/>
     </dependencies>
 </module>

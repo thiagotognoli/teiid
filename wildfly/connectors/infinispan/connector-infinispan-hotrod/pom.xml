@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.teiid.wildfly.connectors</groupId>
 		<artifactId>infinispan</artifactId>
-		<version>17.0.4-SNAPSHOT</version>
+		<version>17.0.8</version>
 	</parent>
 	<artifactId>connector-infinispan-hotrod</artifactId>
 	<name>Infinispan Hotrod Protocol Based Resource Adapter</name>
@@ -81,7 +81,6 @@
 		<dependency>
 			<groupId>org.jboss.logging</groupId>
 			<artifactId>jboss-logging</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.logging</groupId>

@@ -29,7 +29,7 @@ import org.infinispan.protostream.impl.ByteArrayOutputStreamEx;
 import org.infinispan.protostream.impl.TagWriterImpl;
 import org.teiid.translator.document.Document;
 
-public class TeiidTableMarshaller implements RawProtobufMarshaller<InfinispanDocument>, Serializable {
+public class TeiidTableMarshaller implements ProtobufTagMarshaller<InfinispanDocument>, Serializable {
     private static final long serialVersionUID = 6540991524742624955L;
     private String documentName;
     private TreeMap<Integer, TableWireFormat> wireMap = new TreeMap<>();
@@ -45,16 +45,21 @@ public class TeiidTableMarshaller implements RawProtobufMarshaller<InfinispanDoc
     }
 
     // Read from ISPN Types >> Teiid Types
-    @Override
-    public InfinispanDocument readFrom(ImmutableSerializationContext ctx, RawProtoStreamReader in) throws IOException {
+    public InfinispanDocument readFrom(ImmutableSerializationContext ctx, TagReader in) throws IOException {
         InfinispanDocument row = new InfinispanDocument(this.documentName, this.wireMap, null);
         readDocument(in, row, this.wireMap);
         return row;
     }
 
-    // Write from Teiid Types >> ISPN Types
     @Override
-    public void writeTo(ImmutableSerializationContext ctx, RawProtoStreamWriter out, InfinispanDocument document)
+    public InfinispanDocument read(ReadContext ctx) throws IOException {
+        ImmutableSerializationContext context = ctx.getSerializationContext();
+        TagReader reader = ctx.getReader();
+        return readFrom(context, reader);
+    }
+
+    // Write from Teiid Types >> ISPN Types
+    public void writeTo(ImmutableSerializationContext ctx, TagWriter out, InfinispanDocument document)
             throws IOException {
         TreeMap<Integer, TableWireFormat> wireMap = document.getWireMap();
         for (Entry<Integer, TableWireFormat> entry : wireMap.entrySet()) {
@@ -236,8 +241,15 @@ public class TeiidTableMarshaller implements RawProtobufMarshaller<InfinispanDoc
         }
     }
 
-    static void readDocument(RawProtoStreamReader in, InfinispanDocument document,
-            TreeMap<Integer, TableWireFormat> columnMap) throws IOException {
+    @Override
+    public void write(WriteContext ctx, InfinispanDocument infinispanDocument) throws IOException {
+        ImmutableSerializationContext context = ctx.getSerializationContext();
+        TagWriter writer = ctx.getWriter();
+        writeTo(context, writer, infinispanDocument);
+    }
+
+    static void readDocument(TagReader in, InfinispanDocument document,
+                             TreeMap<Integer, TableWireFormat> columnMap) throws IOException {
 
         while (true) {
             int tag = in.readTag();
@@ -251,7 +263,7 @@ public class TeiidTableMarshaller implements RawProtobufMarshaller<InfinispanDoc
 
             if (twf.isNested()) {
                 InfinispanDocument child = new InfinispanDocument(twf.getAttributeName(), twf.getNestedWireMap(), document);
-                int length = in.readRawVarint32();
+                int length = in.readInt32();
                 int oldLimit = in.pushLimit(length);
                 readDocument(in, child, twf.getNestedWireMap());
                 document.addChildDocument(twf.getAttributeName(), child);

@@ -57,7 +57,6 @@ import org.jboss.as.naming.deployment.ContextNames;
 import org.jboss.as.naming.service.BinderService;
 import org.jboss.as.server.AbstractDeploymentChainStep;
 import org.jboss.as.server.DeploymentProcessorTarget;
-import org.jboss.as.server.Services;
 import org.jboss.as.server.deployment.Phase;
 import org.jboss.as.server.moduleservice.ServiceModuleLoader;
 import org.jboss.dmr.ModelNode;
@@ -100,10 +99,8 @@ import org.teiid.runtime.MaterializationManager;
 import org.teiid.services.InternalEventDistributorFactory;
 import org.teiid.services.SessionServiceImpl;
 import org.teiid.translator.ExecutionFactory;
-import org.wildfly.clustering.infinispan.service.InfinispanCacheRequirement;
-import org.wildfly.clustering.infinispan.service.InfinispanRequirement;
+import org.wildfly.clustering.infinispan.service.InfinispanServiceDescriptor;
 import org.wildfly.clustering.jgroups.ChannelFactory;
-import org.wildfly.clustering.jgroups.spi.JGroupsRequirement;
 
 class TeiidAdd extends AbstractAddStepHandler {
 
@@ -189,11 +186,6 @@ class TeiidAdd extends AbstractAddStepHandler {
         if (context.getProcessType().equals(ProcessType.STANDALONE_SERVER) && context.isNormalServer()) {
             deployResources(context);
         }
-    }
-
-    @Override
-    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        throw new UnsupportedOperationException();
     }
 
     static void populate(ModelNode operation, ModelNode model) throws OperationFailedException {
@@ -299,7 +291,7 @@ class TeiidAdd extends AbstractAddStepHandler {
             replicatorAvailable = true;
             ServiceBuilder<?> serviceBuilder = target.addService(TeiidServiceNames.OBJECT_REPLICATOR);
             Consumer<JGroupsObjectReplicator> replicatorInstance = serviceBuilder.provides(TeiidServiceNames.OBJECT_REPLICATOR);
-            Supplier<ChannelFactory> channelFactorySupplier = serviceBuilder.requires(JGroupsRequirement.CHANNEL_FACTORY.getServiceName(context, stack));//$NON-NLS-1$ //$NON-NLS-2$
+            Supplier<ChannelFactory> channelFactorySupplier = serviceBuilder.requires(ServiceNameFactory.resolveServiceName(org.wildfly.clustering.jgroups.spi.ChannelFactory.SERVICE_DESCRIPTOR, stack));//$NON-NLS-1$ //$NON-NLS-2$
             Supplier<Executor> poolServiceSupplier = serviceBuilder.requires(TeiidServiceNames.THREAD_POOL_SERVICE);
             JGroupsObjectReplicatorService replicatorService = new JGroupsObjectReplicatorService(channelFactorySupplier, poolServiceSupplier, replicatorInstance);
             serviceBuilder.setInstance(replicatorService);
@@ -307,7 +299,7 @@ class TeiidAdd extends AbstractAddStepHandler {
             LogManager.logInfo(LogConstants.CTX_RUNTIME, IntegrationPlugin.Util.gs(IntegrationPlugin.Event.TEIID50003));
 
             ServiceBuilder<?> nodeTrackerBuilder = target.addService(TeiidServiceNames.NODE_TRACKER_SERVICE);
-            Supplier<ChannelFactory> channelFactoryDep = nodeTrackerBuilder.requires(JGroupsRequirement.CHANNEL_FACTORY.getServiceName(context, stack));//$NON-NLS-1$ //$NON-NLS-2$
+            Supplier<ChannelFactory> channelFactoryDep = nodeTrackerBuilder.requires(ServiceNameFactory.resolveServiceName(org.wildfly.clustering.jgroups.spi.ChannelFactory.SERVICE_DESCRIPTOR, stack));//$NON-NLS-1$ //$NON-NLS-2$
             NodeTrackerService trackerService = new NodeTrackerService(nodeName, scheduler, channelFactoryDep);
             nodeTrackerBuilder.setInstance(trackerService);
             nodeTrackerBuilder.install();
@@ -411,7 +403,7 @@ class TeiidAdd extends AbstractAddStepHandler {
             ServiceBuilder<?> cacheFactoryBuilder = target.addService(TeiidServiceNames.RESULTSET_CACHE_FACTORY);
             Consumer<CacheFactory> cfCons = cacheFactoryBuilder.provides(TeiidServiceNames.RESULTSET_CACHE_FACTORY);
             String ispnName = asString(RSC_CONTAINER_NAME_ATTRIBUTE, operation, context);
-            Supplier<EmbeddedCacheManager> cmDep = cacheFactoryBuilder.requires(InfinispanRequirement.CONTAINER.getServiceName(context, ispnName)); // $NON-NLS-1$
+            Supplier<EmbeddedCacheManager> cmDep = cacheFactoryBuilder.requires(ServiceNameFactory.resolveServiceName(InfinispanServiceDescriptor.CACHE_CONTAINER, ispnName)); // $NON-NLS-1$
             CacheFactoryService cfs = new CacheFactoryService(cmDep, cfCons);
             cacheFactoryBuilder.setInstance(cfs);
             cacheFactoryBuilder.install();
@@ -425,8 +417,8 @@ class TeiidAdd extends AbstractAddStepHandler {
             Consumer<SessionAwareCache<CachedResults>> sacConsumer = resultsCacheBuilder.provides(TeiidServiceNames.CACHE_RESULTSET);
             Supplier<TupleBufferCache> tbcDep = resultsCacheBuilder.requires(TeiidServiceNames.TUPLE_BUFFER);
             Supplier<CacheFactory> cfDep = resultsCacheBuilder.requires(TeiidServiceNames.RESULTSET_CACHE_FACTORY);
-            resultsCacheBuilder.requires(InfinispanCacheRequirement.CACHE.getServiceName(context, ispnName, cacheName)); //$NON-NLS-1$
-            resultsCacheBuilder.requires(InfinispanCacheRequirement.CACHE.getServiceName(context, ispnName, cacheName+SessionAwareCache.REPL)); //$NON-NLS-1$
+            resultsCacheBuilder.requires(ServiceNameFactory.resolveServiceName(InfinispanServiceDescriptor.CACHE, ispnName, cacheName)); //$NON-NLS-1$
+            resultsCacheBuilder.requires(ServiceNameFactory.resolveServiceName(InfinispanServiceDescriptor.CACHE, ispnName, cacheName+SessionAwareCache.REPL)); //$NON-NLS-1$
             CacheService<CachedResults> resultSetService = new CacheService<CachedResults>(cacheName, SessionAwareCache.Type.RESULTSET, maxStaleness, tbcDep, cfDep, sacConsumer);
             resultsCacheBuilder.setInstance(resultSetService);
             resultsCacheBuilder.install();
@@ -453,7 +445,7 @@ class TeiidAdd extends AbstractAddStepHandler {
             ServiceBuilder<?> cacheFactoryBuilder = target.addService(TeiidServiceNames.PREPAREDPLAN_CACHE_FACTORY);
             Consumer<CacheFactory> ppcfCons = cacheFactoryBuilder.provides(TeiidServiceNames.PREPAREDPLAN_CACHE_FACTORY);
             String ispnName = asString(PPC_CONTAINER_NAME_ATTRIBUTE, operation, context);
-            Supplier<EmbeddedCacheManager> ecmDep = cacheFactoryBuilder.requires(InfinispanRequirement.CONTAINER.getServiceName(context, ispnName)); // $NON-NLS-1$
+            Supplier<EmbeddedCacheManager> ecmDep = cacheFactoryBuilder.requires(ServiceNameFactory.resolveServiceName(InfinispanServiceDescriptor.CACHE_CONTAINER, ispnName)); // $NON-NLS-1$
             CacheFactoryService cfs = new CacheFactoryService(ecmDep, ppcfCons);
             cacheFactoryBuilder.setInstance(cfs);
             cacheFactoryBuilder.install();
@@ -461,7 +453,7 @@ class TeiidAdd extends AbstractAddStepHandler {
             ServiceBuilder<?> preparedPlanCacheBuilder = target.addService(TeiidServiceNames.CACHE_PREPAREDPLAN);
             Consumer<SessionAwareCache<PreparedPlan>> ppConsumer = preparedPlanCacheBuilder.provides(TeiidServiceNames.CACHE_PREPAREDPLAN);
             Supplier<CacheFactory> ppcDep = preparedPlanCacheBuilder.requires(TeiidServiceNames.PREPAREDPLAN_CACHE_FACTORY);
-            preparedPlanCacheBuilder.requires(InfinispanCacheRequirement.CACHE.getServiceName(context, ispnName, cacheName)); // $NON-NLS-1$
+            preparedPlanCacheBuilder.requires(ServiceNameFactory.resolveServiceName(InfinispanServiceDescriptor.CACHE, ispnName, cacheName)); // $NON-NLS-1$
             CacheService<PreparedPlan> preparedPlanService = new CacheService<>(cacheName, SessionAwareCache.Type.PREPAREDPLAN, 0, null, ppcDep, ppConsumer);
             preparedPlanCacheBuilder.setInstance(preparedPlanService);
             preparedPlanCacheBuilder.install();

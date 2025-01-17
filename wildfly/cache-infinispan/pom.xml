@@ -3,7 +3,7 @@
 	<parent>
 	    <artifactId>wildfly-parent</artifactId>
 	    <groupId>org.teiid.wildfly</groupId>
-	    <version>17.0.4-SNAPSHOT</version>
+	    <version>17.0.8</version>
 	</parent>
 	<licenses>
         <license>
@@ -37,7 +37,7 @@
     <dependencies>
 	    <dependency>
 	        <groupId>org.infinispan</groupId>
-	        <artifactId>infinispan-core-jakarta</artifactId>
+	        <artifactId>infinispan-core</artifactId>
             <version>${version.wildfly.org.infinispan}</version>
             <exclusions>
                 <exclusion>
@@ -48,7 +48,7 @@
 	    </dependency> 
 	    <dependency>
 	        <groupId>org.infinispan</groupId>
-	        <artifactId>infinispan-commons-jakarta</artifactId>
+	        <artifactId>infinispan-commons</artifactId>
 	        <version>${version.wildfly.org.infinispan}</version>
 	    </dependency>
 	    	    
@@ -71,6 +71,11 @@
             <groupId>jakarta.transaction</groupId>
             <artifactId>jakarta.transaction-api</artifactId>
 	    </dependency>
+
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+        </dependency>
 	</dependencies>
 
 </project>
