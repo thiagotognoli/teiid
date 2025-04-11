@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
     <name>Teiid</name>
 
-    <version>17.0.9</version>
+    <version>17.0.10</version>
     <description>Federated SQL and XML query engine.</description>
     <properties>
         <site.url>http://teiid.io</site.url>
@@ -60,9 +60,9 @@
         <version.cassandra-driver-core>3.11.3</version.cassandra-driver-core>
         <version.com.couchbase.client>2.4.2</version.com.couchbase.client>
         <version.com.fasterxml.aalto-xml>0.9.10</version.com.fasterxml.aalto-xml>
-        <version.com.fasterxml.jackson.core>2.18.2</version.com.fasterxml.jackson.core>
-        <version.com.fasterxml.jackson.dataformat>2.18.2</version.com.fasterxml.jackson.dataformat>
-        <version.com.fasterxml.jackson.core.jackson-databind>2.18.2</version.com.fasterxml.jackson.core.jackson-databind>
+        <version.com.fasterxml.jackson.core>2.18.3</version.com.fasterxml.jackson.core>
+        <version.com.fasterxml.jackson.dataformat>2.18.3</version.com.fasterxml.jackson.dataformat>
+        <version.com.fasterxml.jackson.core.jackson-databind>2.18.3</version.com.fasterxml.jackson.core.jackson-databind>
         <version.com.force.api.34>34.0.0</version.com.force.api.34>
         <version.com.force.api.41>45.1.0</version.com.force.api.41>
         <version.com.google.code.findbugs>3.0.2</version.com.google.code.findbugs>
@@ -133,7 +133,7 @@
 
 
         <!-- Infinispan Translator -->
-        <version.org.infinispan>15.0.13.Final</version.org.infinispan>
+        <version.org.infinispan>15.1.7.Final</version.org.infinispan>
         <version.protostream>5.0.10.Final</version.protostream>
         <version.square.protoparser>4.0.3</version.square.protoparser>
 
