@@ -20,10 +20,10 @@ package org.teiid.jboss;
 import org.jboss.as.naming.deployment.ContextNames;
 import org.jboss.as.server.deployment.*;
 import org.jboss.modules.ModuleClassLoader;
-import org.jboss.msc.Service;
 import org.jboss.msc.service.*;
 import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceController.State;
+import org.jboss.msc.value.InjectedValue;
 import org.jboss.vfs.VirtualFile;
 import org.teiid.adminapi.Model;
 import org.teiid.adminapi.Translator;
@@ -52,8 +52,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.concurrent.TimeUnit;
 
 
 class VDBDeployer implements DeploymentUnitProcessor {
@@ -141,12 +140,13 @@ class VDBDeployer implements DeploymentUnitProcessor {
 
         this.vdbRepository.addPendingDeployment(deployment);
         // build a VDB service
+        final VDBService vdb = new VDBService(deployment, resources, shutdownListener);
+        vdb.addMetadataRepository("index", new IndexMetadataRepository()); //$NON-NLS-1$
 
-        final ServiceBuilder<?> vdbService = context.getServiceTarget().addService(TeiidServiceNames.vdbServiceName(deployment.getName(), deployment.getVersion()));
-        Consumer<RuntimeVDB> runtimeVDBConsumer = vdbService.provides(TeiidServiceNames.vdbServiceName(deployment.getName(), deployment.getVersion()));
+        final ServiceBuilder<RuntimeVDB> vdbService = context.getRequirementServiceTarget().addService(TeiidServiceNames.vdbServiceName(deployment.getName(), deployment.getVersion()), vdb);
 
         // add dependencies to data-sources
-        dataSourceDependencies(deployment, context.getServiceTarget());
+        dataSourceDependencies(deployment, context.getRequirementServiceTarget());
 
         for (VDBImport vdbImport : deployment.getVDBImports()) {
             VDBKey vdbKey = new VDBKey(vdbImport.getName(), vdbImport.getVersion());
@@ -172,44 +172,42 @@ class VDBDeployer implements DeploymentUnitProcessor {
         }
 
         ServiceName vdbSwitchServiceName = TeiidServiceNames.vdbSwitchServiceName(deployment.getName(), deployment.getVersion());
-        Supplier<VDBRepository> vdbRepoDep = vdbService.requires(TeiidServiceNames.VDB_REPO);
-        Supplier<TranslatorRepository> translatorDep = vdbService.requires(TeiidServiceNames.TRANSLATOR_REPO);
-        Supplier<Executor> threadPoolDep = vdbService.requires(TeiidServiceNames.THREAD_POOL_SERVICE);
-        Supplier<ObjectSerializer> objSerDep = vdbService.requires(TeiidServiceNames.OBJECT_SERIALIZER);
-        Supplier<VDBStatusChecker> statusCheckerDep = vdbService.requires(TeiidServiceNames.VDB_STATUS_CHECKER);
-        Supplier<CountDownLatch> switchDep = vdbService.requires(vdbSwitchServiceName);
+        vdbService.addDependency(TeiidServiceNames.VDB_REPO, VDBRepository.class,  vdb.vdbRepositoryInjector);
+        vdbService.addDependency(TeiidServiceNames.TRANSLATOR_REPO, TranslatorRepository.class,  vdb.translatorRepositoryInjector);
+        vdbService.addDependency(TeiidServiceNames.THREAD_POOL_SERVICE, Executor.class,  vdb.executorInjector);
+        vdbService.addDependency(TeiidServiceNames.OBJECT_SERIALIZER, ObjectSerializer.class, vdb.serializerInjector);
+        vdbService.addDependency(TeiidServiceNames.VDB_STATUS_CHECKER, VDBStatusChecker.class, vdb.vdbStatusCheckInjector);
+        vdbService.addDependency(vdbSwitchServiceName, CountDownLatch.class, new InjectedValue<CountDownLatch>());
         //ensure that the secondary services have started
         vdbService.requires(TeiidServiceNames.MATVIEW_SERVICE);
         vdbService.requires(TeiidServiceNames.REST_WAR_SERVICE);
 
         // VDB restart switch, control the vdbservice by adding removing the switch service. If you
         // remove the service by setting status remove, there is no way start it back up if vdbservice used alone
-        installVDBSwitchService(context.getServiceTarget(), vdbSwitchServiceName);
+        installVDBSwitchService(context.getRequirementServiceTarget(), vdbSwitchServiceName);
 
-//        vdbService.addListener(new AbstractServiceListener<Object>() {
-//            @Override
-//            public void transition(final ServiceController controller, final ServiceController.Transition transition) {
-//                if (transition.equals(ServiceController.Transition.DOWN_to_WAITING)) {
-//                    RuntimeVDB runtimeVDB = RuntimeVDB.class.cast(controller.getValue());
-//                    if (runtimeVDB != null && runtimeVDB.isRestartInProgress()) {
-//                        ServiceName vdbSwitchServiceName = TeiidServiceNames.vdbSwitchServiceName(deployment.getName(), deployment.getVersion());
-//                        ServiceController<?> switchSvc =  controller.getServiceContainer().getService(vdbSwitchServiceName);
-//                        if (switchSvc != null) {
-//                            CountDownLatch latch = CountDownLatch.class.cast(switchSvc.getValue());
-//                            try {
-//                                latch.await(5, TimeUnit.SECONDS);
-//                            } catch (InterruptedException e) {
-//                                // todo:log it?
-//                            }
-//                        }
-//                        installVDBSwitchService(controller.getServiceContainer(), vdbSwitchServiceName);
-//                    }
-//                }
-//            }
-//        });
-        final VDBService vdb = new VDBService(deployment, resources, shutdownListener, vdbRepoDep, translatorDep, threadPoolDep, objSerDep, statusCheckerDep, runtimeVDBConsumer);
+        vdbService.addListener(new LifecycleListener() {
+            @Override
+            public void handleEvent(ServiceController<?> controller, LifecycleEvent event) {
+                if(LifecycleEvent.DOWN.equals(event)) {
+                    RuntimeVDB runtimeVDB = RuntimeVDB.class.cast(controller.getValue());
+                    if (runtimeVDB != null && runtimeVDB.isRestartInProgress()) {
+                        ServiceName vdbSwitchServiceName = TeiidServiceNames.vdbSwitchServiceName(deployment.getName(), deployment.getVersion());
+                        ServiceController<?> switchSvc =  controller.getServiceContainer().getService(vdbSwitchServiceName);
+                        if (switchSvc != null) {
+                            CountDownLatch latch = CountDownLatch.class.cast(switchSvc.getValue());
+                            try {
+                                latch.await(5, TimeUnit.SECONDS);
+                            } catch (InterruptedException e) {
+                                // todo:log it?
+                            }
+                        }
+                        installVDBSwitchService(controller.getServiceContainer(), vdbSwitchServiceName);
+                    }
+                }
+            }
+        });
         vdb.addMetadataRepository("index", new IndexMetadataRepository()); //$NON-NLS-1$
-        vdbService.setInstance(vdb);
         vdbService.setInitialMode(Mode.PASSIVE).install();
     }
 
@@ -250,11 +248,9 @@ class VDBDeployer implements DeploymentUnitProcessor {
         }
         ContextNames.BindInfo bindInfo = ContextNames.bindInfoFor(jndiName);
         final ServiceName svcName = bindInfo.getBinderServiceName();
-        ServiceBuilder<?> sb = serviceTarget.addService(dsListenerServiceName);
-        sb.requires(svcName);
-        Supplier<VDBStatusChecker> statusCheckerSupplier = sb.requires(TeiidServiceNames.VDB_STATUS_CHECKER);
-        DataSourceListener dsl = new DataSourceListener(dsName, svcName, vdbKey, statusCheckerSupplier);
-        sb.setInstance(dsl);
+        DataSourceListener dsl = new DataSourceListener(dsName, svcName, vdbKey);
+        ServiceBuilder<DataSourceListener> sb = serviceTarget.addService(dsListenerServiceName, dsl);
+        sb.addDependency(TeiidServiceNames.VDB_STATUS_CHECKER, VDBStatusChecker.class, dsl.vdbStatusCheckInjector);
         sb.setInitialMode(Mode.PASSIVE).install();
     }
 
@@ -276,17 +272,16 @@ class VDBDeployer implements DeploymentUnitProcessor {
         }
     }
 
-    static class DataSourceListener implements Service {
+    static class DataSourceListener implements org.jboss.msc.service.Service<DataSourceListener>{
         private String dsName;
         private ServiceName svcName;
         private VDBKey vdb;
-        Supplier<VDBStatusChecker> vdbStatusCheckInjector;
+        InjectedValue<VDBStatusChecker> vdbStatusCheckInjector = new InjectedValue<VDBStatusChecker>();
 
-        public DataSourceListener(String dsName, ServiceName svcName, VDBKey vdb, Supplier<VDBStatusChecker> statusChecker) {
+        public DataSourceListener(String dsName, ServiceName svcName, VDBKey vdb) {
             this.dsName = dsName;
             this.svcName = svcName;
             this.vdb = vdb;
-            this.vdbStatusCheckInjector = statusChecker;
         }
 
         public DataSourceListener getValue() throws IllegalStateException,IllegalArgumentException {
@@ -297,7 +292,7 @@ class VDBDeployer implements DeploymentUnitProcessor {
         public void start(StartContext context) throws StartException {
             ServiceController<?> s = context.getController().getServiceContainer().getService(this.svcName);
             if (s != null) {
-                this.vdbStatusCheckInjector.get().dataSourceAdded(this.dsName, vdb);
+                this.vdbStatusCheckInjector.getValue().dataSourceAdded(this.dsName, vdb);
             }
         }
 
@@ -305,7 +300,7 @@ class VDBDeployer implements DeploymentUnitProcessor {
         public void stop(StopContext context) {
             ServiceController<?> s = context.getController().getServiceContainer().getService(this.svcName);
             if (s.getMode().equals(Mode.REMOVE) || s.getState().equals(State.STOPPING)) {
-                this.vdbStatusCheckInjector.get().dataSourceRemoved(this.dsName, vdb);
+                this.vdbStatusCheckInjector.getValue().dataSourceRemoved(this.dsName, vdb);
             }
         }
     }
