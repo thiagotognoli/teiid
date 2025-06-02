@@ -12,7 +12,7 @@
         </feature>
         <feature spec="subsystem.logging.logger">
             <param name="logger" value="org.teiid"/>
-            <param name="level" value="WARN"/>
+            <param name="level" value="INFO"/>
         </feature>
         <feature spec="subsystem.logging.logger">
             <param name="logger" value="org.teiid.AUDIT_LOG"/>
