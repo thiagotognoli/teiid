@@ -36,7 +36,7 @@ import org.teiid.translator.jdbc.JDBCMetadataProcessor;
 
 public class PrestoDBMetadataProcessor extends JDBCMetadataProcessor implements MetadataProcessor<Connection>{
 
-    private boolean trimColumnNames;
+    protected boolean trimColumnNames;
 
     @Override
     public void process(MetadataFactory metadataFactory, Connection conn)    throws TranslatorException {
@@ -73,7 +73,7 @@ public class PrestoDBMetadataProcessor extends JDBCMetadataProcessor implements 
         }
     }
 
-    private List<String> getCatalogs(Connection conn) throws SQLException {
+    protected List<String> getCatalogs(Connection conn) throws SQLException {
         ArrayList<String> catalogs = new ArrayList<String>();
         Statement stmt = conn.createStatement();
         ResultSet rs =  stmt.executeQuery("SHOW CATALOGS"); //$NON-NLS-1$
@@ -106,7 +106,7 @@ public class PrestoDBMetadataProcessor extends JDBCMetadataProcessor implements 
         return tables;
     }
 
-    private String getRuntimeType(String type) {
+    protected String getRuntimeType(String type) {
 
         if (type.equalsIgnoreCase("boolean")) { //$NON-NLS-1$
             return TypeFacility.RUNTIME_NAMES.BOOLEAN;
@@ -139,7 +139,7 @@ public class PrestoDBMetadataProcessor extends JDBCMetadataProcessor implements 
         return TypeFacility.RUNTIME_NAMES.OBJECT;
     }
 
-    private void addTable(String tableName, Connection conn, String catalog, String schema, MetadataFactory metadataFactory) throws SQLException {
+    protected void addTable(String tableName, Connection conn, String catalog, String schema, MetadataFactory metadataFactory) throws SQLException {
         Table table = addTable(metadataFactory, null, null, tableName, null, tableName);
         if (table == null) {
             return;

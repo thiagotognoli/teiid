@@ -230,6 +230,10 @@
             <param name="module" value="org.jboss.teiid.translator.prestodb"/>
         </feature>
         <feature spec="subsystem.teiid.translator">
+            <param name="translator" value="amazon-athena"/>
+            <param name="module" value="org.jboss.teiid.translator.prestodb"/>
+        </feature>
+        <feature spec="subsystem.teiid.translator">
             <param name="translator" value="phoenix"/>
             <param name="module" value="org.jboss.teiid.translator.phoenix"/>
         </feature>
