@@ -28,6 +28,9 @@ Enter the following:
 	
 you can find the deployment artifacts in the "teiid/build/target" directory once the build is completed.
 
+	$ JAVA_TOOL_OPTIONS="-Duser.language=en -Duser.country=US" mvn clean install -P dev -s settings.xml
+
+
 ## Travis Builds
 
 Teiid includes a travis build config.  By default it performs only an "install" on every commit.  It allows for a
