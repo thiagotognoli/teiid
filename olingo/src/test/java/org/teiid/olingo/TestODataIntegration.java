@@ -3297,7 +3297,6 @@ public class TestODataIntegration {
         ef.setRowCount(2);
         ef.setIncrementRows(true);
         ContentResponse response = http.GET(baseURL + "/loopy/vm1/G1?$apply=aggregate(e3%20with%20sum%20as%20Total)");
-        System.out.println(response.getContentAsString());
         assertEquals(200, response.getStatus());
         assertEquals("{\"@odata.context\":\"$metadata#G1%28Total%29\",\"value\":[{\"@odata.id\":\"null\",\"Total\":0.1}]}",  response.getContentAsString());
     }
