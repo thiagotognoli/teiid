@@ -18,8 +18,12 @@
 
 package org.teiid.translator.athena;
 
+import org.teiid.translator.MetadataProcessor;
 import org.teiid.translator.Translator;
+import org.teiid.translator.jdbc.JDBCMetadataProcessor;
 import org.teiid.translator.prestodb.PrestoDBExecutionFactory;
+
+import java.sql.Connection;
 
 @Translator(name="amazon-athena", description="Amazon Athena Translator")
 public class AthenaExecutionFactory extends PrestoDBExecutionFactory {
@@ -36,4 +40,13 @@ public class AthenaExecutionFactory extends PrestoDBExecutionFactory {
         return false;
     }
 
+    @Override
+    protected JDBCMetadataProcessor createMetadataProcessor() {
+        return (AthenaMetadataProcessor)getMetadataProcessor();
+    }
+
+    @Override
+    public MetadataProcessor<Connection> getMetadataProcessor() {
+        return new AthenaMetadataProcessor();
+    }
 }
