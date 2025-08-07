@@ -22,15 +22,14 @@ Teiid is a data virtualization system that allows applications to use data from 
 - Create a github account and fork Teiid
 
 Enter the following:
-	$ mkdir -p teiid && cd teiid
-	$ git clone --branch certara-oreva-0.9.0 --single-branch https://github.com/thiagotognoli/teiid-oreva oreva && cd oreva && mvn clean install -P release && cd ..
-	$ git clone --branch 5.0.2 --single-branch https://github.com/thiagotognoli/olingo-odata4.git && cd olingo-odata4 && mvn clean install && cd ..
-	$ git clone https://github.com/certara-dwebster/teiid.git
-	$ cd teiid
-	$ mvn clean install -s settings.xml
+```bash
+mkdir -p teiid && cd teiid
+git clone --branch certara-oreva-0.9.0 --single-branch https://github.com/thiagotognoli/teiid-oreva oreva && cd oreva && mvn clean install -P release && cd ..
+git clone --branch 5.0.2 --single-branch https://github.com/thiagotognoli/olingo-odata4.git && cd olingo-odata4 && mvn clean install && cd ..
+git clone https://github.com/certara-dwebster/teiid.git && cd teiid && mvn clean install -s settings.xml
+```
 
 you can find the deployment artifacts in the "teiid/build/target" directory once the build is completed.
-
 
 
 ## Travis Builds
