@@ -17,15 +17,10 @@
  */
 package org.teiid.jboss;
 
-import org.jboss.as.server.deployment.Attachments;
-import org.jboss.as.server.deployment.DeploymentPhaseContext;
-import org.jboss.as.server.deployment.DeploymentUnit;
-import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
-import org.jboss.as.server.deployment.DeploymentUnitProcessor;
+import org.jboss.as.server.deployment.*;
 import org.jboss.as.server.deployment.module.ModuleDependency;
 import org.jboss.as.server.deployment.module.ModuleSpecification;
 import org.jboss.modules.Module;
-import org.jboss.modules.ModuleIdentifier;
 import org.jboss.modules.ModuleLoadException;
 import org.jboss.modules.ModuleLoader;
 
@@ -36,11 +31,11 @@ public class TranslatorDependencyDeployer implements DeploymentUnitProcessor {
         DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
         try {
             final ModuleSpecification moduleSpecification = deploymentUnit.getAttachment(Attachments.MODULE_SPECIFICATION);
-            final ModuleLoader moduleLoader = Module.getCallerModule().getModule(ModuleIdentifier.create("org.jboss.teiid")).getModuleLoader(); //$NON-NLS-1$
-            moduleSpecification.addLocalDependency(new ModuleDependency(moduleLoader, ModuleIdentifier.create("org.jboss.teiid.api"), false, false, false, false)); //$NON-NLS-1$
-            moduleSpecification.addLocalDependency(new ModuleDependency(moduleLoader, ModuleIdentifier.create("org.jboss.teiid.common-core"), false, false, false, false)); //$NON-NLS-1$
-            moduleSpecification.addLocalDependency(new ModuleDependency(moduleLoader, ModuleIdentifier.create("javax.api"), false, false, false, false)); //$NON-NLS-1$
-            moduleSpecification.addLocalDependency(new ModuleDependency(moduleLoader, ModuleIdentifier.create("javax.resource.api"), false, false, false, false)); //$NON-NLS-1$
+            final ModuleLoader moduleLoader = Module.getCallerModule().getModule("org.jboss.teiid").getModuleLoader();
+            moduleSpecification.addLocalDependency(ModuleDependency.Builder.of(moduleLoader, "org.jboss.teiid.api").setOptional(false).setExport(false).setImportServices(false).setUserSpecified(false).build()); //$NON-NLS-1$
+            moduleSpecification.addLocalDependency(ModuleDependency.Builder.of(moduleLoader, "org.jboss.teiid.common-core").setOptional(false).setExport(false).setImportServices(false).setUserSpecified(false).build()); //$NON-NLS-1$
+            moduleSpecification.addLocalDependency(ModuleDependency.Builder.of(moduleLoader, "javax.api").setOptional(false).setExport(false).setImportServices(false).setUserSpecified(false).build()); //$NON-NLS-1$
+            moduleSpecification.addLocalDependency(ModuleDependency.Builder.of(moduleLoader, "javax.resource.api").setOptional(false).setExport(false).setImportServices(false).setUserSpecified(false).build()); //$NON-NLS-1$
         } catch (ModuleLoadException e) {
             throw new DeploymentUnitProcessingException(e);
         }
