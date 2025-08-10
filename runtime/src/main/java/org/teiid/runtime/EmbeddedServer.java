@@ -1002,7 +1002,7 @@ public class EmbeddedServer extends AbstractVDBDeployer implements EventDistribu
     }
 
     @Override
-    protected VDBRepository getVDBRepository() {
+    public VDBRepository getVDBRepository() {
         return this.repo;
     }
 
