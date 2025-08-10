@@ -23,11 +23,11 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.Properties;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stax.StAXSource;
-import javax.xml.ws.Dispatch;
-import javax.xml.ws.Service;
+import jakarta.xml.ws.Dispatch;
+import jakarta.xml.ws.Service;
 
 import org.junit.Ignore;
 import org.junit.Test;

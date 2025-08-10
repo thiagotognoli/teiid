@@ -22,8 +22,8 @@ import static org.junit.Assert.*;
 
 import java.util.Collections;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
 
 import org.junit.Test;
 import org.mockito.Mockito;

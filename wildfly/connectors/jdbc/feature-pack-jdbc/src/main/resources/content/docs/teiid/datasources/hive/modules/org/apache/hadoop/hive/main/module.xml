@@ -16,6 +16,6 @@
         <module name="org.slf4j"/>
         <module name="org.apache.commons.logging"/>
         <module name="javax.api"/>
-        <module name="javax.resource.api"/>
+        <module name="jakarta.resource.api"/>
     </dependencies>
 </module>

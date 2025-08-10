@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import javax.xml.transform.stax.StAXSource;
-import javax.xml.ws.Dispatch;
-import javax.xml.ws.Service;
-import javax.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.Dispatch;
+import jakarta.xml.ws.Service;
+import jakarta.xml.ws.handler.MessageContext;
 
 import org.junit.Test;
 import org.mockito.Mockito;

@@ -20,8 +20,8 @@
     </resources>
 
     <dependencies>
-        <module name="javax.api" />
-        <module name="javax.resource.api"/>         
+        <module name="jakarta.api" />
+        <module name="jakarta.resource.api"/>         
         <module name="sun.jdk" optional="true"/> <!-- Kerberos -->          
         <module name="org.jboss.teiid.common-core" />
         <module name="org.jboss.teiid.api" />
@@ -38,9 +38,9 @@
         <module name="org.jboss.as.server"/>        
         <module name="org.jboss.as.naming"/>
         <module name="org.jboss.security.negotiation"/> <!-- SPNEGO -->
-        <module name="javax.xml.bind.api"/>
-        <module name="javax.transaction.api"/>
-        <module name="javax.activation.api"/>
+        <module name="jakarta.xml.bind.api"/>
+        <module name="jakarta.transaction.api"/>
+        <module name="jakarta.activation.api"/>
         <module name="org.jboss.as.clustering.jgroups"/>
         <module name="org.infinispan"/>
         <module name="org.arrahtec"/>

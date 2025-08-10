@@ -9,7 +9,7 @@
 	</resources>
 
 	<dependencies>
-		<module name="javax.api" />
+		<module name="jakarta.api" />
 	</dependencies>
 
 </module>

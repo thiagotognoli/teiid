@@ -9,8 +9,8 @@
 	</resources>
 
 	<dependencies>
-		<module name="javax.api" />
-		<module name="javax.activation.api" />
+		<module name="jakarta.api" />
+		<module name="jakarta.activation.api" />
 		<module name="org.apache.log4j" />
 		<module name="org.slf4j" />
 		<module name="org.apache.lucene" />

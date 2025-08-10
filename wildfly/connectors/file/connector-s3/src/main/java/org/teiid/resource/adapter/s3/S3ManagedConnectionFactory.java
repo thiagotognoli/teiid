@@ -19,7 +19,7 @@ package org.teiid.resource.adapter.s3;
 
 import java.util.Objects;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.teiid.core.BundleUtil;
 import org.teiid.resource.spi.BasicConnectionFactory;

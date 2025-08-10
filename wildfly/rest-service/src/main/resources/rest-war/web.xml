@@ -4,7 +4,7 @@
     <display-name>${context-name}</display-name>
     
     <context-param>
-        <param-name>javax.ws.rs.Application</param-name>
+        <param-name>jakarta.ws.rs.Application</param-name>
         <param-value>org.teiid.jboss.rest.TeiidRestApplication</param-value>
     </context-param>
     

@@ -17,7 +17,7 @@
  */
 package org.teiid.resource.adapter.ws;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 import javax.security.auth.Subject;
 
 import org.teiid.resource.spi.BasicConnectionFactory;

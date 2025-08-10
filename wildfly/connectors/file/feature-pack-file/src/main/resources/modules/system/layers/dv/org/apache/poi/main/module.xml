@@ -12,7 +12,7 @@
     </resources>
 
     <dependencies>
-        <module name="javax.api" />
+        <module name="jakarta.api" />
         <module name="org.apache.xmlbeans" />
 
     </dependencies>

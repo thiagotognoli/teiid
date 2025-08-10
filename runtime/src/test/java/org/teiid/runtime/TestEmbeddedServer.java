@@ -47,7 +47,7 @@ import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.transaction.*;
+import jakarta.transaction.*;
 import javax.transaction.xa.XAResource;
 
 import org.junit.After;
@@ -360,7 +360,7 @@ public class TestEmbeddedServer {
         public int getStatus() throws SystemException {
             Transaction t = txns.get();
             if (t == null) {
-                return javax.transaction.Status.STATUS_NO_TRANSACTION;
+                return jakarta.transaction.Status.STATUS_NO_TRANSACTION;
             }
             return t.getStatus();
         }

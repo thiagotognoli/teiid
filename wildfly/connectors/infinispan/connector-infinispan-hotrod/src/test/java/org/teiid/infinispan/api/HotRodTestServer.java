@@ -17,7 +17,7 @@
  */
 package org.teiid.infinispan.api;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfiguration;

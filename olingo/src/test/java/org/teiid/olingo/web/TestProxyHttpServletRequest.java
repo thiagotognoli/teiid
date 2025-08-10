@@ -20,7 +20,7 @@ package org.teiid.olingo.web;
 
 import static org.junit.Assert.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
 import org.mockito.Mockito;

@@ -31,20 +31,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import javax.security.auth.Subject;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 import javax.xml.namespace.QName;
-import javax.xml.ws.AsyncHandler;
-import javax.xml.ws.Binding;
-import javax.xml.ws.Dispatch;
-import javax.xml.ws.EndpointReference;
-import javax.xml.ws.Response;
-import javax.xml.ws.Service;
-import javax.xml.ws.Service.Mode;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.http.HTTPBinding;
+import jakarta.xml.ws.AsyncHandler;
+import jakarta.xml.ws.Binding;
+import jakarta.xml.ws.Dispatch;
+import jakarta.xml.ws.EndpointReference;
+import jakarta.xml.ws.Response;
+import jakarta.xml.ws.Service;
+import jakarta.xml.ws.Service.Mode;
+import jakarta.xml.ws.WebServiceException;
+import jakarta.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.http.HTTPBinding;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
@@ -196,7 +196,7 @@ public abstract class BaseWSConnection implements WSConnection {
                     clientPolicy.setConnectionTimeout(timeout);
                 }
 
-                javax.ws.rs.core.Response response = this.client.invoke(httpMethod, payload);
+                jakarta.ws.rs.core.Response response = this.client.invoke(httpMethod, payload);
                 this.responseContext.put(WSConnection.STATUS_CODE, response.getStatus());
                 this.responseContext.putAll(response.getMetadata());
 
@@ -495,7 +495,7 @@ public abstract class BaseWSConnection implements WSConnection {
 
     @Override
     public String getStatusMessage(int status) {
-        Status s = javax.ws.rs.core.Response.Status.fromStatusCode(status);
+        Status s = jakarta.ws.rs.core.Response.Status.fromStatusCode(status);
         if (s != null) {
             return s.getReasonPhrase();
         }

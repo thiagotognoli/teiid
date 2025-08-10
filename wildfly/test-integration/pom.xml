@@ -70,14 +70,14 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
 		</dependency>
-	    <dependency>
-	        <groupId>org.jboss.spec.javax.transaction</groupId>
-	        <artifactId>jboss-transaction-api_1.3_spec</artifactId>
-	        <scope>provided</scope>
-	    </dependency>
-	    <dependency>
-	        <groupId>org.jboss.spec.javax.resource</groupId>
-	        <artifactId>jboss-connector-api_1.7_spec</artifactId>
+		<dependency>
+			<groupId>jakarta.transaction</groupId>
+			<artifactId>jakarta.transaction-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.resource</groupId>
+			<artifactId>jakarta.resource-api</artifactId>
 	        <scope>provided</scope>
 	    </dependency>
         <dependency>

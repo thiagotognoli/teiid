@@ -19,7 +19,7 @@ package org.teiid.resource.adapter.solr;
 
 import java.io.IOException;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 import javax.security.auth.Subject;
 
 import org.apache.http.impl.client.DefaultHttpClient;

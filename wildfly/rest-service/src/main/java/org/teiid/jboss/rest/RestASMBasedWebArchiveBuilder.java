@@ -297,7 +297,7 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
         FieldVisitor fv;
         MethodVisitor mv;
 
-        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, "org/teiid/jboss/rest/TeiidRestApplication", null, "javax/ws/rs/core/Application", null);
+        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, "org/teiid/jboss/rest/TeiidRestApplication", null, "jakarta/ws/rs/core/Application", null);
 
         {
         fv = cw.visitField(ACC_PRIVATE, "singletons", "Ljava/util/Set;", "Ljava/util/Set<Ljava/lang/Object;>;", null);
@@ -313,7 +313,7 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
         mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, "javax/ws/rs/core/Application", "<init>", "()V");
+        mv.visitMethodInsn(INVOKESPECIAL, "jakarta/ws/rs/core/Application", "<init>", "()V");
         mv.visitVarInsn(ALOAD, 0);
         mv.visitTypeInsn(NEW, "java/util/HashSet");
         mv.visitInsn(DUP);
@@ -391,7 +391,7 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
         cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, "org/teiid/jboss/rest/"+modelName, null, "org/teiid/jboss/rest/TeiidRSProvider", null);
 
         {
-        av0 = cw.visitAnnotation("Ljavax/ws/rs/Path;", true);
+        av0 = cw.visitAnnotation("Ljakarta/ws/rs/Path;", true);
         av0.visit("value", "/"+modelName);
         av0.visitEnd();
         }
@@ -402,7 +402,7 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
             av0.visitEnd();
         }
 
-        cw.visitInnerClass("javax/ws/rs/core/Response$Status", "javax/ws/rs/core/Response", "Status", ACC_PUBLIC + ACC_FINAL + ACC_STATIC + ACC_ENUM);
+        cw.visitInnerClass("jakarta/ws/rs/core/Response$Status", "jakarta/ws/rs/core/Response", "Status", ACC_PUBLIC + ACC_FINAL + ACC_STATIC + ACC_ENUM);
 
         {
         mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
@@ -522,13 +522,13 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
         paramSignature.append(")");
 
         if (useMultipart) {
-            mv = cw.visitMethod(ACC_PUBLIC, procedure.getName()+contentType.replaceAll("[^\\w]", "_"), "(Lorg/jboss/resteasy/plugins/providers/multipart/MultipartFormDataInput;)Ljavax/ws/rs/core/StreamingOutput;", null, new String[] { "javax/ws/rs/WebApplicationException" });
+            mv = cw.visitMethod(ACC_PUBLIC, procedure.getName()+contentType.replaceAll("[^\\w]", "_"), "(Lorg/jboss/resteasy/plugins/providers/multipart/MultipartFormDataInput;)Ljakarta/ws/rs/core/StreamingOutput;", null, new String[] { "jakarta/ws/rs/WebApplicationException" });
         }
         else {
-            mv = cw.visitMethod(ACC_PUBLIC, procedure.getName()+contentType.replaceAll("[^\\w]", "_"), paramSignature+"Ljavax/ws/rs/core/StreamingOutput;", null, new String[] { "javax/ws/rs/WebApplicationException" });
+            mv = cw.visitMethod(ACC_PUBLIC, procedure.getName()+contentType.replaceAll("[^\\w]", "_"), paramSignature+"Ljakarta/ws/rs/core/StreamingOutput;", null, new String[] { "jakarta/ws/rs/WebApplicationException" });
         }
         {
-        av0 = mv.visitAnnotation("Ljavax/ws/rs/Produces;", true);
+        av0 = mv.visitAnnotation("Ljakarta/ws/rs/Produces;", true);
         {
         AnnotationVisitor av1 = av0.visitArray("value");
         av1.visit(null, contentType);
@@ -537,16 +537,16 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
         av0.visitEnd();
         }
         {
-        av0 = mv.visitAnnotation("Ljavax/ws/rs/"+method.toUpperCase()+";", true);
+        av0 = mv.visitAnnotation("Ljakarta/ws/rs/"+method.toUpperCase()+";", true);
         av0.visitEnd();
         }
         {
-        av0 = mv.visitAnnotation("Ljavax/ws/rs/Path;", true);
+        av0 = mv.visitAnnotation("Ljakarta/ws/rs/Path;", true);
         av0.visit("value", uri);
         av0.visitEnd();
         }
         {
-        av0 = mv.visitAnnotation("Ljavax/annotation/security/PermitAll;", true);
+        av0 = mv.visitAnnotation("Ljakarta/annotation/security/PermitAll;", true);
         av0.visitEnd();
         }
 
@@ -580,12 +580,12 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
             HashSet<String> pathParms = getPathParameters(uri);
             for (int i = 0; i < paramsSize; i++)
             {
-                String paramType = "Ljavax/ws/rs/FormParam;";
+                String paramType = "Ljakarta/ws/rs/FormParam;";
                 if (get) {
-                    paramType = "Ljavax/ws/rs/QueryParam;";
+                    paramType = "Ljakarta/ws/rs/QueryParam;";
                 }
                 if (pathParms.contains(params.get(i).getName())){
-                    paramType = "Ljavax/ws/rs/PathParam;";
+                    paramType = "Ljakarta/ws/rs/PathParam;";
                 }
 
                 av0 = mv.visitParameterAnnotation(i, paramType, true);
@@ -627,17 +627,17 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
             mv.visitLdcInsn(charSet==null?"":charSet);
             mv.visitInsn(passthroughAuth?ICONST_1:ICONST_0);
             mv.visitInsn(usingReturn?ICONST_1:ICONST_0);
-            mv.visitMethodInsn(INVOKEVIRTUAL, "org/teiid/jboss/rest/"+modelName, "execute", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/LinkedHashMap;Ljava/lang/String;ZZ)Ljavax/ws/rs/core/StreamingOutput;");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "org/teiid/jboss/rest/"+modelName, "execute", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/LinkedHashMap;Ljava/lang/String;ZZ)Ljakarta/ws/rs/core/StreamingOutput;");
             mv.visitLabel(l1);
             mv.visitInsn(ARETURN);
             mv.visitLabel(l2);
             mv.visitFrame(F_SAME1, 0, null, 1, new Object[] {"java/sql/SQLException"});
             mv.visitVarInsn(ASTORE, paramsSize+1);
-            mv.visitTypeInsn(NEW, "javax/ws/rs/WebApplicationException");
+            mv.visitTypeInsn(NEW, "jakarta/ws/rs/WebApplicationException");
             mv.visitInsn(DUP);
             mv.visitVarInsn(ALOAD, paramsSize+1);
-            mv.visitFieldInsn(GETSTATIC, "javax/ws/rs/core/Response$Status", "INTERNAL_SERVER_ERROR", "Ljavax/ws/rs/core/Response$Status;");
-            mv.visitMethodInsn(INVOKESPECIAL, "javax/ws/rs/WebApplicationException", "<init>", "(Ljava/lang/Throwable;Ljavax/ws/rs/core/Response$Status;)V");
+            mv.visitFieldInsn(GETSTATIC, "jakarta/ws/rs/core/Response$Status", "INTERNAL_SERVER_ERROR", "Ljakarta/ws/rs/core/Response$Status;");
+            mv.visitMethodInsn(INVOKESPECIAL, "jakarta/ws/rs/WebApplicationException", "<init>", "(Ljava/lang/Throwable;Ljakarta/ws/rs/core/Response$Status;)V");
             mv.visitInsn(ATHROW);
             mv.visitMaxs(7, paramsSize+2);
             mv.visitEnd();
@@ -651,17 +651,17 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
             mv.visitLdcInsn(charSet==null?"":charSet);
             mv.visitInsn(passthroughAuth?ICONST_1:ICONST_0);
             mv.visitInsn(usingReturn?ICONST_1:ICONST_0);
-            mv.visitMethodInsn(INVOKEVIRTUAL, "org/teiid/jboss/rest/"+modelName, "executePost", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/jboss/resteasy/plugins/providers/multipart/MultipartFormDataInput;Ljava/lang/String;ZZ)Ljavax/ws/rs/core/StreamingOutput;");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "org/teiid/jboss/rest/"+modelName, "executePost", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/jboss/resteasy/plugins/providers/multipart/MultipartFormDataInput;Ljava/lang/String;ZZ)Ljakarta/ws/rs/core/StreamingOutput;");
             mv.visitLabel(l1);
             mv.visitInsn(ARETURN);
             mv.visitLabel(l2);
             mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] {"java/sql/SQLException"});
             mv.visitVarInsn(ASTORE, 2);
-            mv.visitTypeInsn(NEW, "javax/ws/rs/WebApplicationException");
+            mv.visitTypeInsn(NEW, "jakarta/ws/rs/WebApplicationException");
             mv.visitInsn(DUP);
             mv.visitVarInsn(ALOAD, 2);
-            mv.visitFieldInsn(GETSTATIC, "javax/ws/rs/core/Response$Status", "INTERNAL_SERVER_ERROR", "Ljavax/ws/rs/core/Response$Status;");
-            mv.visitMethodInsn(INVOKESPECIAL, "javax/ws/rs/WebApplicationException", "<init>", "(Ljava/lang/Throwable;Ljavax/ws/rs/core/Response$Status;)V");
+            mv.visitFieldInsn(GETSTATIC, "jakarta/ws/rs/core/Response$Status", "INTERNAL_SERVER_ERROR", "Ljakarta/ws/rs/core/Response$Status;");
+            mv.visitMethodInsn(INVOKESPECIAL, "jakarta/ws/rs/WebApplicationException", "<init>", "(Ljava/lang/Throwable;Ljakarta/ws/rs/core/Response$Status;)V");
             mv.visitInsn(ATHROW);
             mv.visitMaxs(8, 3);
             mv.visitEnd();
@@ -671,7 +671,7 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
 
     private void addConsumes(MethodVisitor mv, String contentType) {
         AnnotationVisitor av0;
-        av0 = mv.visitAnnotation("Ljavax/ws/rs/Consumes;", true);
+        av0 = mv.visitAnnotation("Ljakarta/ws/rs/Consumes;", true);
         {
         AnnotationVisitor av1 = av0.visitArray("value");
         av1.visit(null, contentType);
@@ -684,9 +684,9 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
         MethodVisitor mv;
         {
             AnnotationVisitor av0;
-            mv = cw.visitMethod(ACC_PUBLIC, "sqlQuery"+context, "(Ljava/lang/String;)Ljavax/ws/rs/core/StreamingOutput;", null, null);
+            mv = cw.visitMethod(ACC_PUBLIC, "sqlQuery"+context, "(Ljava/lang/String;)Ljakarta/ws/rs/core/StreamingOutput;", null, null);
             {
-            av0 = mv.visitAnnotation("Ljavax/ws/rs/Produces;", true);
+            av0 = mv.visitAnnotation("Ljakarta/ws/rs/Produces;", true);
             {
             AnnotationVisitor av1 = av0.visitArray("value");
             av1.visit(null, "application/"+context);
@@ -696,11 +696,11 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
             }
             addConsumes(mv, "application/x-www-form-urlencoded");
             {
-            av0 = mv.visitAnnotation("Ljavax/ws/rs/POST;", true);
+            av0 = mv.visitAnnotation("Ljakarta/ws/rs/POST;", true);
             av0.visitEnd();
             }
             {
-            av0 = mv.visitAnnotation("Ljavax/ws/rs/Path;", true);
+            av0 = mv.visitAnnotation("Ljakarta/ws/rs/Path;", true);
             av0.visit("value", "/query");
             av0.visitEnd();
             }
@@ -729,7 +729,7 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
             }
 
             {
-            av0 = mv.visitParameterAnnotation(0, "Ljavax/ws/rs/FormParam;", true);
+            av0 = mv.visitParameterAnnotation(0, "Ljakarta/ws/rs/FormParam;", true);
             av0.visit("value", "sql");
             av0.visitEnd();
             }
@@ -745,17 +745,17 @@ public class RestASMBasedWebArchiveBuilder implements RestWarGenerator {
             mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(context.equals("xml")?ICONST_0:ICONST_1);
             mv.visitInsn(passthroughAuth?ICONST_1:ICONST_0);
-            mv.visitMethodInsn(INVOKEVIRTUAL, "org/teiid/jboss/rest/"+modelName, "executeQuery", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZ)Ljavax/ws/rs/core/StreamingOutput;");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "org/teiid/jboss/rest/"+modelName, "executeQuery", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZ)Ljakarta/ws/rs/core/StreamingOutput;");
             mv.visitLabel(l1);
             mv.visitInsn(ARETURN);
             mv.visitLabel(l2);
             mv.visitFrame(F_SAME1, 0, null, 1, new Object[] {"java/sql/SQLException"});
             mv.visitVarInsn(ASTORE, 2);
-            mv.visitTypeInsn(NEW, "javax/ws/rs/WebApplicationException");
+            mv.visitTypeInsn(NEW, "jakarta/ws/rs/WebApplicationException");
             mv.visitInsn(DUP);
             mv.visitVarInsn(ALOAD, 2);
-            mv.visitFieldInsn(GETSTATIC, "javax/ws/rs/core/Response$Status", "INTERNAL_SERVER_ERROR", "Ljavax/ws/rs/core/Response$Status;");
-            mv.visitMethodInsn(INVOKESPECIAL, "javax/ws/rs/WebApplicationException", "<init>", "(Ljava/lang/Throwable;Ljavax/ws/rs/core/Response$Status;)V");
+            mv.visitFieldInsn(GETSTATIC, "jakarta/ws/rs/core/Response$Status", "INTERNAL_SERVER_ERROR", "Ljakarta/ws/rs/core/Response$Status;");
+            mv.visitMethodInsn(INVOKESPECIAL, "jakarta/ws/rs/WebApplicationException", "<init>", "(Ljava/lang/Throwable;Ljakarta/ws/rs/core/Response$Status;)V");
             mv.visitInsn(ATHROW);
             mv.visitMaxs(6, 3);
             mv.visitEnd();

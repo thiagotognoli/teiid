@@ -7,7 +7,7 @@
         <artifact name="${org.teiid.wildfly:teiid-wildfly-security}" />
     </resources>
     <dependencies>
-        <module name="javax.api" />
+        <module name="jakarta.api" />
         <module name="org.jboss.teiid.common-core"/>
         <module name="org.jboss.teiid.api"/>
         <module name="org.apache.cxf" /> <!-- for OAuth -->
