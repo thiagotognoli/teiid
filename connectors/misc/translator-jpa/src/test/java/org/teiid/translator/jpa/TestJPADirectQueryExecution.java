@@ -19,8 +19,8 @@ package org.teiid.translator.jpa;
 
 import static org.junit.Assert.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

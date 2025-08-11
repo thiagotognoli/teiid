@@ -19,8 +19,8 @@ package org.teiid.resource.adapter.couchbase;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.resource.ResourceException;
-import javax.resource.spi.InvalidPropertyException;
+import jakarta.resource.ResourceException;
+import jakarta.resource.spi.InvalidPropertyException;
 
 import org.teiid.core.BundleUtil;
 import org.teiid.resource.spi.BasicConnectionFactory;

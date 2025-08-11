@@ -20,7 +20,7 @@ package org.teiid.dqp.internal.process;
 
 import static org.junit.Assert.*;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
 import org.junit.Before;
@@ -37,7 +37,7 @@ public class TestTransactionServer {
     private TransactionServerImpl server;
     private XAImporter xaImporter;
     private TransactionManager tm;
-    private javax.transaction.Transaction txn;
+    private jakarta.transaction.Transaction txn;
 
     private static final String THREAD1 = "abc1"; //$NON-NLS-1$
     private static final String THREAD2 = "abc2"; //$NON-NLS-1$
@@ -54,7 +54,7 @@ public class TestTransactionServer {
     @Before public void setUp() throws Exception {
         server = new TransactionServerImpl();
         tm = Mockito.mock(TransactionManager.class);
-        txn = Mockito.mock(javax.transaction.Transaction.class);
+        txn = Mockito.mock(jakarta.transaction.Transaction.class);
         Mockito.stub(tm.getTransaction()).toReturn(txn);
         Mockito.stub(tm.suspend()).toReturn(txn);
         xaImporter = Mockito.mock(XAImporter.class);
@@ -163,7 +163,7 @@ public class TestTransactionServer {
         try {
             server.commit(THREAD1);
         } catch (XATransactionException e) {
-            assertEquals("TEIID30526 javax.transaction.InvalidTransactionException: No transaction found for client abc1.", e.getMessage()); //$NON-NLS-1$
+            assertEquals("TEIID30526 jakarta.transaction.InvalidTransactionException: No transaction found for client abc1.", e.getMessage()); //$NON-NLS-1$
         }
     }
 
@@ -183,7 +183,7 @@ public class TestTransactionServer {
         try {
             server.rollback(THREAD1);
         } catch (XATransactionException e) {
-            assertEquals("TEIID30526 javax.transaction.InvalidTransactionException: No transaction found for client abc1.", e.getMessage()); //$NON-NLS-1$
+            assertEquals("TEIID30526 jakarta.transaction.InvalidTransactionException: No transaction found for client abc1.", e.getMessage()); //$NON-NLS-1$
         }
     }
 

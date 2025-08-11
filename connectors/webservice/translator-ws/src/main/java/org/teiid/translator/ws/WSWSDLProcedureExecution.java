@@ -28,9 +28,9 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.stax.StAXSource;
-import javax.xml.ws.Dispatch;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.Dispatch;
+import jakarta.xml.ws.WebServiceException;
+import jakarta.xml.ws.handler.MessageContext;
 
 import org.teiid.core.types.SQLXMLImpl;
 import org.teiid.core.types.XMLType;

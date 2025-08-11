@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.junit.Ignore;
 import org.junit.Test;

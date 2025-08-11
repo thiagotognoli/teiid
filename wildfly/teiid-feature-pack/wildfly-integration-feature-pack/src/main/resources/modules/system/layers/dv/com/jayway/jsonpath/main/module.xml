@@ -9,7 +9,7 @@
         <artifact name="${net.minidev:accessors-smart}"/>
     </resources>
     <dependencies>
-        <module name="javax.api" />
+        <module name="jakarta.api" />
         <module name="asm.asm" />
         <module name="org.slf4j" />
     </dependencies>

@@ -41,7 +41,7 @@
             <version>${version.wildfly.org.infinispan}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.jboss.spec.javax.transaction</groupId>
+                    <groupId>org.jboss.spec.jakarta.transaction</groupId>
                     <artifactId>jboss-transaction-api_1.3_spec</artifactId>
                 </exclusion>
             </exclusions>

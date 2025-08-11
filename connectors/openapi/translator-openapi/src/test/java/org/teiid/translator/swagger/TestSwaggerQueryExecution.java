@@ -32,11 +32,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.activation.DataSource;
-import javax.xml.ws.Dispatch;
-import javax.xml.ws.Service.Mode;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.http.HTTPBinding;
+import jakarta.activation.DataSource;
+import jakarta.xml.ws.Dispatch;
+import jakarta.xml.ws.Service.Mode;
+import jakarta.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.http.HTTPBinding;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

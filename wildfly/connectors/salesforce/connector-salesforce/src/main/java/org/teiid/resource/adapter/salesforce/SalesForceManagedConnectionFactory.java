@@ -19,7 +19,7 @@ package org.teiid.resource.adapter.salesforce;
 
 import java.lang.reflect.Field;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.teiid.core.TeiidRuntimeException;
 import org.teiid.logging.LogConstants;

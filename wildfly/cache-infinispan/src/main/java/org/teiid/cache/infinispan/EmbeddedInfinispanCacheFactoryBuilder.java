@@ -20,7 +20,7 @@ package org.teiid.cache.infinispan;
 
 import java.io.IOException;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 
 import org.infinispan.commons.tx.lookup.TransactionManagerLookup;
 import org.infinispan.manager.DefaultCacheManager;

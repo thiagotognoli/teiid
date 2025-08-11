@@ -47,8 +47,8 @@
         <!-- since we auto-release, we want to push the changes -->
         <basepom.release.push-changes>true</basepom.release.push-changes>
         
-        <project.build.systemJdk>9</project.build.systemJdk>
-        <project.build.targetJdk>8</project.build.targetJdk>
+        <project.build.systemJdk>17</project.build.systemJdk>
+        <project.build.targetJdk>17</project.build.targetJdk>
 
         <derby.version>10.2.1.6</derby.version>
         <mysql.connector.version>8.0.16</mysql.connector.version>
@@ -109,7 +109,7 @@
         <version.org.eclipse.persistence>2.5.0</version.org.eclipse.persistence>
         <version.org.eclipse.persistence.javax>2.1.0</version.org.eclipse.persistence.javax>
         <version.org.hibernate.core>5.4.12.Final</version.org.hibernate.core>
-        <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.2.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
+        <version.org.hibernate.jakarta.persistence.hibernate-jpa-2.1-api>1.0.2.Final</version.org.hibernate.jakarta.persistence.hibernate-jpa-2.1-api>
         <version.org.mockito>1.10.19</version.org.mockito>
         <version.org.jboss.oreva>1.0.0</version.org.jboss.oreva>
         <version.org.mockito>1.10.19</version.org.mockito>
@@ -125,7 +125,6 @@
         <!-- Overrides to allow the release process to commit: https://jira.codehaus.org/browse/MRELEASE-812 -->
         <version.release.plugin>2.5</version.release.plugin>
         <version.solr>6.4.1</version.solr>
-        <version.sun.jaxb>2.3.0</version.sun.jaxb>      
         <version.swagger-parser>1.0.44</version.swagger-parser>
         <version.swagger-parser.v3>2.0.12</version.swagger-parser.v3>
         <version.xml-apis>1.4.01</version.xml-apis>
@@ -151,7 +150,7 @@
         <version.caffeine>2.8.0</version.caffeine>
         <version.org.checkerframework>2.10.0</version.org.checkerframework>
         
-        <version.org.apache.cxf>3.3.6</version.org.apache.cxf>
+        <version.org.apache.cxf>4.0.0</version.org.apache.cxf>
         <version.org.springframework>5.1.14.RELEASE</version.org.springframework>
 	</properties>
 	<scm>
@@ -624,7 +623,7 @@
 	                 </exclusion>
 	                 <exclusion>
 	                    <artifactId>servlet-api</artifactId>
-	                    <groupId>javax.servlet</groupId>
+	                    <groupId>jakarta.servlet</groupId>
 	                 </exclusion>
 	                 <exclusion>
 	                    <artifactId>httpclient</artifactId>
@@ -828,9 +827,9 @@
             </dependency>
 
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
+                <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-xjc</artifactId>
-                <version>${version.sun.jaxb}</version>
+                <version>3.0.2</version>
             </dependency>
             <dependency>
                 <groupId>org.locationtech.jts</groupId>
@@ -866,7 +865,7 @@
                         <artifactId>avalon-framework</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>javax.servlet</groupId>
+                        <groupId>jakarta.servlet</groupId>
                         <artifactId>servlet-api</artifactId>
                     </exclusion>
                 </exclusions>
@@ -1289,12 +1288,12 @@
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
-                        <groupId>javax.servlet</groupId>
+                        <groupId>jakarta.servlet</groupId>
                         <artifactId>servlet-api</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>javax.servlet</groupId>
-                        <artifactId>javax.servlet-api</artifactId>
+                        <groupId>jakarta.servlet</groupId>
+                        <artifactId>jakarta.servlet-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -1323,7 +1322,7 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
-                <artifactId>javax.persistence</artifactId>
+                <artifactId>jakarta.persistence</artifactId>
                 <version>${version.org.eclipse.persistence.javax}</version>
             </dependency>
             <dependency>
@@ -1333,9 +1332,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.hibernate.javax.persistence</groupId>
+                <groupId>org.hibernate.jakarta.persistence</groupId>
                 <artifactId>hibernate-jpa-2.1-api</artifactId>
-                <version>${version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api}</version>
+                <version>${version.org.hibernate.jakarta.persistence.hibernate-jpa-2.1-api}</version>
             </dependency>
             <dependency>
                 <groupId>org.mongodb</groupId>
@@ -1365,7 +1364,7 @@
                 <exclusions>
                     <exclusion>
                         <groupId>org.eclipse.persistence</groupId>
-                        <artifactId>javax.persistence</artifactId>
+                        <artifactId>jakarta.persistence</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>javax.ws.rs</groupId>
@@ -1849,18 +1848,12 @@
            </dependency>
            
            <dependency>
-               <groupId>javax.annotation</groupId>
-               <artifactId>javax.annotation-api</artifactId>
-               <version>1.3.2</version>
-           </dependency>           
-           
-           <dependency>
                <groupId>org.hibernate</groupId>
                <artifactId>hibernate-core</artifactId>
                <version>${version.org.hibernate.core}</version>
                <exclusions>
                    <exclusion>
-                       <groupId>org.jboss.spec.javax.transaction</groupId>
+                       <groupId>org.jboss.spec.jakarta.transaction</groupId>
                        <artifactId>jboss-transaction-api_1.2_spec</artifactId>
                    </exclusion>
                    <exclusion>
@@ -1942,6 +1935,41 @@
                </exclusions>
            </dependency>
 
+            <dependency>
+                <groupId>org.apache.wss4j</groupId>
+                <artifactId>wss4j-ws-security-common</artifactId>
+                <version>2.2.5</version>
+           </dependency> 
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>
+                <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${version.org.springframework}</version>
+            </dependency>
            <dependency>
                <groupId>wsdl4j</groupId>
                <artifactId>wsdl4j</artifactId>
@@ -1968,17 +1996,17 @@
             <dependency>
                 <groupId>jakarta.activation</groupId>
                 <artifactId>jakarta.activation-api</artifactId>
-                <version>1.2.1</version>
+                <version>2.0.1</version>
             </dependency>
             <dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>javax.ws.rs-api</artifactId>
-                <version>2.1.1</version>
-            </dependency>           
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>3.0.0</version>
+            </dependency>                   
             <dependency>
                 <groupId>jakarta.xml.ws</groupId>
                 <artifactId>jakarta.xml.ws-api</artifactId>
-                <version>2.3.2</version>
+                <version>3.0.0</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.servlet</groupId>
@@ -1988,7 +2016,7 @@
             <dependency>
                 <groupId>jakarta.transaction</groupId>
                 <artifactId>jakarta.transaction-api</artifactId>
-                <version>1.3.3</version>
+                <version>2.0.1</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.annotation</groupId>
@@ -1998,7 +2026,12 @@
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
                 <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>2.3.2</version>
+                <version>3.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.resource</groupId>
+                <artifactId>jakarta.resource-api</artifactId>
+                <version>2.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -2015,7 +2048,7 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-frontend-jaxrs</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <exclusions>
+                <!-- <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
                         <artifactId>cxf-rt-bindings-xml</artifactId>
@@ -2028,7 +2061,7 @@
                         <groupId>org.apache.cxf</groupId>
                         <artifactId>cxf-rt-core</artifactId>
                     </exclusion>
-                </exclusions>
+                </exclusions> -->
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>

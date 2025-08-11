@@ -1,13 +1,13 @@
 package org.teiid.resource.spi;
 
-import javax.resource.NotSupportedException;
-import javax.resource.ResourceException;
-import javax.resource.cci.Connection;
-import javax.resource.cci.ConnectionMetaData;
-import javax.resource.cci.Interaction;
-import javax.resource.cci.LocalTransaction;
-import javax.resource.cci.ResultSetInfo;
-import javax.resource.spi.ManagedConnection;
+import jakarta.resource.NotSupportedException;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.Connection;
+import jakarta.resource.cci.ConnectionMetaData;
+import jakarta.resource.cci.Interaction;
+import jakarta.resource.cci.LocalTransaction;
+import jakarta.resource.cci.ResultSetInfo;
+import jakarta.resource.spi.ManagedConnection;
 import javax.transaction.xa.XAResource;
 
 public interface ResourceConnection extends Connection, org.teiid.resource.api.Connection {

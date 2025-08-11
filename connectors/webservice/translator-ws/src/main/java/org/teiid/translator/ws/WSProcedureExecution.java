@@ -38,10 +38,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.ws.Dispatch;
-import javax.xml.ws.Service.Mode;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.Dispatch;
+import jakarta.xml.ws.Service.Mode;
+import jakarta.xml.ws.WebServiceException;
+import jakarta.xml.ws.handler.MessageContext;
 
 import org.teiid.core.types.InputStreamFactory;
 import org.teiid.core.types.SQLXMLImpl;

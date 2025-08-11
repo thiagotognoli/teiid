@@ -7,6 +7,6 @@
     <module name="javax.api"/>
     <module name="sun.jdk"/>
     <module name="org.apache.log4j"/>
-    <module name="javax.transaction.api"/>
+    <module name="jakarta.transaction.api"/>
   </dependencies>
 </module>

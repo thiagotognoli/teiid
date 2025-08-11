@@ -36,7 +36,7 @@ import java.util.Properties;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.jboss.arquillian.junit.Arquillian;

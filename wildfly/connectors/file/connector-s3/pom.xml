@@ -23,10 +23,10 @@
             <groupId>org.teiid.wildfly</groupId>
             <artifactId>teiid-resource-spi</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.resource</groupId>
-            <artifactId>jboss-connector-api_1.7_spec</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>jakarta.resource</groupId>
+			<artifactId>jakarta.resource-api</artifactId>
+		</dependency>
         <dependency>
             <groupId>org.teiid.connectors</groupId>
             <artifactId>file-s3</artifactId>

@@ -20,7 +20,7 @@ package org.teiid.resource.adapter.couchbase;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.resource.ResourceException;
+import jakarta.resource.ResourceException;
 
 import org.teiid.core.BundleUtil;
 import org.teiid.couchbase.CouchbaseConnection;

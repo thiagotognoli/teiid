@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.teiid.language.*;
 import org.teiid.language.SQLConstants.Tokens;

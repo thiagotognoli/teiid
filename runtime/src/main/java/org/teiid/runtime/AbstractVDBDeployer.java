@@ -234,7 +234,7 @@ public abstract class AbstractVDBDeployer {
         }
     }
 
-    protected abstract VDBRepository getVDBRepository();
+    public abstract VDBRepository getVDBRepository();
 
     @SuppressWarnings({"rawtypes","unchecked"})
     private void loadMetadata(final VDBMetaData vdb, final ModelMetaData model, final ConnectorManagerRepository cmr, final MetadataRepository metadataRepo, final MetadataStore vdbMetadataStore, final AtomicInteger loadCount, final VDBResources vdbResources) throws TranslatorException {

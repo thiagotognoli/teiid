@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.odata4j.edm.*;
 import org.odata4j.format.xml.EdmxFormatParser;

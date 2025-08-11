@@ -10,9 +10,9 @@
     </resources>
 
     <dependencies>
-        <module name="javax.api" />
+        <module name="jakarta.api" />
         <module name="org.joda.time" />
-        <module name="javax.ws.rs.api"/>
+        <module name="jakarta.ws.rs.api"/>
     </dependencies>
 
 </module>
