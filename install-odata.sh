@@ -35,8 +35,21 @@ cd connectors
   cd odata
     mvn clean install -P dev -s "$basePath/settings.xml" -pl translator-odata
   cd ..
+cd ..
 
+cd connectors
+  mvn clean install -P dev -s "$basePath/settings.xml" -pl misc
+  cd misc
+     mvn clean install -P dev -s "$basePath/settings.xml" -pl translator-loopback
+   cd ..
+cd ..
+mvn clean install -P dev -s "$basePath/settings.xml" -pl olingo-common,olingo
 
+cd connectors
+  mvn clean install -P dev -s "$basePath/settings.xml" -pl document-api
+  cd odata
+    mvn clean install -P dev -s "$basePath/settings.xml" -pl translator-odata4
+  cd ..
 cd ..
 
 cd wildfly

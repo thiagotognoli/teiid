@@ -230,6 +230,7 @@ public class TestODataIntegration {
             }
         }), "/*", EnumSet.allOf(DispatcherType.class));
         server.setHandler(context);
+        server.setStopTimeout(5000);
         server.start();
         port = connector.getLocalPort();
         baseURL = "http://localhost:"+port+contextPath;
@@ -237,7 +238,6 @@ public class TestODataIntegration {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        http.setStopTimeout(5000);
         http.start();
     }
 
