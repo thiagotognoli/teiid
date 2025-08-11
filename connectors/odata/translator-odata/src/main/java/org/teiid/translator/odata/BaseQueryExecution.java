@@ -84,7 +84,7 @@ public class BaseQueryExecution {
             // if parser is written to return raw objects; then we can avoid some un-necessary object creation
             // due to time, I am not pursuing that now.
             FormatParser<Feed> parser = FormatParserFactory.getParser(
-                    Feed.class, FormatType.ATOM, new Settings(version, edsMetadata, entityTable, null));
+                    Feed.class, FormatType.ATOM, new Settings(version, edsMetadata, entityTable, null, null));
             return parser.parse(new InputStreamReader(blob.getBinaryStream()));
         } catch (SQLException e) {
             throw new TranslatorException(ODataPlugin.Event.TEIID17010, e, e.getMessage());

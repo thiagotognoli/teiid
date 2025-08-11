@@ -92,11 +92,18 @@ public class ODataProcedureExecution extends BaseQueryExecution implements Proce
 
                 // if the procedure is not void
                 if (this.visitor.getReturnType() != null) {
-                    FormatParser<? extends OObject> parser = FormatParserFactory.getParser(OSimpleObject.class,
-                            FormatType.ATOM, new Settings(version, edm, this.visitor.getProcedure().getName(),
-                                null, // entitykey
-                                true, // isResponse
-                                ODataTypeManager.odataType(this.visitor.getReturnType())));
+                    FormatParser<? extends OObject> parser = FormatParserFactory.getParser(
+                        OSimpleObject.class,
+                        FormatType.ATOM,
+                        new Settings(
+                            version,
+                            edm,
+                            this.visitor.getProcedure().getName(),
+                            null,
+                            null, // entitykey
+                            true // isResponse
+                        )
+                    );
 
                     OSimpleObject object = (OSimpleObject)parser.parse(new InputStreamReader(blob.getBinaryStream()));
                     this.returnValue = this.translator.retrieveValue(object.getValue(), this.visitor.getReturnTypeClass());
