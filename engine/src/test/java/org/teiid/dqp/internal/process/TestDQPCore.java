@@ -117,7 +117,7 @@ public class TestDQPCore {
 
         ConnectorManagerRepository repo = Mockito.mock(ConnectorManagerRepository.class);
         context.getVDB().addAttachment(ConnectorManagerRepository.class, repo);
-        Mockito.stub(repo.getConnectorManager(Mockito.anyString())).toReturn(agds);
+        Mockito.when(repo.getConnectorManager(Mockito.anyString())).thenReturn(agds);
         BufferManagerImpl bm = BufferManagerFactory.createBufferManager();
         bm.setInlineLobs(false);
         FakeBufferService bs = new FakeBufferService(bm, bm);

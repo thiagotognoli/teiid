@@ -58,9 +58,9 @@ public class TestUpdates {
         CassandraConnection connection = Mockito.mock(CassandraConnection.class);
 
         ResultSetFuture rsf = Mockito.mock(ResultSetFuture.class);
-        Mockito.stub(rsf.isDone()).toReturn(true);
+        Mockito.when(rsf.isDone()).thenReturn(true);
 
-        Mockito.stub(connection.executeBatch(Arrays.asList("INSERT INTO g1 (e1) VALUES ('a')", "UPDATE g1 SET e1 = 'b'"))).toReturn(rsf);
+        Mockito.when(connection.executeBatch(Arrays.asList("INSERT INTO g1 (e1) VALUES ('a')", "UPDATE g1 SET e1 = 'b'"))).thenReturn(rsf);
 
         UpdateExecution execution = (UpdateExecution)cef.createExecution(command, ec, rm, connection);
         execution.execute();
@@ -88,9 +88,9 @@ public class TestUpdates {
         CassandraConnection connection = Mockito.mock(CassandraConnection.class);
 
         ResultSetFuture rsf = Mockito.mock(ResultSetFuture.class);
-        Mockito.stub(rsf.isDone()).toReturn(true);
+        Mockito.when(rsf.isDone()).thenReturn(true);
 
-        Mockito.stub(connection.executeBatch(Mockito.eq("INSERT INTO g1 (e1) VALUES (?)"), (List<Object[]>) Mockito.anyObject())).toReturn(rsf);
+        Mockito.when(connection.executeBatch(Mockito.eq("INSERT INTO g1 (e1) VALUES (?)"), (List<Object[]>) Mockito.anyObject())).thenReturn(rsf);
 
         UpdateExecution execution = (UpdateExecution)cef.createExecution(command, ec, rm, connection);
         execution.execute();

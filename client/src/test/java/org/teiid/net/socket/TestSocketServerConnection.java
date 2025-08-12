@@ -32,7 +32,7 @@ import java.util.Properties;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.Mockito.whenbing.Answer;
 import org.teiid.client.security.ILogon;
 import org.teiid.client.security.InvalidSessionException;
 import org.teiid.client.security.LogonException;
@@ -139,7 +139,7 @@ public class TestSocketServerConnection {
     @Test public void testLogonFailsWithMultipleHosts() throws Exception {
         Properties p = new Properties();
         SocketServerInstanceFactory instanceFactory = Mockito.mock(SocketServerInstanceFactory.class);
-        Mockito.stub(instanceFactory.getServerInstance((HostInfo)Mockito.anyObject())).toThrow(new SingleInstanceCommunicationException());
+        Mockito.when(instanceFactory.getServerInstance((HostInfo)Mockito.anyObject())).toThrow(new SingleInstanceCommunicationException());
         UrlServerDiscovery discovery = new UrlServerDiscovery(new TeiidURL("mm://host1:1,host2:2")); //$NON-NLS-1$
         try {
             new SocketServerConnection(instanceFactory, false, discovery, p);
@@ -206,10 +206,10 @@ public class TestSocketServerConnection {
             public SocketServerInstance getServerInstance(HostInfo info)
                     throws CommunicationException, IOException {
                 SocketServerInstance instance = Mockito.mock(SocketServerInstance.class);
-                Mockito.stub(instance.getCryptor()).toReturn(new NullCryptor());
-                Mockito.stub(instance.getHostInfo()).toReturn(hostInfo);
-                Mockito.stub(instance.getService(ILogon.class)).toReturn(logon);
-                Mockito.stub(instance.getServerVersion()).toReturn("07.03");
+                Mockito.when(instance.getCryptor()).thenReturn(new NullCryptor());
+                Mockito.when(instance.getHostInfo()).thenReturn(hostInfo);
+                Mockito.when(instance.getService(ILogon.class)).thenReturn(logon);
+                Mockito.when(instance.getServerVersion()).thenReturn("07.03");
                 if (t != null) {
                     try {
                         Mockito.doAnswer(new Answer<Void>() {
@@ -226,7 +226,7 @@ public class TestSocketServerConnection {
 
                     }
                 }
-                Mockito.stub(instance.isOpen()).toReturn(true);
+                Mockito.when(instance.isOpen()).thenReturn(true);
                 return instance;
             }
 

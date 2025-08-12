@@ -83,7 +83,7 @@ public class TestCompositeVDB {
     private static ConnectorManager getConnectorManager(String translatorName, String connectionName, List<FunctionMethod> funcs) {
         final ExecutionFactory<Object, Object> ef = Mockito.mock(ExecutionFactory.class);
 
-        Mockito.stub(ef.getPushDownFunctions()).toReturn(funcs);
+        Mockito.when(ef.getPushDownFunctions()).thenReturn(funcs);
 
         ConnectorManager cm = new ConnectorManager(translatorName,connectionName, ef);
         cm.start();

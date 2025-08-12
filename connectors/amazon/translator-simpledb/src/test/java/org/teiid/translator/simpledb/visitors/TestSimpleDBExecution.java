@@ -73,18 +73,18 @@ public class TestSimpleDBExecution {
         SelectResult result = new SelectResult();
         result.setItems(mockResult());
         String query = "select * from item where attribute > 'name'";
-        Mockito.stub(connection.performSelect(Mockito.anyString(), Mockito.anyString())).toReturn(result);
+        Mockito.when(connection.performSelect(Mockito.anyString(), Mockito.anyString())).thenReturn(result);
 
         Command cmd = utility.parseCommand(query);
         ExecutionContext context = Mockito.mock(ExecutionContext.class);
-        Mockito.stub(context.getBatchSize()).toReturn(10);
+        Mockito.when(context.getBatchSize()).thenReturn(10);
         ResultSetExecution exec = translator.createResultSetExecution((Select)cmd, context, Mockito.mock(RuntimeMetadata.class), connection);
         exec.execute();
         exec.next();
         Mockito.verify(connection).performSelect("SELECT `attribute`, `somedate`, `strarray` FROM `item` WHERE `attribute` > 'name' LIMIT 10", null);
 
         //cap at 2500
-        Mockito.stub(context.getBatchSize()).toReturn(4000);
+        Mockito.when(context.getBatchSize()).thenReturn(4000);
         exec = translator.createResultSetExecution((Select)cmd, context, Mockito.mock(RuntimeMetadata.class), connection);
         exec.execute();
         exec.next();
@@ -94,7 +94,7 @@ public class TestSimpleDBExecution {
     @Test
     public void testUpdate() throws Exception {
         String query = "UPDATE item set attribute = 'value', somedate = {ts '2014-04-04 10:50:45'} where attribute > 'name'";
-        Mockito.stub(connection.performUpdate(Mockito.anyString(),Mockito.anyMap(), Mockito.anyString())).toReturn(100);
+        Mockito.when(connection.performUpdate(Mockito.anyString(),Mockito.anyMap(), Mockito.anyString())).thenReturn(100);
 
         Command cmd = utility.parseCommand(query);
         ExecutionContext context = Mockito.mock(ExecutionContext.class);
@@ -110,7 +110,7 @@ public class TestSimpleDBExecution {
     @Test
     public void testUpdateArray() throws Exception {
         String query = "UPDATE item set strarray = ('1','2')";
-        Mockito.stub(connection.performUpdate(Mockito.anyString(),Mockito.anyMap(), Mockito.anyString())).toReturn(100);
+        Mockito.when(connection.performUpdate(Mockito.anyString(),Mockito.anyMap(), Mockito.anyString())).thenReturn(100);
 
         Command cmd = utility.parseCommand(query);
         ExecutionContext context = Mockito.mock(ExecutionContext.class);
@@ -131,7 +131,7 @@ public class TestSimpleDBExecution {
     @Test
     public void testDelete() throws Exception {
         String query = "delete from item where somedate = {ts '2014-04-04 10:50:45'}";
-        Mockito.stub(connection.performDelete(Mockito.anyString(), Mockito.anyString())).toReturn(100);
+        Mockito.when(connection.performDelete(Mockito.anyString(), Mockito.anyString())).thenReturn(100);
 
         Command cmd = utility.parseCommand(query);
         ExecutionContext context = Mockito.mock(ExecutionContext.class);
@@ -204,7 +204,7 @@ public class TestSimpleDBExecution {
 
         String query = "select * from item where attribute > 'name'";
 
-        Mockito.stub(connection.performSelect(Mockito.anyString(), Mockito.anyString())).toReturn(result);
+        Mockito.when(connection.performSelect(Mockito.anyString(), Mockito.anyString())).thenReturn(result);
 
         Command cmd = utility.parseCommand(query);
         ExecutionContext context = Mockito.mock(ExecutionContext.class);

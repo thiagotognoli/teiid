@@ -49,17 +49,17 @@ public class TestSimpleDBMetadataProcessor {
         MetadataFactory mf = new MetadataFactory("vdb", 1, "people", SystemMetadata.getInstance().getRuntimeTypeMap(), props, null);
         SimpleDBConnection connection = Mockito.mock(SimpleDBConnection.class);
 
-        Mockito.stub(connection.getDomains()).toReturn(Arrays.asList("G1", "G2"));
+        Mockito.when(connection.getDomains()).thenReturn(Arrays.asList("G1", "G2"));
 
         HashSet<SimpleDBAttribute> cols = new HashSet<SimpleDBConnection.SimpleDBAttribute>();
         cols.add(new SimpleDBAttribute("e1", false));
         cols.add(new SimpleDBAttribute("e2", false));
-        Mockito.stub(connection.getAttributeNames("G1")).toReturn(cols);
+        Mockito.when(connection.getAttributeNames("G1")).thenReturn(cols);
 
         HashSet<SimpleDBAttribute> cols2 = new HashSet<SimpleDBConnection.SimpleDBAttribute>();
         cols2.add(new SimpleDBAttribute("e1", false));
         cols2.add(new SimpleDBAttribute("e2", true));
-        Mockito.stub(connection.getAttributeNames("G2")).toReturn(cols2);
+        Mockito.when(connection.getAttributeNames("G2")).thenReturn(cols2);
 
         translator.getMetadata(mf, connection);
 

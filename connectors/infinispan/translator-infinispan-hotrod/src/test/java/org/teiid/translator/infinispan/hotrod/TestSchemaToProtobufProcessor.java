@@ -42,8 +42,8 @@ public class TestSchemaToProtobufProcessor {
         MetadataFactory mf = TestProtobufMetadataProcessor.protoMatadata("tables.proto");
         InfinispanConnection conn = Mockito.mock(InfinispanConnection.class);
         BasicCache cache = Mockito.mock(BasicCache.class);
-        Mockito.stub(cache.getName()).toReturn("default");
-        Mockito.stub(conn.getCache()).toReturn(cache);
+        Mockito.when(cache.getName()).thenReturn("default");
+        Mockito.when(conn.getCache()).thenReturn(cache);
         ProtobufResource resource = tool.process(mf, conn);
 
         String expected = "package model;\n" +
@@ -135,8 +135,8 @@ public class TestSchemaToProtobufProcessor {
         tool.setIndexMessages(true);
         InfinispanConnection conn = Mockito.mock(InfinispanConnection.class);
         BasicCache cache = Mockito.mock(BasicCache.class);
-        Mockito.stub(cache.getName()).toReturn("default");
-        Mockito.stub(conn.getCache()).toReturn(cache);
+        Mockito.when(cache.getName()).thenReturn("default");
+        Mockito.when(conn.getCache()).thenReturn(cache);
         ProtobufResource resource = tool.process(mf, conn);
 
         String expected = "package model;\n" +
@@ -207,8 +207,8 @@ public class TestSchemaToProtobufProcessor {
         MetadataFactory mf = TestProtobufMetadataProcessor.protoMatadata("tables_bad.proto");
         InfinispanConnection conn = Mockito.mock(InfinispanConnection.class);
         BasicCache cache = Mockito.mock(BasicCache.class);
-        Mockito.stub(cache.getName()).toReturn("foo");
-        Mockito.stub(conn.getCache()).toReturn(cache);
+        Mockito.when(cache.getName()).thenReturn("foo");
+        Mockito.when(conn.getCache()).thenReturn(cache);
         ProtobufResource resource = tool.process(mf, conn);
 
         String expected = "package model;\n" +

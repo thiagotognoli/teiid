@@ -58,16 +58,16 @@ public class TestConnectorCapabilitiesFinder {
 
         VDBMetaData vdb = Mockito.mock(VDBMetaData.class);
         ModelMetaData model = Mockito.mock(ModelMetaData.class);
-        Mockito.stub(vdb.getModel(modelName)).toReturn(model);
-        Mockito.stub(model.getSourceNames()).toReturn(bindings);
+        Mockito.when(vdb.getModel(modelName)).thenReturn(model);
+        Mockito.when(model.getSourceNames()).thenReturn(bindings);
 
         BasicSourceCapabilities basicSourceCapabilities = new BasicSourceCapabilities();
         basicSourceCapabilities.setFunctionSupport(functionName, true);
 
         ConnectorManagerRepository repo = Mockito.mock(ConnectorManagerRepository.class);
         ConnectorManager cm = Mockito.mock(ConnectorManager.class);
-        Mockito.stub(cm.getCapabilities()).toReturn(basicSourceCapabilities);
-        Mockito.stub(repo.getConnectorManager(Mockito.anyString())).toReturn(cm);
+        Mockito.when(cm.getCapabilities()).thenReturn(basicSourceCapabilities);
+        Mockito.when(repo.getConnectorManager(Mockito.anyString())).thenReturn(cm);
 
         CachedFinder finder = new CachedFinder(repo, vdb);
 
@@ -86,16 +86,16 @@ public class TestConnectorCapabilitiesFinder {
 
         VDBMetaData vdb = Mockito.mock(VDBMetaData.class);
         ModelMetaData model = Mockito.mock(ModelMetaData.class);
-        Mockito.stub(vdb.getModel(modelName)).toReturn(model);
-        Mockito.stub(model.getSourceNames()).toReturn(bindings);
+        Mockito.when(vdb.getModel(modelName)).thenReturn(model);
+        Mockito.when(model.getSourceNames()).thenReturn(bindings);
 
         BasicSourceCapabilities basicSourceCapabilities = new BasicSourceCapabilities();
         basicSourceCapabilities.setFunctionSupport(functionName, true);
 
         ConnectorManagerRepository repo = Mockito.mock(ConnectorManagerRepository.class);
         ConnectorManager cm = Mockito.mock(ConnectorManager.class);
-        Mockito.stub(cm.getCapabilities()).toThrow(new TranslatorException());
-        Mockito.stub(repo.getConnectorManager(Mockito.anyString())).toReturn(cm);
+        Mockito.when(cm.getCapabilities()).toThrow(new TranslatorException());
+        Mockito.when(repo.getConnectorManager(Mockito.anyString())).thenReturn(cm);
 
         CachedFinder finder = new CachedFinder(repo, vdb);
 

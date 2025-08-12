@@ -113,7 +113,7 @@ public class TestTranslatorUtil {
         metadata.addProperty("MyProperty", "correctly-assigned");
 
         Logger logger = Mockito.mock(Logger.class);
-        Mockito.stub(logger.isEnabled(Mockito.anyString(), Mockito.anyInt())).toReturn(true);
+        Mockito.when(logger.isEnabled(Mockito.anyString(), Mockito.anyInt())).thenReturn(true);
         Mockito.doThrow(new RuntimeException("fail")).when(logger).log(Mockito.eq(MessageLevel.WARNING), Mockito.eq(LogConstants.CTX_RUNTIME), Mockito.anyString());
         LogManager.setLogListener(logger);
         try {

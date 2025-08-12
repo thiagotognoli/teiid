@@ -257,11 +257,11 @@ public class TestHiveExecutionFactory {
         Connection c = Mockito.mock(Connection.class);
         MetadataFactory mf = Mockito.mock(MetadataFactory.class);
         Statement stmt = Mockito.mock(Statement.class);
-        Mockito.stub(c.createStatement()).toReturn(stmt);
+        Mockito.when(c.createStatement()).thenReturn(stmt);
         ResultSet rs = Mockito.mock(ResultSet.class);
-        Mockito.stub(stmt.executeQuery("SHOW TABLES")).toReturn(rs);
-        Mockito.stub(rs.next()).toReturn(true).toReturn(false);
-        Mockito.stub(rs.getString(1)).toReturn("x");
+        Mockito.when(stmt.executeQuery("SHOW TABLES")).thenReturn(rs);
+        Mockito.when(rs.next()).thenReturn(true).thenReturn(false);
+        Mockito.when(rs.getString(1)).thenReturn("x");
 
         hmp.process(mf, c);
         Mockito.verify(mf, Mockito.times(0)).addTable("x");
@@ -272,22 +272,22 @@ public class TestHiveExecutionFactory {
         Connection c = Mockito.mock(Connection.class);
         MetadataFactory mf = Mockito.mock(MetadataFactory.class);
         Table table = new Table();
-        Mockito.stub(mf.addTable("x")).toReturn(table);
+        Mockito.when(mf.addTable("x")).thenReturn(table);
         Column col = new Column();
         col.setName("y");
-        Mockito.stub(mf.addColumn("y", "string", table)).toReturn(col);
+        Mockito.when(mf.addColumn("y", "string", table)).thenReturn(col);
         Statement stmt = Mockito.mock(Statement.class);
-        Mockito.stub(c.createStatement()).toReturn(stmt);
+        Mockito.when(c.createStatement()).thenReturn(stmt);
         ResultSet rs = Mockito.mock(ResultSet.class);
-        Mockito.stub(stmt.executeQuery("SHOW TABLES")).toReturn(rs);
-        Mockito.stub(rs.next()).toReturn(true).toReturn(false);
-        Mockito.stub(rs.getString(1)).toReturn("x");
+        Mockito.when(stmt.executeQuery("SHOW TABLES")).thenReturn(rs);
+        Mockito.when(rs.next()).thenReturn(true).thenReturn(false);
+        Mockito.when(rs.getString(1)).thenReturn("x");
 
         ResultSet rs1 = Mockito.mock(ResultSet.class);
-        Mockito.stub(stmt.executeQuery("DESCRIBE x")).toReturn(rs1);
-        Mockito.stub(rs1.next()).toReturn(true).toReturn(false);
-        Mockito.stub(rs1.getString(1)).toReturn("y");
-        Mockito.stub(rs1.getString(2)).toReturn("string");
+        Mockito.when(stmt.executeQuery("DESCRIBE x")).thenReturn(rs1);
+        Mockito.when(rs1.next()).thenReturn(true).thenReturn(false);
+        Mockito.when(rs1.getString(1)).thenReturn("y");
+        Mockito.when(rs1.getString(2)).thenReturn("string");
 
         hmp.process(mf, c);
         assertEquals("`x`", table.getNameInSource());

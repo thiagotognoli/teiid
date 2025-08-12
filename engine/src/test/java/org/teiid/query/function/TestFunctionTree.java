@@ -154,7 +154,7 @@ public class TestFunctionTree {
 
         Collection<org.teiid.metadata.FunctionMethod> list = Arrays.asList(method);
         FunctionMetadataSource fms = Mockito.mock(FunctionMetadataSource.class);
-        Mockito.stub(fms.getFunctionMethods()).toReturn(list);
+        Mockito.when(fms.getFunctionMethods()).thenReturn(list);
         FunctionTree ft = new FunctionTree("foo", fms);
         assertEquals(1, ft.getFunctionsInCategory(FunctionCategoryConstants.MISCELLANEOUS).size());
     }

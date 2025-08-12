@@ -129,7 +129,7 @@ public class FakeRelationalNode extends RelationalNode {
     protected TupleBuffer getBufferDirect(int maxRows) throws BlockedException,
             TeiidComponentException, TeiidProcessingException {
         TupleBuffer tb = Mockito.mock(TupleBuffer.class);
-        Mockito.stub(tb.getRowCount()).toReturn((long)(maxRows != -1 ? Math.min(maxRows, data.length) : data.length));
+        Mockito.when(tb.getRowCount()).thenReturn((long)(maxRows != -1 ? Math.min(maxRows, data.length) : data.length));
         return tb;
     }
 

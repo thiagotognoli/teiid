@@ -36,16 +36,16 @@ public class TestODataFilter {
         ODataFilter filter = new ODataFilter();
         FilterConfig config = Mockito.mock(FilterConfig.class);
         ServletContext mock = Mockito.mock(ServletContext.class);
-        Mockito.stub(mock.getInitParameterNames()).toReturn(Collections.emptyEnumeration());
-        Mockito.stub(config.getServletContext()).toReturn(mock);
-        Mockito.stub(config.getInitParameterNames()).toReturn(Collections.emptyEnumeration());
+        Mockito.when(mock.getInitParameterNames()).thenReturn(Collections.emptyEnumeration());
+        Mockito.when(config.getServletContext()).thenReturn(mock);
+        Mockito.when(config.getInitParameterNames()).thenReturn(Collections.emptyEnumeration());
 
         //default to 1
         filter.init(config);
         assertEquals("1", filter.getDefaultVdbVersion());
 
         //override
-        Mockito.stub(config.getInitParameter("explicit-vdb-version")).toReturn("false");
+        Mockito.when(config.getInitParameter("explicit-vdb-version")).thenReturn("false");
         filter.init(config);
         assertNull(filter.getDefaultVdbVersion());
     }

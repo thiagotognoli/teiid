@@ -339,7 +339,7 @@ public class TestSqlServerConversionVisitor {
         trans.setDatabaseVersion(SQLServerExecutionFactory.V_2008);
         trans.start();
         Connection c = Mockito.mock(Connection.class);
-        Mockito.stub(c.getMetaData()).toReturn(Mockito.mock(DatabaseMetaData.class));
+        Mockito.when(c.getMetaData()).thenReturn(Mockito.mock(DatabaseMetaData.class));
         trans.initCapabilities(c);
 
         String input = "select cast(smalla.stringkey as date), formatdate(smalla.datevalue, 'dd/MM/yy'), parsedate(smalla.stringkey, 'dd/MM/yy') from bqt1.smalla where smalla.datevalue = {d'2000-01-01'}"; //$NON-NLS-1$

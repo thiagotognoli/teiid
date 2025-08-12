@@ -740,7 +740,7 @@ public class TestPostgreSQLTranslator {
     @Test public void testArrayBind() throws Exception {
         PreparedStatement ps = Mockito.mock(PreparedStatement.class);
         Connection c = Mockito.mock(Connection.class);
-        Mockito.stub(ps.getConnection()).toReturn(c);
+        Mockito.when(ps.getConnection()).thenReturn(c);
         TRANSLATOR.bindValue(ps, new Array(String.class,
                 Arrays.asList((Expression)new Literal("a", String.class))), String[].class, 1);
         Mockito.verify(c, Mockito.times(1)).createArrayOf("varchar", new Object[] {"a"});

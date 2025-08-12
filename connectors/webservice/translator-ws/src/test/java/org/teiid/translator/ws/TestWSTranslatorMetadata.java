@@ -51,9 +51,9 @@ public class TestWSTranslatorMetadata {
         Properties props = new Properties();
 
         WSConnection mockConnection = Mockito.mock(WSConnection.class);
-        Mockito.stub(mockConnection.getWsdl()).toReturn(new File(UnitTestUtil.getTestDataPath()+"/xquotes.wsdl").toURI().toURL());
-        Mockito.stub(mockConnection.getServiceQName()).toReturn(new QName("http://www.xignite.com/services/", "XigniteQuotes"));
-        Mockito.stub(mockConnection.getPortQName()).toReturn(new QName("http://www.xignite.com/services/", "XigniteQuotesSoap"));
+        Mockito.when(mockConnection.getWsdl()).thenReturn(new File(UnitTestUtil.getTestDataPath()+"/xquotes.wsdl").toURI().toURL());
+        Mockito.when(mockConnection.getServiceQName()).thenReturn(new QName("http://www.xignite.com/services/", "XigniteQuotes"));
+        Mockito.when(mockConnection.getPortQName()).thenReturn(new QName("http://www.xignite.com/services/", "XigniteQuotesSoap"));
 
         MetadataFactory mf = new MetadataFactory("vdb", 1, "x", SystemMetadata.getInstance().getRuntimeTypeMap(), props, null);
         ef.getMetadata(mf, mockConnection);
@@ -65,8 +65,8 @@ public class TestWSTranslatorMetadata {
 
         Dispatch<Object> mockDispatch = Mockito.mock(Dispatch.class);
         StAXSource source = Mockito.mock(StAXSource.class);
-        Mockito.stub(mockDispatch.invoke(Mockito.any(DataSource.class))).toReturn(source);
-        Mockito.stub(mockConnection.createDispatch(Mockito.any(Class.class), Mockito.any(Service.Mode.class))).toReturn(mockDispatch);
+        Mockito.when(mockDispatch.invoke(Mockito.any(DataSource.class))).thenReturn(source);
+        Mockito.when(mockConnection.createDispatch(Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
 
         CommandBuilder cb = new CommandBuilder(tm);
 
@@ -85,7 +85,7 @@ public class TestWSTranslatorMetadata {
         props.setProperty("importer.portname", "XigniteQuotesHttpGet");
 
         WSConnection mockConnection = Mockito.mock(WSConnection.class);
-        Mockito.stub(mockConnection.getWsdl()).toReturn(new File(UnitTestUtil.getTestDataPath()+"/xquotes.wsdl").toURI().toURL());
+        Mockito.when(mockConnection.getWsdl()).thenReturn(new File(UnitTestUtil.getTestDataPath()+"/xquotes.wsdl").toURI().toURL());
 
         MetadataFactory mf = new MetadataFactory("vdb", 1, "x", SystemMetadata.getInstance().getRuntimeTypeMap(), props, null);
         ef.getMetadata(mf, mockConnection);
@@ -96,8 +96,8 @@ public class TestWSTranslatorMetadata {
         RuntimeMetadataImpl rm = new RuntimeMetadataImpl(tm);
 
         Dispatch<Object> mockDispatch = Mockito.mock(Dispatch.class);
-        Mockito.stub(mockDispatch.invoke(Mockito.any(DataSource.class))).toReturn(Mockito.mock(StAXSource.class));
-        Mockito.stub(mockConnection.createDispatch(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).toReturn(mockDispatch);
+        Mockito.when(mockDispatch.invoke(Mockito.any(DataSource.class))).thenReturn(Mockito.mock(StAXSource.class));
+        Mockito.when(mockConnection.createDispatch(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(Class.class), Mockito.any(Service.Mode.class))).thenReturn(mockDispatch);
 
         CommandBuilder cb = new CommandBuilder(tm);
 

@@ -37,7 +37,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.Mockito.whenbing.Answer;
 import org.teiid.cdk.api.TranslationUtility;
 import org.teiid.language.Select;
 import org.teiid.metadata.RuntimeMetadata;
@@ -73,8 +73,8 @@ public class TestQueryExecutionImpl {
         QueryResult finalQr = new QueryResult();
         finalQr.setRecords(new SObject[] {so});
         finalQr.setDone(true);
-        Mockito.stub(sfc.query("SELECT Name FROM Account", 0, false)).toReturn(qr);
-        Mockito.stub(sfc.queryMore(null, 0)).toReturn(finalQr);
+        Mockito.when(sfc.query("SELECT Name FROM Account", 0, false)).thenReturn(qr);
+        Mockito.when(sfc.queryMore(null, 0)).thenReturn(finalQr);
         QueryExecutionImpl qei = new QueryExecutionImpl(command, sfc, Mockito.mock(RuntimeMetadata.class), Mockito.mock(ExecutionContext.class), new SalesForceExecutionFactory());
         qei.execute();
         assertNotNull(qei.next());
@@ -95,7 +95,7 @@ public class TestQueryExecutionImpl {
         so1.addField("Account", so);
         qr.setRecords(new SObject[] {so1});
         qr.setDone(true);
-        Mockito.stub(sfc.query("SELECT Account.Name, Id FROM Contact WHERE AccountId != NULL", 0, false)).toReturn(qr);
+        Mockito.when(sfc.query("SELECT Account.Name, Id FROM Contact WHERE AccountId != NULL", 0, false)).thenReturn(qr);
         QueryExecutionImpl qei = new QueryExecutionImpl(command, sfc, Mockito.mock(RuntimeMetadata.class), Mockito.mock(ExecutionContext.class), new SalesForceExecutionFactory());
         qei.execute();
         assertEquals(Arrays.asList("account name", "contact id"), qei.next());
@@ -115,7 +115,7 @@ public class TestQueryExecutionImpl {
         so1.addField("Account", so);
         qr.setRecords(new SObject[] {so1});
         qr.setDone(true);
-        Mockito.stub(sfc.query("SELECT Account.Name, Id, Account.Parent.Id FROM Contact", 0, false)).toReturn(qr);
+        Mockito.when(sfc.query("SELECT Account.Name, Id, Account.Parent.Id FROM Contact", 0, false)).thenReturn(qr);
         QueryExecutionImpl qei = new QueryExecutionImpl(command, sfc, Mockito.mock(RuntimeMetadata.class), Mockito.mock(ExecutionContext.class), new SalesForceExecutionFactory());
         qei.execute();
         assertEquals(Arrays.asList("account name", "contact id", null), qei.next());
@@ -137,7 +137,7 @@ public class TestQueryExecutionImpl {
         so.addField("Contacts", records);
         qr.setRecords(new SObject[] {so});
         qr.setDone(true);
-        Mockito.stub(sfc.query("SELECT Name, (SELECT Id FROM Contacts) FROM Account", 0, false)).toReturn(qr);
+        Mockito.when(sfc.query("SELECT Name, (SELECT Id FROM Contacts) FROM Account", 0, false)).thenReturn(qr);
         QueryExecutionImpl qei = new QueryExecutionImpl(command, sfc, Mockito.mock(RuntimeMetadata.class), Mockito.mock(ExecutionContext.class), new SalesForceExecutionFactory());
         qei.execute();
         assertEquals(Arrays.asList("account name", "contact id"), qei.next());
@@ -161,7 +161,7 @@ public class TestQueryExecutionImpl {
         so.addField("Owner", so2);
         qr.setRecords(new SObject[] {so1});
         qr.setDone(true);
-        Mockito.stub(sfc.query("SELECT Account.Name, Id, Account.Owner.Id FROM Contact", 0, false)).toReturn(qr);
+        Mockito.when(sfc.query("SELECT Account.Name, Id, Account.Owner.Id FROM Contact", 0, false)).thenReturn(qr);
         QueryExecutionImpl qei = new QueryExecutionImpl(command, sfc, Mockito.mock(RuntimeMetadata.class), Mockito.mock(ExecutionContext.class), new SalesForceExecutionFactory());
         qei.execute();
         assertEquals(Arrays.asList("account name", "contact id", "user id"), qei.next());
@@ -185,7 +185,7 @@ public class TestQueryExecutionImpl {
         so.addField("ChildAccounts", so2);
         qr.setRecords(new SObject[] {so});
         qr.setDone(true);
-        Mockito.stub(sfc.query("SELECT Name, (SELECT Id FROM ChildAccounts) FROM Account", 0, false)).toReturn(qr);
+        Mockito.when(sfc.query("SELECT Name, (SELECT Id FROM ChildAccounts) FROM Account", 0, false)).thenReturn(qr);
         QueryExecutionImpl qei = new QueryExecutionImpl(command, sfc, Mockito.mock(RuntimeMetadata.class), Mockito.mock(ExecutionContext.class), new SalesForceExecutionFactory());
         qei.execute();
         assertEquals(Arrays.asList("account name", "account id1"), qei.next());
@@ -213,7 +213,7 @@ public class TestQueryExecutionImpl {
         Select command = (Select)translationUtility.parseCommand("select Name from Account where id = 'abc'"); //$NON-NLS-1$
         SalesforceConnection sfc = Mockito.mock(SalesforceConnection.class);
 
-        Mockito.stub(sfc.retrieve("Name", "Account", Arrays.asList("abc"))).toReturn(new SObject[] {null});
+        Mockito.when(sfc.retrieve("Name", "Account", Arrays.asList("abc"))).thenReturn(new SObject[] {null});
         QueryExecutionImpl qei = new QueryExecutionImpl(command, sfc, Mockito.mock(RuntimeMetadata.class), Mockito.mock(ExecutionContext.class), new SalesForceExecutionFactory());
         qei.execute();
         assertNull(qei.next());
@@ -279,7 +279,7 @@ public class TestQueryExecutionImpl {
         Mockito.when(connection.addBatch("SELECT Name FROM Account", jobInfo)).thenReturn(info);
 
         ExecutionContext mock = Mockito.mock(ExecutionContext.class);
-        Mockito.stub(mock.getSourceHint()).toReturn("bulk");
+        Mockito.when(mock.getSourceHint()).thenReturn("bulk");
 
         QueryExecutionImpl execution = new QueryExecutionImpl(command, connection, Mockito.mock(RuntimeMetadata.class), mock, new SalesForceExecutionFactory());
 

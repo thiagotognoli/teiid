@@ -69,8 +69,8 @@ public class TestSessionAwareCache {
         CacheID id = new CacheID(buildWorkContext(), new ParseInfo(), "SELECT * FROM FOO");
 
         Cachable result = Mockito.mock(Cachable.class);
-        Mockito.stub(result.prepare((BufferManager)anyObject())).toReturn(true);
-        Mockito.stub(result.restore((BufferManager)anyObject())).toReturn(true);
+        Mockito.when(result.prepare((BufferManager)anyObject())).thenReturn(true);
+        Mockito.when(result.restore((BufferManager)anyObject())).thenReturn(true);
 
         cache.put(id, Determinism.USER_DETERMINISTIC, result, null);
 
@@ -95,8 +95,8 @@ public class TestSessionAwareCache {
         CacheID id = new CacheID(buildWorkContext(), new ParseInfo(), "SELECT * FROM FOO");
 
         Cachable result = Mockito.mock(Cachable.class);
-        Mockito.stub(result.prepare((BufferManager)anyObject())).toReturn(true);
-        Mockito.stub(result.restore((BufferManager)anyObject())).toReturn(true);
+        Mockito.when(result.prepare((BufferManager)anyObject())).thenReturn(true);
+        Mockito.when(result.restore((BufferManager)anyObject())).thenReturn(true);
 
         cache.put(id, Determinism.VDB_DETERMINISTIC, result, null);
 
@@ -121,8 +121,8 @@ public class TestSessionAwareCache {
         CacheID id = new CacheID(buildWorkContext(), new ParseInfo(), "SELECT * FROM FOO");
 
         Cachable result = Mockito.mock(Cachable.class);
-        Mockito.stub(result.prepare((BufferManager)anyObject())).toReturn(true);
-        Mockito.stub(result.restore((BufferManager)anyObject())).toReturn(true);
+        Mockito.when(result.prepare((BufferManager)anyObject())).thenReturn(true);
+        Mockito.when(result.restore((BufferManager)anyObject())).thenReturn(true);
 
         id = new CacheID(buildWorkContext(), new ParseInfo(), "SELECT * FROM FOO");
         cache.put(id, Determinism.VDB_DETERMINISTIC, result, null);
@@ -143,8 +143,8 @@ public class TestSessionAwareCache {
         CacheID id = new CacheID(buildWorkContext(), new ParseInfo(), "SELECT * FROM FOO");
 
         Cachable result = Mockito.mock(Cachable.class);
-        Mockito.stub(result.prepare((BufferManager)anyObject())).toReturn(true);
-        Mockito.stub(result.restore((BufferManager)anyObject())).toReturn(true);
+        Mockito.when(result.prepare((BufferManager)anyObject())).thenReturn(true);
+        Mockito.when(result.restore((BufferManager)anyObject())).thenReturn(true);
 
         id = new CacheID(buildWorkContext(), new ParseInfo(), "SELECT * FROM FOO");
         cache.put(id, Determinism.VDB_DETERMINISTIC, result, null);
@@ -176,7 +176,7 @@ public class TestSessionAwareCache {
         assertEquals(Long.valueOf(1), cache.computeTtl(id, result, 1L));
 
         AccessInfo ai = new AccessInfo();
-        Mockito.stub(result.getAccessInfo()).toReturn(ai);
+        Mockito.when(result.getAccessInfo()).thenReturn(ai);
 
         Table t = new Table();
         t.setProperty(DataModifiable.DATA_TTL, "2");
@@ -202,8 +202,8 @@ public class TestSessionAwareCache {
         CacheID id = new CacheID(context, new ParseInfo(), "SELECT * FROM FOO");
 
         Cachable result = Mockito.mock(Cachable.class);
-        Mockito.stub(result.prepare((BufferManager)anyObject())).toReturn(true);
-        Mockito.stub(result.restore((BufferManager)anyObject())).toReturn(true);
+        Mockito.when(result.prepare((BufferManager)anyObject())).thenReturn(true);
+        Mockito.when(result.restore((BufferManager)anyObject())).thenReturn(true);
 
         id = new CacheID(context, new ParseInfo(), "SELECT * FROM FOO");
         cache.put(id, Determinism.VDB_DETERMINISTIC, result, null);

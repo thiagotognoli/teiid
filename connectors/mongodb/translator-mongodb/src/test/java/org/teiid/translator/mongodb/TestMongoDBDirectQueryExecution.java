@@ -64,10 +64,10 @@ public class TestMongoDBDirectQueryExecution {
         ExecutionContext context = Mockito.mock(ExecutionContext.class);
         DBCollection dbCollection = Mockito.mock(DBCollection.class);
         DB db = Mockito.mock(DB.class);
-        Mockito.stub(db.getCollection("MyTable")).toReturn(dbCollection);
+        Mockito.when(db.getCollection("MyTable")).thenReturn(dbCollection);
 
-        Mockito.stub(db.collectionExists(Mockito.anyString())).toReturn(true);
-        Mockito.stub(connection.getDatabase()).toReturn(db);
+        Mockito.when(db.collectionExists(Mockito.anyString())).thenReturn(true);
+        Mockito.when(connection.getDatabase()).thenReturn(db);
 
         Argument arg = new Argument(Direction.IN, null, String.class, null);
         arg.setArgumentValue(new Literal("MyTable;{$match:{\"id\":\"$1\"}};{$project:{\"_m0\":\"$user\"}}", String.class));
@@ -91,10 +91,10 @@ public class TestMongoDBDirectQueryExecution {
         ExecutionContext context = Mockito.mock(ExecutionContext.class);
         DBCollection dbCollection = Mockito.mock(DBCollection.class);
         DB db = Mockito.mock(DB.class);
-        Mockito.stub(db.getCollection("MyTable")).toReturn(dbCollection);
+        Mockito.when(db.getCollection("MyTable")).thenReturn(dbCollection);
 
-        Mockito.stub(db.collectionExists(Mockito.anyString())).toReturn(true);
-        Mockito.stub(connection.getDatabase()).toReturn(db);
+        Mockito.when(db.collectionExists(Mockito.anyString())).thenReturn(true);
+        Mockito.when(connection.getDatabase()).thenReturn(db);
 
         Argument arg = new Argument(Direction.IN, null, String.class, null);
         arg.setArgumentValue(new Literal("$ShellCmd;MyTable;remove;{ qty: { $gt: 20 }}", String.class));

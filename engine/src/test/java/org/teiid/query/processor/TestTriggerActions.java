@@ -27,7 +27,7 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.Mockito.whenbing.Answer;
 import org.teiid.api.exception.query.QueryProcessingException;
 import org.teiid.dqp.service.TransactionContext;
 import org.teiid.dqp.service.TransactionContext.Scope;

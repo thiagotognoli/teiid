@@ -90,22 +90,22 @@ public class TestQueryExecution {
         RuntimeMetadata rm = Mockito.mock(RuntimeMetadata.class);
         LdapContext connection = Mockito.mock(LdapContext.class);
         LdapContext ctx = Mockito.mock(LdapContext.class);
-        Mockito.stub(connection.lookup("ou=Infrastructure,ou=Support,o=DEMOCORP,c=AU")).toReturn(ctx);
+        Mockito.when(connection.lookup("ou=Infrastructure,ou=Support,o=DEMOCORP,c=AU")).thenReturn(ctx);
         Attributes attribs = Mockito.mock(Attributes.class);
         Attribute attrib = Mockito.mock(Attribute.class);
-        Mockito.stub(attrib.size()).toReturn(2);
+        Mockito.when(attrib.size()).thenReturn(2);
 
         NamingEnumeration attribValues = new SimpleNamingEnumeration(Arrays.asList("foo", "bar").iterator());
 
-        Mockito.stub(attrib.getAll()).toReturn(attribValues);
+        Mockito.when(attrib.getAll()).thenReturn(attribValues);
 
-        Mockito.stub(attribs.get("objectClass")).toReturn(attrib);
+        Mockito.when(attribs.get("objectClass")).thenReturn(attrib);
 
         final SearchResult sr = new SearchResult("x", null, attribs);
 
         NamingEnumeration<SearchResult> enumeration = new SimpleNamingEnumeration(Arrays.asList(sr).iterator());
 
-        Mockito.stub(ctx.search((String)Mockito.any(), (String)Mockito.any(), (SearchControls)Mockito.any())).toReturn(enumeration);
+        Mockito.when(ctx.search((String)Mockito.any(), (String)Mockito.any(), (SearchControls)Mockito.any())).thenReturn(enumeration);
 
         LDAPExecutionFactory lef = new LDAPExecutionFactory();
         lef.start();
@@ -119,9 +119,9 @@ public class TestQueryExecution {
         assertNull(execution.next());
 
         //missing attribute handling
-        Mockito.stub(attribs.get("objectClass")).toReturn(null);
+        Mockito.when(attribs.get("objectClass")).thenReturn(null);
         enumeration = new SimpleNamingEnumeration(Arrays.asList(sr).iterator());
-        Mockito.stub(ctx.search((String)Mockito.any(), (String)Mockito.any(), (SearchControls)Mockito.any())).toReturn(enumeration);
+        Mockito.when(ctx.search((String)Mockito.any(), (String)Mockito.any(), (SearchControls)Mockito.any())).thenReturn(enumeration);
 
         execution = (LDAPSyncQueryExecution)lef.createExecution(command, ec, rm, connection);
         execution.execute();
@@ -131,11 +131,11 @@ public class TestQueryExecution {
 
         //empty attribute handling
         attribValues = new SimpleNamingEnumeration(new ArrayList<Object>().iterator());
-        Mockito.stub(attrib.size()).toReturn(0);
-        Mockito.stub(attrib.getAll()).toReturn(attribValues);
-        Mockito.stub(attribs.get("objectClass")).toReturn(attrib);
+        Mockito.when(attrib.size()).thenReturn(0);
+        Mockito.when(attrib.getAll()).thenReturn(attribValues);
+        Mockito.when(attribs.get("objectClass")).thenReturn(attrib);
         enumeration = new SimpleNamingEnumeration(Arrays.asList(sr).iterator());
-        Mockito.stub(ctx.search((String)Mockito.any(), (String)Mockito.any(), (SearchControls)Mockito.any())).toReturn(enumeration);
+        Mockito.when(ctx.search((String)Mockito.any(), (String)Mockito.any(), (SearchControls)Mockito.any())).thenReturn(enumeration);
 
         execution = (LDAPSyncQueryExecution)lef.createExecution(command, ec, rm, connection);
         execution.execute();
@@ -151,7 +151,7 @@ public class TestQueryExecution {
         RuntimeMetadata rm = Mockito.mock(RuntimeMetadata.class);
         LdapContext connection = Mockito.mock(LdapContext.class);
         LdapContext ctx = Mockito.mock(LdapContext.class);
-        Mockito.stub(connection.lookup("ou=Infrastructure,ou=Support,o=DEMOCORP,c=AU")).toReturn(ctx);
+        Mockito.when(connection.lookup("ou=Infrastructure,ou=Support,o=DEMOCORP,c=AU")).thenReturn(ctx);
         BasicAttributes attributes = new BasicAttributes(true);
         BasicAttribute attrib = new BasicAttribute("member");
         attributes.put(attrib);
@@ -163,7 +163,7 @@ public class TestQueryExecution {
 
         NamingEnumeration<SearchResult> enumeration = new SimpleNamingEnumeration(Arrays.asList(sr).iterator());
 
-        Mockito.stub(ctx.search((String)Mockito.any(), (String)Mockito.any(), (SearchControls)Mockito.any())).toReturn(enumeration);
+        Mockito.when(ctx.search((String)Mockito.any(), (String)Mockito.any(), (SearchControls)Mockito.any())).thenReturn(enumeration);
 
         LDAPExecutionFactory lef = new LDAPExecutionFactory();
         lef.start();

@@ -31,7 +31,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.Mockito.whenbing.Answer;
 import org.teiid.core.types.DataTypeManager;
 import org.teiid.core.util.TimestampWithTimezone;
 import org.teiid.language.ColumnReference;
@@ -85,7 +85,7 @@ public class TestSingleInsert {
 
         SalesforceConnection connection = Mockito.mock(SalesforceConnection.class);
 
-        Mockito.stub(connection.create(Mockito.any(DataPayload.class))).toAnswer(new Answer<Integer>() {
+        Mockito.when(connection.create(Mockito.any(DataPayload.class))).toAnswer(new Answer<Integer>() {
             @Override
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 DataPayload payload = (DataPayload) invocation.getArguments()[0];
@@ -99,7 +99,7 @@ public class TestSingleInsert {
             }
         });
 
-        Mockito.stub(connection.upsert(Mockito.any(DataPayload.class))).toReturn(1);
+        Mockito.when(connection.upsert(Mockito.any(DataPayload.class))).thenReturn(1);
 
         SalesForceExecutionFactory config = new SalesForceExecutionFactory();
         config.setMaxBulkInsertBatchSize(1);

@@ -191,8 +191,8 @@ public class TestODataSQLBuilder {
         Hashtable<String, String> headers = new Hashtable<String, String>();
         headers.put("Content-Type", "application/json");
 
-        Mockito.stub(client.getMetadataStore()).toReturn(store);
-        Mockito.stub(client.executeCount(Mockito.any(Query.class), Mockito.anyListOf(SQLParameter.class))).toReturn(new CountResponse() {
+        Mockito.when(client.getMetadataStore()).thenReturn(store);
+        Mockito.when(client.executeCount(Mockito.any(Query.class), Mockito.anyListOf(SQLParameter.class))).thenReturn(new CountResponse() {
             @Override
             public int getCount() {
                 return 10;
@@ -200,9 +200,9 @@ public class TestODataSQLBuilder {
         });
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.stub(request.getHeaderNames()).toReturn(headers.keys());
-        Mockito.stub(request.getHeaders("Content-Type")).toReturn(headers.elements());
-        Mockito.stub(request.getMethod()).toReturn(method);
+        Mockito.when(request.getHeaderNames()).thenReturn(headers.keys());
+        Mockito.when(request.getHeaders("Content-Type")).thenReturn(headers.elements());
+        Mockito.when(request.getMethod()).thenReturn(method);
 
         String requestURL = url;
         String queryString = "";
@@ -211,11 +211,11 @@ public class TestODataSQLBuilder {
             requestURL = url.substring(0, idx);
             queryString = url.substring(idx+1);
         }
-        Mockito.stub(request.getRequestURL()).toReturn(new StringBuffer(requestURL));
-        Mockito.stub(request.getQueryString()).toReturn(queryString);
-        Mockito.stub(request.getServletPath()).toReturn("");
-        Mockito.stub(request.getContextPath()).toReturn("/odata4/vdb/PM1");
-        Mockito.stub(request.getInputStream()).toReturn(stream);
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(requestURL));
+        Mockito.when(request.getQueryString()).thenReturn(queryString);
+        Mockito.when(request.getServletPath()).thenReturn("");
+        Mockito.when(request.getContextPath()).thenReturn("/odata4/vdb/PM1");
+        Mockito.when(request.getInputStream()).thenReturn(stream);
 
         final StringBuffer sb = new StringBuffer();
         ServletOutputStream out = new ServletOutputStream() {
@@ -232,7 +232,7 @@ public class TestODataSQLBuilder {
             }
         };
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        Mockito.stub(response.getOutputStream()).toReturn(out);
+        Mockito.when(response.getOutputStream()).thenReturn(out);
 
         try {
             TeiidServiceHandler tsh = new TeiidServiceHandler("PM1");

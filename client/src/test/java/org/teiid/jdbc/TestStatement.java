@@ -35,7 +35,7 @@ import java.util.regex.Matcher;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.Mockito.whenbing.Answer;
 import org.teiid.client.DQP;
 import org.teiid.client.RequestMessage;
 import org.teiid.client.ResultsMessage;
@@ -47,15 +47,15 @@ public class TestStatement {
 
     @Test public void testBatchExecution() throws Exception {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
-        Mockito.stub(conn.getConnectionProps()).toReturn(new Properties());
+        Mockito.when(conn.getConnectionProps()).thenReturn(new Properties());
         DQP dqp = Mockito.mock(DQP.class);
         ResultsFuture<ResultsMessage> results = new ResultsFuture<ResultsMessage>();
-        Mockito.stub(dqp.executeRequest(Mockito.anyLong(), (RequestMessage)Mockito.anyObject())).toReturn(results);
+        Mockito.when(dqp.executeRequest(Mockito.anyLong(), (RequestMessage)Mockito.anyObject())).thenReturn(results);
         ResultsMessage rm = new ResultsMessage();
         rm.setResults(new List<?>[] {Arrays.asList(1), Arrays.asList(2)});
         rm.setUpdateResult(true);
         results.getResultsReceiver().receiveResults(rm);
-        Mockito.stub(conn.getDQP()).toReturn(dqp);
+        Mockito.when(conn.getDQP()).thenReturn(dqp);
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         statement.clearBatch(); //previously caused npe
         statement.addBatch("delete from table"); //$NON-NLS-1$
@@ -65,17 +65,17 @@ public class TestStatement {
 
     @Test public void testWarnings() throws Exception {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
-        Mockito.stub(conn.getConnectionProps()).toReturn(new Properties());
+        Mockito.when(conn.getConnectionProps()).thenReturn(new Properties());
         DQP dqp = Mockito.mock(DQP.class);
         ResultsFuture<ResultsMessage> results = new ResultsFuture<ResultsMessage>();
-        Mockito.stub(dqp.executeRequest(Mockito.anyLong(), (RequestMessage)Mockito.anyObject())).toReturn(results);
+        Mockito.when(dqp.executeRequest(Mockito.anyLong(), (RequestMessage)Mockito.anyObject())).thenReturn(results);
         ResultsMessage rm = new ResultsMessage();
         rm.setResults(new List<?>[] {Arrays.asList(1)});
         rm.setWarnings(Arrays.asList(new Throwable()));
         rm.setColumnNames(new String[] {"expr1"});
         rm.setDataTypes(new String[] {"string"});
         results.getResultsReceiver().receiveResults(rm);
-        Mockito.stub(conn.getDQP()).toReturn(dqp);
+        Mockito.when(conn.getDQP()).thenReturn(dqp);
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY) {
             @Override
             protected java.util.TimeZone getServerTimeZone() throws java.sql.SQLException {
@@ -91,17 +91,17 @@ public class TestStatement {
 
     @Test public void testGetMoreResults() throws Exception {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
-        Mockito.stub(conn.getConnectionProps()).toReturn(new Properties());
+        Mockito.when(conn.getConnectionProps()).thenReturn(new Properties());
         DQP dqp = Mockito.mock(DQP.class);
         ResultsFuture<ResultsMessage> results = new ResultsFuture<ResultsMessage>();
-        Mockito.stub(dqp.executeRequest(Mockito.anyLong(), (RequestMessage)Mockito.anyObject())).toReturn(results);
+        Mockito.when(dqp.executeRequest(Mockito.anyLong(), (RequestMessage)Mockito.anyObject())).thenReturn(results);
         ResultsMessage rm = new ResultsMessage();
         rm.setUpdateResult(true);
         rm.setColumnNames(new String[] {"expr1"});
         rm.setDataTypes(new String[] {"integer"});
         rm.setResults(new List<?>[] {Arrays.asList(1)});
         results.getResultsReceiver().receiveResults(rm);
-        Mockito.stub(conn.getDQP()).toReturn(dqp);
+        Mockito.when(conn.getDQP()).thenReturn(dqp);
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY) {
             @Override
             protected java.util.TimeZone getServerTimeZone() throws java.sql.SQLException {
@@ -144,7 +144,7 @@ public class TestStatement {
     @Test public void testSetPayloadStatement() throws Exception {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
         Properties p = new Properties();
-        Mockito.stub(conn.getExecutionProperties()).toReturn(p);
+        Mockito.when(conn.getExecutionProperties()).thenReturn(p);
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         assertFalse(statement.execute("set payload foo bar")); //$NON-NLS-1$
     }
@@ -152,7 +152,7 @@ public class TestStatement {
     @Test public void testSetAuthorizationStatement() throws Exception {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
         Properties p = new Properties();
-        Mockito.stub(conn.getExecutionProperties()).toReturn(p);
+        Mockito.when(conn.getExecutionProperties()).thenReturn(p);
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         assertFalse(statement.execute("set session authorization bar")); //$NON-NLS-1$
         Mockito.verify(conn).changeUser("bar", null);
@@ -162,7 +162,7 @@ public class TestStatement {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
         Properties p = new Properties();
         p.setProperty(ExecutionProperties.ANSI_QUOTED_IDENTIFIERS, Boolean.TRUE.toString());
-        Mockito.stub(conn.getExecutionProperties()).toReturn(p);
+        Mockito.when(conn.getExecutionProperties()).thenReturn(p);
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         assertEquals(Boolean.TRUE.toString(), statement.getExecutionProperty(ExecutionProperties.ANSI_QUOTED_IDENTIFIERS));
         statement.setExecutionProperty(ExecutionProperties.ANSI_QUOTED_IDENTIFIERS, Boolean.FALSE.toString());
@@ -173,7 +173,7 @@ public class TestStatement {
     @Test public void testTransactionStatements() throws Exception {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
         Properties p = new Properties();
-        Mockito.stub(conn.getExecutionProperties()).toReturn(p);
+        Mockito.when(conn.getExecutionProperties()).thenReturn(p);
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         assertFalse(statement.execute("start transaction")); //$NON-NLS-1$
         Mockito.verify(conn).setAutoCommit(false);
@@ -194,7 +194,7 @@ public class TestStatement {
     @Test public void testDisableLocalTransations() throws Exception {
         ServerConnection mock = Mockito.mock(ServerConnection.class);
         DQP dqp = Mockito.mock(DQP.class);
-        Mockito.stub(mock.getService(DQP.class)).toReturn(dqp);
+        Mockito.when(mock.getService(DQP.class)).thenReturn(dqp);
         ConnectionImpl conn = new ConnectionImpl(mock, new Properties(), "x");
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         assertTrue(conn.getAutoCommit());
@@ -212,9 +212,9 @@ public class TestStatement {
     @SuppressWarnings("unchecked")
     @Test public void testTransactionStatementsAsynch() throws Exception {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
-        Mockito.stub(conn.submitSetAutoCommitTrue(Mockito.anyBoolean())).toReturn((ResultsFuture)ResultsFuture.NULL_FUTURE);
+        Mockito.when(conn.submitSetAutoCommitTrue(Mockito.anyBoolean())).thenReturn((ResultsFuture)ResultsFuture.NULL_FUTURE);
         Properties p = new Properties();
-        Mockito.stub(conn.getExecutionProperties()).toReturn(p);
+        Mockito.when(conn.getExecutionProperties()).thenReturn(p);
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         statement.submitExecute("start transaction", null); //$NON-NLS-1$
         Mockito.verify(conn).setAutoCommit(false);
@@ -227,13 +227,13 @@ public class TestStatement {
 
     @Test public void testAsynchTimeout() throws Exception {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
-        Mockito.stub(conn.getConnectionProps()).toReturn(new Properties());
+        Mockito.when(conn.getConnectionProps()).thenReturn(new Properties());
         final StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         statement.setQueryTimeoutMS(1);
         DQP dqp = Mockito.mock(DQP.class);
-        Mockito.stub(statement.getDQP()).toReturn(dqp);
+        Mockito.when(statement.getDQP()).thenReturn(dqp);
         final AtomicInteger counter = new AtomicInteger();
-        Mockito.stub(dqp.cancelRequest(0)).toAnswer(new Answer<Boolean>() {
+        Mockito.when(dqp.cancelRequest(0)).toAnswer(new Answer<Boolean>() {
             @Override
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 synchronized (statement) {
@@ -244,7 +244,7 @@ public class TestStatement {
             }
         });
         ResultsFuture<ResultsMessage> future = new ResultsFuture<ResultsMessage>();
-        Mockito.stub(dqp.executeRequest(Mockito.anyLong(), (RequestMessage) Mockito.anyObject())).toReturn(future);
+        Mockito.when(dqp.executeRequest(Mockito.anyLong(), (RequestMessage) Mockito.anyObject())).thenReturn(future);
         statement.submitExecute("select 'hello world'", null);
         synchronized (statement) {
             while (counter.get() != 1) {
@@ -264,7 +264,7 @@ public class TestStatement {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
         Properties p = new Properties();
         p.setProperty(ExecutionProperties.QUERYTIMEOUT, "2");
-        Mockito.stub(conn.getExecutionProperties()).toReturn(p);
+        Mockito.when(conn.getExecutionProperties()).thenReturn(p);
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         assertEquals(2, statement.getQueryTimeout());
     }
@@ -274,7 +274,7 @@ public class TestStatement {
         Properties p = new Properties();
         p.setProperty(ExecutionProperties.JDBC4COLUMNNAMEANDLABELSEMANTICS, "false");
 
-        Mockito.stub(conn.getExecutionProperties()).toReturn(p);
+        Mockito.when(conn.getExecutionProperties()).thenReturn(p);
         StatementImpl statement = new StatementImpl(conn, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         assertEquals(Boolean.FALSE.toString(), statement.getExecutionProperty(ExecutionProperties.JDBC4COLUMNNAMEANDLABELSEMANTICS));
 
@@ -314,7 +314,7 @@ public class TestStatement {
                 return TimeZone.getDefault();
             }
         };
-        Mockito.stub(conn.getTransactionIsolation()).toReturn(Connection.TRANSACTION_READ_COMMITTED);
+        Mockito.when(conn.getTransactionIsolation()).thenReturn(Connection.TRANSACTION_READ_COMMITTED);
         assertTrue(statement.execute("show transaction isolation level")); //$NON-NLS-1$
         ResultSet rs = statement.getResultSet();
         rs.next();

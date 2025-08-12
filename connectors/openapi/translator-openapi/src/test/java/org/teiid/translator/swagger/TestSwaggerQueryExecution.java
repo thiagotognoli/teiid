@@ -86,13 +86,13 @@ public class TestSwaggerQueryExecution {
         WSConnection connection = Mockito.mock(WSConnection.class);
 
         Dispatch<DataSource> dispatch = Mockito.mock(Dispatch.class);
-        Mockito.stub(dispatch.getRequestContext()).toReturn(userHeaders);
-        Mockito.stub(dispatch.getResponseContext()).toReturn(userHeaders);
+        Mockito.when(dispatch.getRequestContext()).thenReturn(userHeaders);
+        Mockito.when(dispatch.getResponseContext()).thenReturn(userHeaders);
 
-        Mockito.stub(connection.createDispatch(
+        Mockito.when(connection.createDispatch(
                 Mockito.eq(HTTPBinding.HTTP_BINDING), Mockito.anyString(),
                 Mockito.eq(DataSource.class), Mockito.eq(Mode.MESSAGE)))
-                .toReturn(dispatch);
+                .thenReturn(dispatch);
 
         DataSource outputDS = new DataSource() {
             @Override
@@ -117,8 +117,8 @@ public class TestSwaggerQueryExecution {
                 return "application/json";
             }
         };
-        Mockito.stub(dispatch.invoke(Mockito.any(DataSource.class)))
-                .toReturn(outputDS);
+        Mockito.when(dispatch.invoke(Mockito.any(DataSource.class)))
+                .thenReturn(outputDS);
 
         ProcedureExecution execution = translator.createProcedureExecution(
                 (Call) cmd, context, utility.createRuntimeMetadata(),

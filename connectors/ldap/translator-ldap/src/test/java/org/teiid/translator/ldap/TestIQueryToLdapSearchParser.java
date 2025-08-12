@@ -135,7 +135,7 @@ public class TestIQueryToLdapSearchParser {
 
         LdapContext context = Mockito.mock(LdapContext.class);
 
-        Mockito.stub(context.lookup("")).toReturn(context);
+        Mockito.when(context.lookup("")).thenReturn(context);
 
         LDAPUpdateExecution lue = new LDAPUpdateExecution(query, context);
 
@@ -159,7 +159,7 @@ public class TestIQueryToLdapSearchParser {
 
         LdapContext context = Mockito.mock(LdapContext.class);
 
-        Mockito.stub(context.lookup("")).toReturn(context);
+        Mockito.when(context.lookup("")).thenReturn(context);
 
         LDAPUpdateExecution lue = new LDAPUpdateExecution(query, context);
 

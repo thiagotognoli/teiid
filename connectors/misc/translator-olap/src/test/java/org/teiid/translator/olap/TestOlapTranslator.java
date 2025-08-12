@@ -54,10 +54,10 @@ public class TestOlapTranslator {
         OlapWrapper mock2 = Mockito.mock(OlapWrapper.class);
         OlapConnection mock3 = Mockito.mock(OlapConnection.class);
         OlapStatement mock4 = Mockito.mock(OlapStatement.class);
-        Mockito.stub(mock4.executeOlapQuery(Mockito.anyString())).toThrow(new TeiidRuntimeException());
-        Mockito.stub(mock3.createStatement()).toReturn(mock4);
-        Mockito.stub(mock2.unwrap(OlapConnection.class)).toReturn(mock3);
-        Mockito.stub(mock.unwrap(OlapWrapper.class)).toReturn(mock2);
+        Mockito.when(mock4.executeOlapQuery(Mockito.anyString())).toThrow(new TeiidRuntimeException());
+        Mockito.when(mock3.createStatement()).thenReturn(mock4);
+        Mockito.when(mock2.unwrap(OlapConnection.class)).thenReturn(mock3);
+        Mockito.when(mock.unwrap(OlapWrapper.class)).thenReturn(mock2);
         ProcedureExecution pe = oef.createProcedureExecution((Call)obj, Mockito.mock(ExecutionContext.class), new RuntimeMetadataImpl(tm), mock);
         try {
             pe.execute();

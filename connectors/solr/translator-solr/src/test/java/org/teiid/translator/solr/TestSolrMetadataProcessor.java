@@ -39,9 +39,9 @@ public class TestSolrMetadataProcessor {
 
     private FieldInfo buildField(String name, String type, EnumSet<FieldFlag> flags) {
         FieldInfo info = Mockito.mock(FieldInfo.class);
-        Mockito.stub(info.getName()).toReturn(name);
-        Mockito.stub(info.getType()).toReturn(type);
-        Mockito.stub(info.getFlags()).toReturn(flags);
+        Mockito.when(info.getName()).thenReturn(name);
+        Mockito.when(info.getType()).thenReturn(type);
+        Mockito.when(info.getFlags()).thenReturn(flags);
         return info;
     }
 
@@ -51,7 +51,7 @@ public class TestSolrMetadataProcessor {
 
         MetadataFactory mf = new MetadataFactory("vdb", 1, "solr", SystemMetadata.getInstance().getRuntimeTypeMap(), new Properties(), null);
         SolrConnection conn = Mockito.mock(SolrConnection.class);
-        Mockito.stub(conn.getCoreName()).toReturn("SomeTable");
+        Mockito.when(conn.getCoreName()).thenReturn("SomeTable");
 
 
         LinkedHashMap<String, FieldInfo> fields = new LinkedHashMap<String, LukeResponse.FieldInfo>();
@@ -61,9 +61,9 @@ public class TestSolrMetadataProcessor {
         fields.put("id", buildField("id", "long", EnumSet.of(FieldFlag.STORED, FieldFlag.INDEXED)));
 
         LukeResponse response = Mockito.mock(LukeResponse.class);;
-        Mockito.stub(response.getFieldInfo()).toReturn(fields);
+        Mockito.when(response.getFieldInfo()).thenReturn(fields);
 
-        Mockito.stub(conn.metadata(Mockito.any(LukeRequest.class))).toReturn(response);
+        Mockito.when(conn.metadata(Mockito.any(LukeRequest.class))).thenReturn(response);
 
         mp.process(mf, conn);
 

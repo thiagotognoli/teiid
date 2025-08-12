@@ -53,8 +53,8 @@ public class TestCallableStatement {
         params.put(Integer.valueOf(2), Integer.valueOf(2));
         ResultSetImpl rs = Mockito.mock(ResultSetImpl.class);
         mmcs.resultSet = rs;
-        Mockito.stub(rs.getOutputParamValue(1)).toReturn(null);
-        Mockito.stub(rs.getOutputParamValue(2)).toReturn(Boolean.TRUE);
+        Mockito.when(rs.getOutputParamValue(1)).thenReturn(null);
+        Mockito.when(rs.getOutputParamValue(2)).thenReturn(Boolean.TRUE);
         mmcs.getBoolean(1);
         assertTrue(mmcs.wasNull());
         assertTrue(mmcs.getBoolean(2));
@@ -119,8 +119,8 @@ public class TestCallableStatement {
         ConnectionImpl conn = Mockito.mock(ConnectionImpl.class);
         ServerConnection sc = Mockito.mock(ServerConnection.class);
 
-        Mockito.stub(sc.getLogonResult()).toReturn(new LogonResult());
-        Mockito.stub(conn.getServerConnection()).toReturn(sc);
+        Mockito.when(sc.getLogonResult()).thenReturn(new LogonResult());
+        Mockito.when(conn.getServerConnection()).thenReturn(sc);
 
         CallableStatementImpl mmcs = new CallableStatementImpl(conn, "{?=call x(?)}", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         return mmcs;

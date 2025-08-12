@@ -30,7 +30,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.Mockito.whenbing.Answer;
 import org.teiid.client.DQP;
 import org.teiid.client.security.LogonResult;
 import org.teiid.client.security.SessionToken;
@@ -66,19 +66,19 @@ public class TestConnection {
         ServerConnection mock = mock(ServerConnection.class);
         DQP dqp = mock(DQP.class);
         try {
-            stub(dqp.start((XidImpl)Mockito.anyObject(), Mockito.anyInt(), Mockito.anyInt())).toAnswer(new Answer() {
+            when(dqp.start((XidImpl)Mockito.anyObject(), Mockito.anyInt(), Mockito.anyInt())).toAnswer(new Answer() {
                 @Override
                 public Object answer(InvocationOnMock invocation) throws Throwable {
                     return ResultsFuture.NULL_FUTURE;
                 }
             });
-            stub(dqp.rollback((XidImpl)Mockito.anyObject())).toAnswer(new Answer() {
+            when(dqp.rollback((XidImpl)Mockito.anyObject())).toAnswer(new Answer() {
                 @Override
                 public Object answer(InvocationOnMock invocation) throws Throwable {
                     return ResultsFuture.NULL_FUTURE;
                 }
             });
-            stub(dqp.rollback()).toAnswer(new Answer() {
+            when(dqp.rollback()).toAnswer(new Answer() {
                 @Override
                 public Object answer(InvocationOnMock invocation) throws Throwable {
                     return ResultsFuture.NULL_FUTURE;
@@ -97,9 +97,9 @@ public class TestConnection {
             e.printStackTrace();
         }
 
-        stub(mock.getService(DQP.class)).toReturn(dqp);
+        when(mock.getService(DQP.class)).thenReturn(dqp);
 
-        stub(mock.getLogonResult()).toReturn(new LogonResult(new SessionToken(1, "admin"), STD_DATABASE_NAME, "fake")); //$NON-NLS-1$
+        when(mock.getLogonResult()).thenReturn(new LogonResult(new SessionToken(1, "admin"), STD_DATABASE_NAME, "fake")); //$NON-NLS-1$
         return new ConnectionImpl(mock, props, url);
     }
 

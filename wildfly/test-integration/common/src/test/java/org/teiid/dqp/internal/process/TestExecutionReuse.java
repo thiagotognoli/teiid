@@ -32,8 +32,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.mockito.stubbing.DeprecatedOngoingStubbing;
+import org.Mockito.whenbing.Answer;
+import org.Mockito.whenbing.DeprecatedOngoingStubbing;
 import org.teiid.client.util.ResultsFuture;
 import org.teiid.core.util.UnitTestUtil;
 import org.teiid.dqp.internal.datamgr.ConnectorManager;
@@ -97,9 +97,9 @@ public class TestExecutionReuse {
     @Before public void setup() throws DataNotAvailableException, TranslatorException {
         execution = Mockito.mock(FakeReusableExecution.class);
         ec = null;
-        DeprecatedOngoingStubbing stubbing = Mockito.stub(execution.next()).toReturn((List) Arrays.asList((Object)null)).toReturn(null);
+        DeprecatedOngoingStubbing stubbing = Mockito.when(execution.next()).thenReturn((List) Arrays.asList((Object)null)).thenReturn(null);
         for (int i = 1; i < EXEC_COUNT; i++) {
-            stubbing.toReturn(Arrays.asList((Object)null)).toReturn(null);
+            stubbing.thenReturn(Arrays.asList((Object)null)).thenReturn(null);
         }
         Mockito.doAnswer(new Answer<Void>() {
             @Override

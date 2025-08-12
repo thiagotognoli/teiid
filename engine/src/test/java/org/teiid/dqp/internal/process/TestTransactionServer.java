@@ -55,10 +55,10 @@ public class TestTransactionServer {
         server = new TransactionServerImpl();
         tm = Mockito.mock(TransactionManager.class);
         txn = Mockito.mock(jakarta.transaction.Transaction.class);
-        Mockito.stub(tm.getTransaction()).toReturn(txn);
-        Mockito.stub(tm.suspend()).toReturn(txn);
+        Mockito.when(tm.getTransaction()).thenReturn(txn);
+        Mockito.when(tm.suspend()).thenReturn(txn);
         xaImporter = Mockito.mock(XAImporter.class);
-        Mockito.stub(xaImporter.importTransaction(Mockito.any(), Mockito.any(), Mockito.eq(TIMEOUT))).toReturn(txn);
+        Mockito.when(xaImporter.importTransaction(Mockito.any(), Mockito.any(), Mockito.eq(TIMEOUT))).thenReturn(txn);
         server.setXaImporter(xaImporter);
         server.setTransactionManager(tm);
     }

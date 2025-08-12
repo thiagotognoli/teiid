@@ -56,7 +56,7 @@ public class TestFileExecutionFactory {
         fef.getMetadata(mf, null);
         Procedure p = mf.getSchema().getProcedure("getTextFiles");
         VirtualFileConnection fc = Mockito.mock(VirtualFileConnection.class);
-        Mockito.stub(fc.getFiles("*.txt")).toReturn(new VirtualFile[]{new JavaVirtualFile(UnitTestUtil.getTestDataFile("file.txt")), new JavaVirtualFile(UnitTestUtil.getTestDataFile("file1.txt"))});
+        Mockito.when(fc.getFiles("*.txt")).thenReturn(new VirtualFile[]{new JavaVirtualFile(UnitTestUtil.getTestDataFile("file.txt")), new JavaVirtualFile(UnitTestUtil.getTestDataFile("file1.txt"))});
         Call call = fef.getLanguageFactory().createCall("getTextFiles", Arrays.asList(new Argument(Direction.IN, new Literal("*.txt", TypeFacility.RUNTIME_TYPES.STRING), TypeFacility.RUNTIME_TYPES.STRING, null)), p);
         ProcedureExecution pe = fef.createProcedureExecution(call, null, null, fc);
         pe.execute();

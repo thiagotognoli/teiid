@@ -2724,8 +2724,8 @@ public class TestEmbeddedServer {
         MockTracer tracer = new MockTracer();
         GlobalTracerInjector.setTracer(tracer);
         Logger logger = Mockito.mock(Logger.class);
-        Mockito.stub(logger.isEnabled(LogConstants.CTX_COMMANDLOGGING, MessageLevel.DETAIL)).toReturn(false);
-        Mockito.stub(logger.isEnabled(LogConstants.CTX_COMMANDLOGGING_SOURCE, MessageLevel.DETAIL)).toReturn(false);
+        Mockito.when(logger.isEnabled(LogConstants.CTX_COMMANDLOGGING, MessageLevel.DETAIL)).thenReturn(false);
+        Mockito.when(logger.isEnabled(LogConstants.CTX_COMMANDLOGGING_SOURCE, MessageLevel.DETAIL)).thenReturn(false);
         Logger old = org.teiid.logging.LogManager.setLogListener(logger);
         try {
             SocketConfiguration s = new SocketConfiguration();

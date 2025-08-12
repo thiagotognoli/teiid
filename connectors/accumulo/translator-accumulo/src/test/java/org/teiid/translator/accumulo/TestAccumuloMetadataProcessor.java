@@ -94,8 +94,8 @@ public class TestAccumuloMetadataProcessor {
     @Test
     public void testDefaultImportPropertiesMetadata() throws Exception {
         AccumuloConnection conn = Mockito.mock(AccumuloConnection.class);
-        Mockito.stub(conn.getInstance()).toReturn(connector);
-        Mockito.stub(conn.getAuthorizations()).toReturn(new Authorizations("public"));
+        Mockito.when(conn.getInstance()).thenReturn(connector);
+        Mockito.when(conn.getAuthorizations()).thenReturn(new Authorizations("public"));
         MetadataFactory mf = new MetadataFactory("vdb", 1, "accumulo", SystemMetadata.getInstance().getRuntimeTypeMap(), new Properties(), null);
         AccumuloMetadataProcessor processor = new AccumuloMetadataProcessor();
         processor.process(mf,conn);
@@ -128,8 +128,8 @@ public class TestAccumuloMetadataProcessor {
         props.put("importer.ValueIn", "{ROWID}");
 
         AccumuloConnection conn = Mockito.mock(AccumuloConnection.class);
-        Mockito.stub(conn.getInstance()).toReturn(connector);
-        Mockito.stub(conn.getAuthorizations()).toReturn(new Authorizations("public"));
+        Mockito.when(conn.getInstance()).thenReturn(connector);
+        Mockito.when(conn.getAuthorizations()).thenReturn(new Authorizations("public"));
         MetadataFactory mf = new MetadataFactory("vdb", 1, "accumulo", SystemMetadata.getInstance().getRuntimeTypeMap(), props, null);
         AccumuloMetadataProcessor processor = new AccumuloMetadataProcessor();
         PropertiesUtils.setBeanProperties(processor, mf.getModelProperties(), "importer"); //$NON-NLS-1$

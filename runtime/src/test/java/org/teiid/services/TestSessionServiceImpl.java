@@ -38,7 +38,7 @@ public class TestSessionServiceImpl {
         vdb.setStatus(Status.ACTIVE);
 
 
-        Mockito.stub(repo.getLiveVDB("name")).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name")).thenReturn(vdb);
 
         ssi.setVDBRepository(repo);
 
@@ -55,7 +55,7 @@ public class TestSessionServiceImpl {
         vdb.setVersion(1);
         vdb.setStatus(Status.ACTIVE);
 
-        Mockito.stub(repo.getLiveVDB("name.1.2.3")).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name.1.2.3")).thenReturn(vdb);
 
         ssi.setVDBRepository(repo);
 
@@ -72,7 +72,7 @@ public class TestSessionServiceImpl {
         vdb.setStatus(Status.ACTIVE);
 
 
-        Mockito.stub(repo.getLiveVDB("name", "1")).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name", "1")).thenReturn(vdb);
 
         ssi.setVDBRepository(repo);
 
@@ -91,7 +91,7 @@ public class TestSessionServiceImpl {
         vdb.setStatus(Status.ACTIVE);
 
 
-        Mockito.stub(repo.getLiveVDB("name", "1")).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name", "1")).thenReturn(vdb);
 
         ssi.setVDBRepository(repo);
 
@@ -109,7 +109,7 @@ public class TestSessionServiceImpl {
         vdb.setStatus(Status.ACTIVE);
 
 
-        Mockito.stub(repo.getLiveVDB("name", 1)).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name", 1)).thenReturn(vdb);
 
         ssi.setVDBRepository(repo);
 
@@ -125,7 +125,7 @@ public class TestSessionServiceImpl {
         vdb.setStatus(Status.ACTIVE);
 
 
-        Mockito.stub(repo.getLiveVDB("name", 1)).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name", 1)).thenReturn(vdb);
 
         ssi.setVDBRepository(repo);
 
@@ -142,7 +142,7 @@ public class TestSessionServiceImpl {
         vdb.setStatus(Status.ACTIVE);
         vdb.addProperty(SessionServiceImpl.SECURITY_DOMAIN_PROPERTY, "domain");
 
-        Mockito.stub(repo.getLiveVDB("name", "1")).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name", "1")).thenReturn(vdb);
 
         ssi.setVDBRepository(repo);
 
@@ -159,7 +159,7 @@ public class TestSessionServiceImpl {
         vdb.setVersion(1);
         vdb.setStatus(Status.ACTIVE);
 
-        Mockito.stub(repo.getLiveVDB("name", "1")).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name", "1")).thenReturn(vdb);
 
         ssi.setVDBRepository(repo);
         ssi.setSecurityDomain("sd");
@@ -185,7 +185,7 @@ public class TestSessionServiceImpl {
         vdb.setStatus(Status.ACTIVE);
         vdb.addProperty(SessionServiceImpl.SECURITY_DOMAIN_PROPERTY, "domain");
         vdb.addProperty(SessionServiceImpl.Authentication.GSS.getPatternKey(), "x");
-        Mockito.stub(repo.getLiveVDB("name", "1")).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name", "1")).thenReturn(vdb);
 
         ssi.setVDBRepository(repo);
         ssi.setAuthenticationType(AuthenticationType.USERPASSWORD); // this is transport default
@@ -201,7 +201,7 @@ public class TestSessionServiceImpl {
         vdb.setStatus(Status.ACTIVE);
         vdb.addProperty(SessionServiceImpl.SECURITY_DOMAIN_PROPERTY, "domain");
         vdb.addProperty(SessionServiceImpl.AUTHENTICATION_TYPE_PROPERTY, "GSS");
-        Mockito.stub(repo.getLiveVDB("name1", "1")).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name1", "1")).thenReturn(vdb);
 
         assertEquals(AuthenticationType.GSS, ssi.getAuthenticationType("name1", "1", "x"));
         assertEquals(AuthenticationType.GSS, ssi.getAuthenticationType("name1", "1", "y"));
@@ -212,7 +212,7 @@ public class TestSessionServiceImpl {
         vdb.setVersion(1);
         vdb.setStatus(Status.ACTIVE);
 
-        Mockito.stub(repo.getLiveVDB("name2", "1")).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name2", "1")).thenReturn(vdb);
 
         assertEquals(AuthenticationType.USERPASSWORD, ssi.getAuthenticationType("name2", "1", "x"));
         assertEquals(AuthenticationType.USERPASSWORD, ssi.getAuthenticationType("name2", "1", "y"));
@@ -232,7 +232,7 @@ public class TestSessionServiceImpl {
         vdb.addProperty(SessionServiceImpl.MAX_SESSIONS_PER_USER, "1");
         vdb.addAttachment(VDBKey.class, new VDBKey("x", 1));
 
-        Mockito.stub(repo.getLiveVDB("name", "1")).toReturn(vdb);
+        Mockito.when(repo.getLiveVDB("name", "1")).thenReturn(vdb);
 
         ssi.setVDBRepository(repo);
         Properties properties = new Properties();

@@ -39,7 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.Mockito.whenbing.Answer;
 import org.teiid.api.exception.query.QueryResolverException;
 import org.teiid.cache.DefaultCacheFactory;
 import org.teiid.common.buffer.BufferManager;
@@ -183,7 +183,7 @@ public class TestTempTables extends TempTableTestHarness {
                 return null;
             }
         }).when(txn).registerSynchronization((Synchronization)Mockito.anyObject());
-        Mockito.stub(txn.toString()).toReturn("txn");
+        Mockito.when(txn.toString()).thenReturn("txn");
         tc = new TransactionContext();
         tc.setTransaction(txn);
         tc.setIsolationLevel(isolation);

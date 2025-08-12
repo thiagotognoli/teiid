@@ -90,12 +90,12 @@ public class TestODataUpdateExecution {
         headers.put(WSConnection.STATUS_CODE, new Integer(responseCode[0]));
 
         Dispatch<DataSource> dispatch = Mockito.mock(Dispatch.class);
-        Mockito.stub(dispatch.getRequestContext()).toReturn(headers);
-        Mockito.stub(dispatch.getResponseContext()).toReturn(headers);
+        Mockito.when(dispatch.getRequestContext()).thenReturn(headers);
+        Mockito.when(dispatch.getResponseContext()).thenReturn(headers);
 
-        Mockito.stub(connection.createDispatch(Mockito.eq(HTTPBinding.HTTP_BINDING),
+        Mockito.when(connection.createDispatch(Mockito.eq(HTTPBinding.HTTP_BINDING),
                 Mockito.anyString(), Mockito.eq(DataSource.class),
-                Mockito.eq(Mode.MESSAGE))).toReturn(dispatch);
+                Mockito.eq(Mode.MESSAGE))).thenReturn(dispatch);
 
         DataSource ds = new DataSource() {
             @Override
@@ -117,7 +117,7 @@ public class TestODataUpdateExecution {
             }
         };
         ArgumentCaptor<DataSource> payload = ArgumentCaptor.forClass(DataSource.class);
-        Mockito.stub(dispatch.invoke(payload.capture())).toReturn(ds);
+        Mockito.when(dispatch.invoke(payload.capture())).thenReturn(ds);
 
         UpdateExecution execution = translator.createUpdateExecution(cmd,
                 context, utility.createRuntimeMetadata(), connection);

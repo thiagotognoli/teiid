@@ -45,7 +45,7 @@ public class TestExcelMetadataProcessor {
         String xlsName = props.getProperty("importer.excelFileName");
         MetadataFactory mf = new MetadataFactory("vdb", 1, "people", SystemMetadata.getInstance().getRuntimeTypeMap(), props, null);
         VirtualFileConnection connection = Mockito.mock(VirtualFileConnection.class);
-        Mockito.stub(connection.getFiles(xlsName)).toReturn(TestExcelExecution.getFile(xlsName));
+        Mockito.when(connection.getFiles(xlsName)).thenReturn(TestExcelExecution.getFile(xlsName));
         translator.getMetadata(mf, connection);
 
         TransformationMetadata metadata = RealMetadataFactory.createTransformationMetadata(mf.asMetadataStore(), "vdb", new FunctionTree("foo", new UDFSource(translator.getPushDownFunctions())));

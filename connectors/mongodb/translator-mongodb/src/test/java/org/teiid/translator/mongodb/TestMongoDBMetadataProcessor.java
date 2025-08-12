@@ -158,15 +158,15 @@ public class TestMongoDBMetadataProcessor {
         BasicDBObject row = new BasicDBObject();
         row.append("col", new BasicDBObject());
 
-        Mockito.stub(db.getCollectionNames()).toReturn(tables);
-        Mockito.stub(db.getCollection(Mockito.eq("table"))).toReturn(tableDBCollection);
+        Mockito.when(db.getCollectionNames()).thenReturn(tables);
+        Mockito.when(db.getCollection(Mockito.eq("table"))).thenReturn(tableDBCollection);
 
         DBCursor tableCursor = Mockito.mock(DBCursor.class);
         Mockito.when(tableCursor.hasNext()).thenReturn(true).thenReturn(false);
         Mockito.when(tableCursor.next()).thenReturn(row);
         Mockito.when(tableDBCollection.find()).thenReturn(tableCursor);
 
-        Mockito.stub(conn.getDatabase()).toReturn(db);
+        Mockito.when(conn.getDatabase()).thenReturn(db);
 
         mp.process(mf, conn);
 
@@ -222,11 +222,11 @@ public class TestMongoDBMetadataProcessor {
         embedded.append("col2", new byte[0]);
         row.append("embedded", embedded);
 
-        Mockito.stub(db.getCollectionNames()).toReturn(tables);
-        Mockito.stub(db.getCollection(Mockito.eq("table"))).toReturn(tableDBCollection);
-        Mockito.stub(db.getCollection(Mockito.eq("embedded"))).toReturn(embeddedDBCollection);
-        Mockito.stub(db.getCollection(Mockito.eq("empty"))).toReturn(emptyDBCollection);
-        Mockito.stub(db.getCollection(Mockito.eq("emptyFirst"))).toReturn(emptyFirstDBCollection);
+        Mockito.when(db.getCollectionNames()).thenReturn(tables);
+        Mockito.when(db.getCollection(Mockito.eq("table"))).thenReturn(tableDBCollection);
+        Mockito.when(db.getCollection(Mockito.eq("embedded"))).thenReturn(embeddedDBCollection);
+        Mockito.when(db.getCollection(Mockito.eq("empty"))).thenReturn(emptyDBCollection);
+        Mockito.when(db.getCollection(Mockito.eq("emptyFirst"))).thenReturn(emptyFirstDBCollection);
 
         BasicDBObject nextRow = new BasicDBObject();
         nextRow.append("_id", new Integer(2));
@@ -256,7 +256,7 @@ public class TestMongoDBMetadataProcessor {
         Mockito.when(emptyCursor.next()).thenReturn(null);
         Mockito.when(emptyDBCollection.find()).thenReturn(emptyCursor);
 
-        Mockito.stub(conn.getDatabase()).toReturn(db);
+        Mockito.when(conn.getDatabase()).thenReturn(db);
 
         mp.process(mf, conn);
         return mf;
@@ -310,11 +310,11 @@ public class TestMongoDBMetadataProcessor {
         embedded.append("col2", "two");
         row.append("embedded", embedded);
 
-        Mockito.stub(db.getCollectionNames()).toReturn(tables);
-        Mockito.stub(db.getCollection(Mockito.eq("table"))).toReturn(tableDBCollection);
-        Mockito.stub(db.getCollection(Mockito.eq("embedded"))).toReturn(embeddedDBCollection);
-        Mockito.stub(db.getCollection(Mockito.eq("empty"))).toReturn(emptyDBCollection);
-        Mockito.stub(db.getCollection(Mockito.eq("emptyFirst"))).toReturn(emptyFirstDBCollection);
+        Mockito.when(db.getCollectionNames()).thenReturn(tables);
+        Mockito.when(db.getCollection(Mockito.eq("table"))).thenReturn(tableDBCollection);
+        Mockito.when(db.getCollection(Mockito.eq("embedded"))).thenReturn(embeddedDBCollection);
+        Mockito.when(db.getCollection(Mockito.eq("empty"))).thenReturn(emptyDBCollection);
+        Mockito.when(db.getCollection(Mockito.eq("emptyFirst"))).thenReturn(emptyFirstDBCollection);
 
         DBCursor tableCursor = Mockito.mock(DBCursor.class);
         Mockito.when(tableCursor.hasNext()).thenReturn(true).thenReturn(false);
@@ -336,7 +336,7 @@ public class TestMongoDBMetadataProcessor {
         Mockito.when(emptyCursor.next()).thenReturn(null);
         Mockito.when(emptyDBCollection.find()).thenReturn(emptyCursor);
 
-        Mockito.stub(conn.getDatabase()).toReturn(db);
+        Mockito.when(conn.getDatabase()).thenReturn(db);
 
         mp.process(mf, conn);
 
@@ -393,15 +393,15 @@ public class TestMongoDBMetadataProcessor {
         row.append("_id", 1);
         row.append("col1", list);
 
-        Mockito.stub(db.getCollectionNames()).toReturn(tables);
-        Mockito.stub(db.getCollection(Mockito.eq("table"))).toReturn(tableDBCollection);
+        Mockito.when(db.getCollectionNames()).thenReturn(tables);
+        Mockito.when(db.getCollection(Mockito.eq("table"))).thenReturn(tableDBCollection);
 
         DBCursor tableCursor = Mockito.mock(DBCursor.class);
         Mockito.when(tableCursor.hasNext()).thenReturn(true).thenReturn(false);
         Mockito.when(tableCursor.next()).thenReturn(row);
         Mockito.when(tableDBCollection.find()).thenReturn(tableCursor);
 
-        Mockito.stub(conn.getDatabase()).toReturn(db);
+        Mockito.when(conn.getDatabase()).thenReturn(db);
 
         mp.process(mf, conn);
 

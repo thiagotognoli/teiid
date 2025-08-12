@@ -84,8 +84,8 @@ public class TestAccumuloQueryExecution {
 
         connector = Connector.from(client);
 
-        Mockito.stub(connection.getInstance()).toReturn(connector);
-        Mockito.stub(connection.getAuthorizations()).toReturn(new Authorizations("public"));
+        Mockito.when(connection.getInstance()).thenReturn(connector);
+        Mockito.when(connection.getAuthorizations()).thenReturn(new Authorizations("public"));
         connector.tableOperations().create("customer", true, TimeType.LOGICAL);
         connector.tableOperations().create("rental", true, TimeType.LOGICAL);
     }

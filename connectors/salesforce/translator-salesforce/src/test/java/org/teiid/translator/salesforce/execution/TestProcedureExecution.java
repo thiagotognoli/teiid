@@ -42,7 +42,7 @@ public class TestProcedureExecution {
         SalesforceConnection sfc = Mockito.mock(SalesforceConnection.class);
         UpdatedResult ur = new UpdatedResult();
         ur.setIDs(Arrays.asList("1", "2"));
-        Mockito.stub(sfc.getUpdated(Mockito.eq("foo"), (Calendar)Mockito.anyObject(), (Calendar)Mockito.anyObject())).toReturn(ur);
+        Mockito.when(sfc.getUpdated(Mockito.eq("foo"), (Calendar)Mockito.anyObject(), (Calendar)Mockito.anyObject())).thenReturn(ur);
         ProcedureExecutionParentImpl pepi = new ProcedureExecutionParentImpl(command, sfc, Mockito.mock(RuntimeMetadata.class), Mockito.mock(ExecutionContext.class));
         pepi.execute();
         assertNotNull(pepi.next());

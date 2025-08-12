@@ -60,7 +60,7 @@ public class TestTeiidPlatform {
             public VirtualFileConnection getConnection() throws Exception {
                 VirtualFileConnection result = Mockito.mock(VirtualFileConnection.class);
                 JavaVirtualFile javaVirtualFile = new JavaVirtualFile(UnitTestUtil.getTestDataFile("file/marketdata.csv"));
-                Mockito.stub(result.getFiles(Mockito.anyString())).toReturn(new VirtualFile[] {javaVirtualFile});
+                Mockito.when(result.getFiles(Mockito.anyString())).thenReturn(new VirtualFile[] {javaVirtualFile});
                 return result;
             }
         });

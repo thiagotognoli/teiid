@@ -730,7 +730,7 @@ public class TestResultSet {
         ResultsFuture<LobChunk> future = new ResultsFuture<LobChunk>();
         future.getResultsReceiver().receiveResults(new LobChunk("<a/>".getBytes(Charset.forName("UTF-8")), true));
         XMLType result = new XMLType();
-        Mockito.stub(statement.getDQP().requestNextLobChunk(0, 0, result.getReferenceStreamId())).toReturn(future);
+        Mockito.when(statement.getDQP().requestNextLobChunk(0, 0, result.getReferenceStreamId())).thenReturn(future);
         ResultsMessage resultsMsg = new ResultsMessage();
         result.setEncoding("UTF-8");
         resultsMsg.setResults(new List<?>[] {Arrays.asList(result)});
@@ -766,12 +766,12 @@ public class TestResultSet {
     static StatementImpl createMockStatement(int cursorType, MockSettings mockSetting) throws SQLException {
         StatementImpl statement = mock(StatementImpl.class, mockSetting);
         DQP dqp = mock(DQP.class);
-        stub(statement.getDQP()).toReturn(dqp);
-        stub(statement.getResultSetType()).toReturn(cursorType);
+        when(statement.getDQP()).thenReturn(dqp);
+        when(statement.getResultSetType()).thenReturn(cursorType);
         TimeZone tz = TimeZone.getTimeZone("GMT-06:00"); //$NON-NLS-1$
         TimeZone serverTz = TimeZone.getTimeZone("GMT-05:00"); //$NON-NLS-1$
-        stub(statement.getDefaultCalendar()).toReturn(Calendar.getInstance(tz));
-        stub(statement.getServerTimeZone()).toReturn(serverTz);
+        when(statement.getDefaultCalendar()).thenReturn(Calendar.getInstance(tz));
+        when(statement.getServerTimeZone()).thenReturn(serverTz);
         return statement;
     }
 

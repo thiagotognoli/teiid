@@ -79,7 +79,7 @@ public class TestEmbeddedMongoExecution {
 
     private static MongoDBConnection getConnection(MongoClient client) {
         MongoDBConnection connection = Mockito.mock(MongoDBConnection.class);
-        Mockito.stub(connection.getDatabase()).toReturn(client.getDB("test"));
+        Mockito.when(connection.getDatabase()).thenReturn(client.getDB("test"));
         return connection;
     }
 
@@ -91,7 +91,7 @@ public class TestEmbeddedMongoExecution {
         Command cmd = utility.parseCommand(sql);
         CommandContext cc = Mockito.mock(CommandContext.class);
         ExecutionContext ec = Mockito.mock(ExecutionContext.class);
-        Mockito.stub(ec.getCommandContext()).toReturn(cc);
+        Mockito.when(ec.getCommandContext()).thenReturn(cc);
         Execution exec =  translator.createExecution(cmd, ec, utility.createRuntimeMetadata(), this.connection);
         exec.execute();
         return exec;

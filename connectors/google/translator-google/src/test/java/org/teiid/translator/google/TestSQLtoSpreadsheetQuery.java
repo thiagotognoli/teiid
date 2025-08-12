@@ -84,7 +84,7 @@ public class TestSQLtoSpreadsheetQuery {
     private QueryMetadataInterface dummySpreadsheetMetadata() throws Exception {
         GoogleSpreadsheetConnection conn = Mockito.mock(GoogleSpreadsheetConnection.class);
 
-        Mockito.stub(conn.getSpreadsheetInfo()).toReturn(people);
+        Mockito.when(conn.getSpreadsheetInfo()).thenReturn(people);
 
         MetadataFactory factory = new MetadataFactory("", 1, "", SystemMetadata.getInstance().getRuntimeTypeMap(), new Properties(), "");
         GoogleMetadataProcessor processor = new GoogleMetadataProcessor();
@@ -228,7 +228,7 @@ public class TestSQLtoSpreadsheetQuery {
         String sql="insert into PeopleList(A,B,C) values ('String,String', 'val', 15.5)";
         Insert insert = (Insert)getCommand(sql);
         GoogleSpreadsheetConnection gsc = Mockito.mock(GoogleSpreadsheetConnection.class);
-        Mockito.stub(gsc.getSpreadsheetInfo()).toReturn(people);
+        Mockito.when(gsc.getSpreadsheetInfo()).thenReturn(people);
         RuntimeMetadata rm = Mockito.mock(RuntimeMetadata.class);
         ExecutionContext ec = Mockito.mock(ExecutionContext.class);
         SpreadsheetUpdateExecution sue = new SpreadsheetUpdateExecution(insert, gsc, ec, rm);

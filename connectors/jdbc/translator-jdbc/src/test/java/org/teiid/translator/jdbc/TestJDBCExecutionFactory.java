@@ -88,15 +88,15 @@ public class TestJDBCExecutionFactory {
         jef.setStructRetrieval(StructRetrieval.ARRAY);
         ResultSet rs = Mockito.mock(ResultSet.class);
         Struct s = Mockito.mock(Struct.class);
-        Mockito.stub(rs.getObject(1)).toReturn(s);
+        Mockito.when(rs.getObject(1)).thenReturn(s);
         assertTrue(jef.retrieveValue(rs, 1, TypeFacility.RUNTIME_TYPES.OBJECT) instanceof Array);
     }
 
     @Test public void testBooleanRetrival() throws SQLException {
         JDBCExecutionFactory jef = new JDBCExecutionFactory();
         ResultSet rs = Mockito.mock(ResultSet.class);
-        Mockito.stub(rs.getBoolean(1)).toReturn(false);
-        Mockito.stub(rs.wasNull()).toReturn(true);
+        Mockito.when(rs.getBoolean(1)).thenReturn(false);
+        Mockito.when(rs.wasNull()).thenReturn(true);
         assertNull(jef.retrieveValue(rs, 1, TypeFacility.RUNTIME_TYPES.BOOLEAN));
     }
 
@@ -116,8 +116,8 @@ public class TestJDBCExecutionFactory {
         JDBCExecutionFactory jef = new JDBCExecutionFactory();
         Connection connection = Mockito.mock(Connection.class);
         DatabaseMetaData mock = Mockito.mock(DatabaseMetaData.class);
-        Mockito.stub(connection.getMetaData()).toReturn(mock);
-        Mockito.stub(mock.supportsGetGeneratedKeys()).toThrow(new SQLException());
+        Mockito.when(connection.getMetaData()).thenReturn(mock);
+        Mockito.when(mock.supportsGetGeneratedKeys()).toThrow(new SQLException());
         //should still succeed even if an exception is thrown from supportsGetGeneratedKeys
         jef.initCapabilities(connection);
     }

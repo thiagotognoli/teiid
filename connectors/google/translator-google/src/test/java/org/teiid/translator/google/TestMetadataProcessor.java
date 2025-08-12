@@ -56,7 +56,7 @@ public class TestMetadataProcessor {
         newCol.setAlphaName("empty");
         worksheet.addColumn(null, newCol);
 
-        Mockito.stub(conn.getSpreadsheetInfo()).toReturn(people);
+        Mockito.when(conn.getSpreadsheetInfo()).thenReturn(people);
 
         MetadataFactory factory = new MetadataFactory("", 1, "", SystemMetadata.getInstance().getRuntimeTypeMap(), new Properties(), "");
         GoogleMetadataProcessor processor = new GoogleMetadataProcessor();

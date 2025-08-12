@@ -30,7 +30,7 @@ import java.util.Properties;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.Mockito.whenbing.Answer;
 import org.teiid.metadata.MetadataFactory;
 import org.teiid.metadata.Table;
 import org.teiid.query.metadata.SystemMetadata;
@@ -48,7 +48,7 @@ public class TestMetadataProcessor {
         JDBCMetadataProcessor.TableInfo ti = new JDBCMetadataProcessor.TableInfo("a", "b", "c", t);
 
         ResultSet rs = Mockito.mock(ResultSet.class);
-        Mockito.stub(rs.next()).toAnswer(new Answer<Boolean>() {
+        Mockito.when(rs.next()).toAnswer(new Answer<Boolean>() {
             int count = 0;
             @Override
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
@@ -60,8 +60,8 @@ public class TestMetadataProcessor {
         });
         //intentionally leave the column name null
 
-        Mockito.stub(rs.getShort(7)).toReturn(DatabaseMetaData.tableIndexOther);
-        Mockito.stub(dmd.getIndexInfo("a", "b", "c", false, true)).toReturn(rs);
+        Mockito.when(rs.getShort(7)).thenReturn(DatabaseMetaData.tableIndexOther);
+        Mockito.when(dmd.getIndexInfo("a", "b", "c", false, true)).thenReturn(rs);
 
         processor.getIndexes(mf, dmd, Arrays.asList(ti), false);
         Mockito.verify(rs).getString(9);

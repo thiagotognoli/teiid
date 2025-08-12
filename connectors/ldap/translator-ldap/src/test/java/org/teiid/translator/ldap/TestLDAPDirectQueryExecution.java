@@ -56,7 +56,7 @@ public class TestLDAPDirectQueryExecution {
         RuntimeMetadata rm = Mockito.mock(RuntimeMetadata.class);
         LdapContext connection = Mockito.mock(LdapContext.class);
         LdapContext ctx = Mockito.mock(LdapContext.class);
-        Mockito.stub(connection.lookup("corporate")).toReturn(ctx);
+        Mockito.when(connection.lookup("corporate")).thenReturn(ctx);
 
         LDAPDirectSearchQueryExecution execution = (LDAPDirectSearchQueryExecution)TRANSLATOR.createExecution(command, ec, rm, connection);
         execution.execute();
@@ -81,7 +81,7 @@ public class TestLDAPDirectQueryExecution {
         RuntimeMetadata rm = Mockito.mock(RuntimeMetadata.class);
         LdapContext connection = Mockito.mock(LdapContext.class);
         LdapContext ctx = Mockito.mock(LdapContext.class);
-        Mockito.stub(connection.lookup("corporate")).toReturn(ctx);
+        Mockito.when(connection.lookup("corporate")).thenReturn(ctx);
 
         LDAPDirectSearchQueryExecution execution = (LDAPDirectSearchQueryExecution)TRANSLATOR.createExecution(command, ec, rm, connection);
         execution.execute();
@@ -104,7 +104,7 @@ public class TestLDAPDirectQueryExecution {
         RuntimeMetadata rm = Mockito.mock(RuntimeMetadata.class);
         LdapContext connection = Mockito.mock(LdapContext.class);
         LdapContext ctx = Mockito.mock(LdapContext.class);
-        Mockito.stub(connection.lookup("corporate")).toReturn(ctx);
+        Mockito.when(connection.lookup("corporate")).thenReturn(ctx);
 
         Execution execution = TRANSLATOR.createExecution(command, ec, rm, connection);
         assertTrue(!(execution instanceof LDAPDirectSearchQueryExecution));
@@ -120,7 +120,7 @@ public class TestLDAPDirectQueryExecution {
         RuntimeMetadata rm = Mockito.mock(RuntimeMetadata.class);
         LdapContext connection = Mockito.mock(LdapContext.class);
         LdapContext ctx = Mockito.mock(LdapContext.class);
-        Mockito.stub(connection.lookup("")).toReturn(ctx);
+        Mockito.when(connection.lookup("")).thenReturn(ctx);
 
         LDAPDirectCreateUpdateDeleteQueryExecution execution = (LDAPDirectCreateUpdateDeleteQueryExecution)TRANSLATOR.createExecution(command, ec, rm, connection);
         execution.execute();
@@ -137,7 +137,7 @@ public class TestLDAPDirectQueryExecution {
         RuntimeMetadata rm = Mockito.mock(RuntimeMetadata.class);
         LdapContext connection = Mockito.mock(LdapContext.class);
         LdapContext ctx = Mockito.mock(LdapContext.class);
-        Mockito.stub(connection.lookup("")).toReturn(ctx);
+        Mockito.when(connection.lookup("")).thenReturn(ctx);
 
         LDAPDirectCreateUpdateDeleteQueryExecution execution = (LDAPDirectCreateUpdateDeleteQueryExecution)TRANSLATOR.createExecution(command, ec, rm, connection);
         execution.execute();
@@ -164,7 +164,7 @@ public class TestLDAPDirectQueryExecution {
         RuntimeMetadata rm = Mockito.mock(RuntimeMetadata.class);
         LdapContext connection = Mockito.mock(LdapContext.class);
         LdapContext ctx = Mockito.mock(LdapContext.class);
-        Mockito.stub(connection.lookup("")).toReturn(ctx);
+        Mockito.when(connection.lookup("")).thenReturn(ctx);
 
         LDAPDirectCreateUpdateDeleteQueryExecution execution = (LDAPDirectCreateUpdateDeleteQueryExecution)TRANSLATOR.createExecution(command, ec, rm, connection);
         execution.execute();
@@ -191,7 +191,7 @@ public class TestLDAPDirectQueryExecution {
         RuntimeMetadata rm = Mockito.mock(RuntimeMetadata.class);
         LdapContext connection = Mockito.mock(LdapContext.class);
         LdapContext ctx = Mockito.mock(LdapContext.class);
-        Mockito.stub(connection.lookup("")).toReturn(ctx);
+        Mockito.when(connection.lookup("")).thenReturn(ctx);
 
         LDAPDirectCreateUpdateDeleteQueryExecution execution = (LDAPDirectCreateUpdateDeleteQueryExecution)TRANSLATOR.createExecution(command, ec, rm, connection);
         execution.execute();
