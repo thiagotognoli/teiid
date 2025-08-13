@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:atom="http://www.w3.org/2005/Atom" Version="1.0">
+  <edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="2.0">
+    <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:sap="http://www.successfactors.com/edm/sap" Namespace="SFODataSet">
+      <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="GoalComment_1" EntityType="SFOData.GoalComment_1" sap:label="GoalComment_1" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:deletable="true"/>
+        <EntitySet Name="InnerMessage" EntityType="SFOData.InnerMessage" sap:label="InnerMessage" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:deletable="true"/>
+        </EntityContainer>
+      
+      <EntityType Name="GoalComment_1">
+        <Key>
+          <PropertyRef Name="id"/>
+        </Key>
+        <Property Name="commentator" Type="Edm.String" Nullable="true" sap:label="commentator"/>
+        <Property Name="content" Type="Edm.String" Nullable="true" sap:label="content"/>
+        <Property Name="id" Type="Edm.Int64" Nullable="false" sap:label="id"/>
+      </EntityType>
+      
+      <EntityType Name="InnerMessage">
+        <Key>
+          <PropertyRef Name="messageId"/>
+        </Key>
+        <Property Name="messageId" Type="Edm.String" Nullable="false" sap:label="Message ID"/>
+        <Property Name="content" Type="Edm.String" Nullable="true" sap:label="Content"/>
+        <Property Name="sender" Type="Edm.String" Nullable="true" sap:label="Sender"/>
+      </EntityType>
+      
+      </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

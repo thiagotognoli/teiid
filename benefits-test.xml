@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:atom="http://www.w3.org/2005/Atom" Version="1.0">
+  <edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="2.0">
+    <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:sap="http://www.successfactors.com/edm/sap" Namespace="SFODataSet">
+      <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="BenefitProgramEnrollmentDetail" EntityType="SFOData.BenefitProgramEnrollmentDetail" sap:label="Benefit Program Enrollment Detail" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:deletable="false"/>
+        </EntityContainer>
+      
+      <EntityType Name="BenefitProgramEnrollmentDetail">
+        <Key>
+          <PropertyRef Name="id"/>
+        </Key>
+        <Property Name="id" Type="Edm.Int64" Nullable="false" sap:label="ID"/>
+        <Property Name="benefit" Type="Edm.String" Nullable="true" sap:label="Benefit"/>
+        <Property Name="benefitAmount" Type="Edm.Decimal" Nullable="true" sap:label="Amount"/>
+      </EntityType>
+      
+      </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

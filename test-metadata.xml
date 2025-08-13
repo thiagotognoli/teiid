@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:atom="http://www.w3.org/2005/Atom" Version="1.0">
+  <edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="2.0">
+    <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:sap="http://www.successfactors.com/edm/sap" Namespace="SFODataSet">
+      <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="GoalComment_1" EntityType="SFOData.GoalComment_1" sap:label="GoalComment_1" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:deletable="true"/>
+        <EntitySet Name="InnerMessage" EntityType="SFOData.InnerMessage" sap:label="InnerMessage" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:deletable="true"/>
+        <EntitySet Name="BenefitProgramEnrollmentDetail" EntityType="SFOData.BenefitProgramEnrollmentDetail" sap:label="Benefit Program Enrollment Detail" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:deletable="false"/>
+        <EntitySet Name="JobRequisitionPostingFieldControls" EntityType="SFOData.JobRequisitionPostingFieldControls" sap:label="JobRequisitionPostingFieldControls" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:deletable="false"/>
+      </EntityContainer>
+      
+      <EntityType Name="GoalComment_1">
+        <Key>
+          <PropertyRef Name="id"/>
+        </Key>
+        <Property Name="commentator" Type="Edm.String" Nullable="true" sap:label="commentator"/>
+        <Property Name="content" Type="Edm.String" Nullable="true" sap:label="content"/>
+        <Property Name="id" Type="Edm.Int64" Nullable="false" sap:label="id"/>
+      </EntityType>
+      
+      <EntityType Name="InnerMessage">
+        <Key>
+          <PropertyRef Name="messageId"/>
+        </Key>
+        <Property Name="messageId" Type="Edm.String" Nullable="false" sap:label="Message ID"/>
+        <Property Name="content" Type="Edm.String" Nullable="true" sap:label="Content"/>
+        <Property Name="sender" Type="Edm.String" Nullable="true" sap:label="Sender"/>
+      </EntityType>
+      
+      <EntityType Name="BenefitProgramEnrollmentDetail">
+        <Key>
+          <PropertyRef Name="id"/>
+        </Key>
+        <Property Name="id" Type="Edm.Int64" Nullable="false" sap:label="ID"/>
+        <Property Name="benefit" Type="Edm.String" Nullable="true" sap:label="Benefit"/>
+        <Property Name="benefitAmount" Type="Edm.Decimal" Nullable="true" sap:label="Amount"/>
+      </EntityType>
+      
+      <EntityType Name="JobRequisitionPostingFieldControls">
+        <Key>
+          <PropertyRef Name="jobReqId"/>
+        </Key>
+        <Property Name="jobReqId" Type="Edm.String" Nullable="false" sap:label="Job Req ID"/>
+        <Property Name="fieldName" Type="Edm.String" Nullable="true" sap:label="Field Name"/>
+        <Property Name="isVisible" Type="Edm.Boolean" Nullable="true" sap:label="Is Visible"/>
+      </EntityType>
+      
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
